@@ -5,6 +5,7 @@ import FooterComponente from './componentes/FooterComponente';
 
 import ListarUsuariosComponente from './componentes/ListarUsuariosComponente';
 import { BrowserRouter, Route, Router, Routes } from 'react-router-dom';
+import AddUsuarioComponent from './componentes/AddUsuarioComponent';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Routes>
             <Route exact path='/' element={<ListarUsuariosComponente />}></Route>
             <Route path='/usuarios' element={<ListarUsuariosComponente />}></Route>
+            <Route path='/add-usuario' element={<AddUsuarioComponent />}></Route>
           </Routes>
         </div>
       </BrowserRouter>

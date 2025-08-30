@@ -12,13 +12,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -39,7 +40,14 @@ public class UsuarioControlador {
 
     @PostMapping("/usuarios")
     public Usuario registrarUsuario(@RequestBody Usuario usuario) {
-        return usuarioRepositorio.save(usuario);
+        
+        Usuario user = new Usuario();
+
+        user.setRol(usuario.getRol());
+        user.setUsuario(usuario.getUsuario());
+        user.setPassword(new BCryptPasswordEncoder().encode(usuario.getPassword()));
+
+        return usuarioRepositorio.save(user);
     }
 
     @GetMapping("/usuarios/{id}")
@@ -64,7 +72,8 @@ public class UsuarioControlador {
 
         return ResponseEntity.ok(usuarioModificado);
     }
-
+    
+    @DeleteMapping("/usuarios/{id}")
     public ResponseEntity<Map<String,Boolean>> eliminarUsuario(@PathVariable String id) {
         Usuario usuarioExistente = usuarioRepositorio.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("El usuario con ese id no existe"));
