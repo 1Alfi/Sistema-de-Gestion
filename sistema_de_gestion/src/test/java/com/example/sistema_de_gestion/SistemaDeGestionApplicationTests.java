@@ -1,10 +1,10 @@
-package com.SA2.Sistemas_de_gestion;
+package com.example.sistema_de_gestion;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SistemasDeGestionApplicationTests {
+class SistemaDeGestionApplicationTests {
 
 	@Test
 	void contextLoads() {
