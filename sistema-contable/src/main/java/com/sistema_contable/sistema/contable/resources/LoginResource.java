@@ -1,5 +1,6 @@
 package com.sistema_contable.sistema.contable.resources;
 
+import com.sistema_contable.sistema.contable.dto.AuthenticationRequestDTO;
 import com.sistema_contable.sistema.contable.exceptions.ModelExceptions;
 import com.sistema_contable.sistema.contable.model.User;
 import com.sistema_contable.sistema.contable.services.security.AuthenticationService;
@@ -8,10 +9,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,8 +27,8 @@ public class LoginResource {
     @Autowired
     private AuthenticationService authenticationService;
 
-    @PostMapping
-    public ResponseEntity<?> login(AuthenticationService authDTO){
+    @PostMapping(produces = "application/json")
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequestDTO authDTO){
         try {
             String token = authenticationService.authenticate(mapper.map(authDTO, User.class));
             Map<String, String> response = new HashMap<>();
@@ -38,6 +37,7 @@ public class LoginResource {
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         } catch (Exception e) {
+            System.out.print(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

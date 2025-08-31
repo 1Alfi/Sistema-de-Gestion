@@ -23,8 +23,13 @@ public class AuthenticationServiceImp implements AuthenticationService{
     //methods
     @Override
     public String authenticate(User user) throws Exception {
+
         User userDB = userService.findByUsername(user.getUsername());
+
         if(userDB==null || !passwordEncoder.verify(user.getPassword(), userDB.getPassword())){throw new AuthenticationException();}
-        else{return jwtTokenUtil.generateToken(user.getUsername(), user.getRole().name());}
+
+        else{
+            return jwtTokenUtil.generateToken(user.getUsername(), userDB.getRole().name());
+        }
     }
 }
