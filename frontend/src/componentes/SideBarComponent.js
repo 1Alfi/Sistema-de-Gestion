@@ -5,10 +5,12 @@ import { LuBookOpenCheck, LuNotebookTabs } from 'react-icons/lu';
 import { MdAccountTree } from "react-icons/md";
 import { TbMapDollar } from 'react-icons/tb';
 import { getRoleFromToken } from '../utiles/authUtils';
+import {useNavigate} from "react-router-dom";
 
 const SideBarComponent = () => {
 
     const userRole = getRoleFromToken();
+    const navigate = useNavigate();
 
     return (
         <div className="d-flex flex-column flex-shrink-0 bg-dark vh-100" style={{width: '4.5rem'}}>
@@ -44,8 +46,8 @@ const SideBarComponent = () => {
                 */}
                 {userRole === 'ADMIN' && (
                     <li>
-                        <a href="#" className="nav-link py-3 border-bottom rounded-0" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="listado-de-usuarios" data-bs-original-title="listado-de-usuarios">
-                            <FaRegAddressBook />    {/* Esto tiene el acceso al listado de usuarios */}
+                        <a href="/usuarios" className="nav-link py-3 border-bottom rounded-0" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="listado-de-usuarios" data-bs-original-title="listado-de-usuarios">
+                            <FaRegAddressBook />{/* Esto tiene el acceso al listado de usuarios */}
                         </a>
                     </li>
                 )}

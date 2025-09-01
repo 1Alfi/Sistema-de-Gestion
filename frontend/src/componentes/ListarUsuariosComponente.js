@@ -28,8 +28,11 @@ const ListarUsuariosComponente = () => {
     }
 
     return (
+
         <div className='container'>
+
             <h2 className='text-center'>Listado de Usuarios</h2>
+
             <table className='table table-bordered table-striped'>
                 <thead>
                     <tr>
@@ -58,6 +61,7 @@ const ListarUsuariosComponente = () => {
             <div className=' d-grid d-md-flex justify-content-md-end'>
                 <Link to='/add-username' className='btn btn-primary mb-2 '>Agregar usuario</Link>
             </div>
+
         </div>
     )
 }

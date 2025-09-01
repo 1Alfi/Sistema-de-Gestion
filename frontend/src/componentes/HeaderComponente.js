@@ -6,7 +6,7 @@ const HeaderComponente = () => {
       <header>
         <nav className='navbar navbar-expand-md navbar-dark bg-dark'>
             <div>
-                <a href='/' className='navbar-brand'>ContaConmigo</a>
+                <a href='/inicio' className='navbar-brand'>ContaConmigo</a>
             </div>
         </nav>
       </header>
