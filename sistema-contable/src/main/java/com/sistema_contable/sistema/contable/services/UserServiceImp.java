@@ -7,6 +7,8 @@ import com.sistema_contable.sistema.contable.util.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserServiceImp implements UserService{
 
@@ -36,6 +38,11 @@ public class UserServiceImp implements UserService{
             throw new UserNotFindException();
         }
         return userDB;
+    }
+
+    @Override
+    public List<User> getAll() throws Exception {
+       return repository.findAll();
     }
 
 
