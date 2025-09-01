@@ -1,0 +1,18 @@
+import React from 'react'
+
+const HeaderComponente = () => {
+  return (
+    <div>
+      <header>
+        <nav className='navbar navbar-expand-md navbar-dark bg-dark'>
+            <div>
+                <a href='/inicio' className='navbar-brand'>ContaConmigo</a>
+                <a href='/login' onClick={ (e) => localStorage.removeItem('token')}>salir</a>
+            </div>
+        </nav>
+      </header>
+    </div>
+  )
+}
+
+export default HeaderComponente
