@@ -24,10 +24,12 @@ public class AuthorizationServiceImp implements AuthorizationService {
         else{return userDB;}
     }
 
+    @Override
     public User adminAuthorize(String token) throws Exception {
         User userDB = service.findByUsername(jwtTokenUtil.getSubject(token));
         String role = jwtTokenUtil.getRole(token);
-        if (!jwtTokenUtil.verify(token) || userDB == null ){throw new AuthorizationException();}
+
+        if (!jwtTokenUtil.verify(token) || userDB == null || role !="ADMIN"){throw new AuthorizationException();}
         else{return userDB;}
     }
 

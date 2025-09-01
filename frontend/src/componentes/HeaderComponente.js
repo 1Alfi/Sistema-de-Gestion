@@ -7,6 +7,7 @@ const HeaderComponente = () => {
         <nav className='navbar navbar-expand-md navbar-dark bg-dark'>
             <div>
                 <a href='/inicio' className='navbar-brand'>ContaConmigo</a>
+                <a href='/login' onClick={ (e) => localStorage.removeItem('token')}>salir</a>
             </div>
         </nav>
       </header>

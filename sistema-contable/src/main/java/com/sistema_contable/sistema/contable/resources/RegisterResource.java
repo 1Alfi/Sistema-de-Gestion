@@ -24,14 +24,18 @@ public class RegisterResource {
     @Autowired
     private ModelMapper mapper;
 
+    /*
     @PostMapping
+
     public ResponseEntity<?> register(@RequestBody UserRequestDTO userDTO){
         try{
-            service.create(mapper.map(userDTO, User.class));
+            service.create(mapper.map(userDTO, User.class), us);
             return new ResponseEntity<>(null, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+     */
 
 }

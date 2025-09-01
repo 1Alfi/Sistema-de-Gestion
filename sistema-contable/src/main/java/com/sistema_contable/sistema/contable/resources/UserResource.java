@@ -7,6 +7,7 @@ import com.sistema_contable.sistema.contable.exceptions.UserNotFindException;
 import com.sistema_contable.sistema.contable.model.User;
 import com.sistema_contable.sistema.contable.repository.UserRepository;
 import com.sistema_contable.sistema.contable.services.UserService;
+import com.sistema_contable.sistema.contable.services.security.AuthenticationService;
 import com.sistema_contable.sistema.contable.services.security.AuthorizationService;
 import com.sistema_contable.sistema.contable.util.JwtTokenUtil;
 import com.sistema_contable.sistema.contable.util.PasswordEncoder;
@@ -29,15 +30,16 @@ public class UserResource {
     @Autowired
     private UserService service;
     @Autowired
-    private JwtTokenUtil tokenUtil;
-    @Autowired
     private ModelMapper mapper;
+    @Autowired
+    private AuthorizationService authService;
 
     @PostMapping(path = "/create")
-    public ResponseEntity<?> create (@RequestBody UserRequestDTO userDTO){
-        System.out.print(userDTO.getRole());
+    public ResponseEntity<?> create (@RequestHeader("Authorization") String token,@RequestBody UserRequestDTO userDTO){
         try{
-            service.create(mapper.map(userDTO, User.class));
+            System.out.print(token);
+            User userDB = authService.adminAuthorize(token);
+            service.create(mapper.map(userDTO, User.class), userDB);
             return new ResponseEntity<>(null, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

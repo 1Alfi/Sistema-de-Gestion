@@ -2,8 +2,17 @@ import axios from 'axios';
 
 const USUARIO_BASE_REST_API_URL = "http://localhost:8080/user";
 
+const config = {
+    headers: {
+        'Authorization': `${localStorage.getItem('token')}`
+    }
+};
+
+
 class UsuarioServicio {
-    
+
+
+
     getAllUsuarios() {
         return axios.get(USUARIO_BASE_REST_API_URL+'/usuarios');
     }
@@ -13,8 +22,8 @@ class UsuarioServicio {
     }
 
     crearUsuario(usuario) {
-        console.log(usuario);
-        return axios.post(USUARIO_BASE_REST_API_URL+'/create', usuario);
+        console.log(config);
+        return axios.post(USUARIO_BASE_REST_API_URL+'/create',usuario, config);
     }
 
     deleteUsuario(usuarioId) {

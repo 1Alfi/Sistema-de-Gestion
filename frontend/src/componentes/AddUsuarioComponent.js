@@ -6,7 +6,7 @@ const AddUsuarioComponent = () => {
   
   const [username, setUsuario] = useState('')
   const [password, setPassword] = useState('')
-  const [role, setRole] = useState('EMPLEADO')
+  const [role, setRole] = useState('ADMIN')
   const navigate = useNavigate();
 
   const guardarUsuario = (e) => {
@@ -56,6 +56,7 @@ const AddUsuarioComponent = () => {
                     className="form-select mt-4" 
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
+
                   ><option value= 'ADMIN'>Administrador</option>
                     <option value= 'USER'>Usuario</option>
                   </select>

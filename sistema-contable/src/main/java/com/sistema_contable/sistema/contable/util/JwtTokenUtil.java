@@ -8,7 +8,7 @@ import java.util.Date;
 
 public class JwtTokenUtil {
 
-    public static final String SECRET = "SOII2024";
+    public static final String SECRET = "SOII2025";
     public static final long EXPIRATION_TIME = 864_000_000;
     public static final String TOKEN_PREFIX = "Bearer ";
 
