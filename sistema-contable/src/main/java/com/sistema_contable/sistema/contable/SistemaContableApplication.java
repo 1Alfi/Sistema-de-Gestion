@@ -22,3 +22,4 @@ public class SistemaContableApplication {
 	public ModelMapper modelMapper(){return new ModelMapper();}
 
 }
+
