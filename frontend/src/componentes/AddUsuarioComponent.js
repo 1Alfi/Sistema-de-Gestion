@@ -29,7 +29,7 @@ const AddUsuarioComponent = () => {
             <div className='card-body'>
               <form>
                 <div className='form-group mb-2'>
-                  <label className='form-label'>Username</label>
+                  <label className='form-label'>Usuario</label>
                   <input 
                     type='text' 
                     placeholder='Nombre Usuario'
@@ -51,9 +51,9 @@ const AddUsuarioComponent = () => {
                   />
                 </div>
                 <div className='form-group mb-2'>
-                    <label className='form-label'>Rol Usuario</label>
+                  <label className='form-label'>Rol</label>
                   <select
-                    className="form-select mt-4" 
+                    className="form-select" 
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
 

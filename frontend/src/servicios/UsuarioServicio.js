@@ -11,10 +11,8 @@ const config = {
 
 class UsuarioServicio {
 
-
-
     getAllUsuarios() {
-        return axios.get(USUARIO_BASE_REST_API_URL+'/usuarios');
+        return axios.get(USUARIO_BASE_REST_API_URL + '/usuarios');
     }
 
     getUsuarioById(usuarioId) {

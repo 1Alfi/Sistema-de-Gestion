@@ -29,7 +29,7 @@ public class AuthorizationServiceImp implements AuthorizationService {
         User userDB = service.findByUsername(jwtTokenUtil.getSubject(token));
         String role = jwtTokenUtil.getRole(token);
 
-        if (!jwtTokenUtil.verify(token) || userDB == null || role !="ADMIN"){throw new AuthorizationException();}
+        if (!jwtTokenUtil.verify(token) || userDB == null || !role.equals("ADMIN")){throw new AuthorizationException();}
         else{return userDB;}
     }
 

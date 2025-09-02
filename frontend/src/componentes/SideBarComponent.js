@@ -13,28 +13,28 @@ const SideBarComponent = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="d-flex flex-column flex-shrink-0 bg-dark vh-100" style={{width: '4.5rem'}}>
+        <div className="d-flex flex-column flex-shrink-0 bg-secondary vh-100" style={{width: '4.5rem'}}>
             <a href="/" className="d-block p-3 link-dark text-decoration-none" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Icon-only">
             </a>
             <ul className="nav nav-pills nav-flush flex-column mb-auto text-center">
                 <li className="nav-item">
-                    <a href="#" className="nav-link active py-3 border-bottom rounded-0" >
-                        <MdAccountTree />   {/*Esto lleva el plan de cuentas*/}
+                    <a href="#" className="nav-link link-light active py-3 border-bottom rounded-0" >
+                        <MdAccountTree size={25}/>   {/*Esto lleva el plan de cuentas*/}
                     </a>
                 </li>
                 <li>
-                    <a href="#" className="nav-link py-3 border-bottom rounded-0" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="asientos" data-bs-original-title="asientos">
-                        <LuBookOpenCheck />
+                    <a href="#" className="nav-link link-light py-3 border-bottom rounded-0" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="asientos" data-bs-original-title="asientos">
+                        <LuBookOpenCheck size={25}/>
                     </a>
                 </li>
                 <li>
-                    <a href="#" className="nav-link py-3 border-bottom rounded-0" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="libro-diario" data-bs-original-title="libro-diario">
-                        <LuNotebookTabs />  {/*Esto lleva el libro diario*/}
+                    <a href="#" className="nav-link link-light py-3 border-bottom rounded-0" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="libro-diario" data-bs-original-title="libro-diario">
+                        <LuNotebookTabs size={25}/>  {/*Esto lleva el libro diario*/}
                     </a>
                 </li>
                 <li>
-                    <a href="#" className="nav-link py-3 border-bottom rounded-0" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="libro-mayor" data-bs-original-title="libro-mayor">
-                        <TbMapDollar />  {/*Esto lleva el libro mayor*/}
+                    <a href="#" className="nav-link link-light py-3 border-bottom rounded-0" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="libro-mayor" data-bs-original-title="libro-mayor">
+                        <TbMapDollar size={25}/>  {/*Esto lleva el libro mayor*/}
                     </a>
                 </li>
                 {/* 
@@ -46,8 +46,8 @@ const SideBarComponent = () => {
                 */}
                 {userRole === 'ADMIN' && (
                     <li>
-                        <a href="/usuarios" className="nav-link py-3 border-bottom rounded-0" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="listado-de-usuarios" data-bs-original-title="listado-de-usuarios">
-                            <FaRegAddressBook />{/* Esto tiene el acceso al listado de usuarios */}
+                        <a href="/usuarios" className="nav-link link-light py-3 border-bottom rounded-0" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="listado-de-usuarios" data-bs-original-title="listado-de-usuarios">
+                            <FaRegAddressBook size={25}/>{/* Esto tiene el acceso al listado de usuarios */}
                         </a>
                     </li>
                 )}
