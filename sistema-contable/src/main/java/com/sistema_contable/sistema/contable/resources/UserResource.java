@@ -46,8 +46,8 @@ public class UserResource {
         }
     }
 
-    @GetMapping(path = "/usuarios", produces = "application/json")
-    public ResponseEntity<?> getUsers(@RequestHeader("Authorization") String token) throws Exception {
+   @GetMapping(path = "/usuarios", produces = "application/json")
+    public ResponseEntity<?> getUsers(@RequestHeader("Authorization") String token){
         try {
             //Verifica si el user del token es admin y lo retorna para verificar que admin en la db en el service
             User userDB = authService.adminAuthorize(token);
@@ -67,11 +67,11 @@ public class UserResource {
         return response;
     }
     //create... and map a list of Users
-    private MultiValueMap<String, List<UserResponseDTO>> userResponse(List<User> users) {
+    private List<UserResponseDTO> userResponse(List<User> users) {
         MultiValueMap<String, List<UserResponseDTO>> response = new LinkedMultiValueMap<>();
         List<UserResponseDTO> dtos = users.stream().map(user-> mapper.map(user, UserResponseDTO.class)).toList();
         response.add("Users", dtos);
-        return response;
+        return dtos;
 
     }
 

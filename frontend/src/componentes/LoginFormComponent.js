@@ -60,7 +60,7 @@ const LoginFormComponent = () => {
             <div className='card-body'>
               <form>
                 <div className='form-group mb-2'>
-                  <label className='form-label'>Username</label>
+                  <label className='form-label'>Usuario</label>
                   <input 
                     type='text' 
                     placeholder='Nombre Usuario'
