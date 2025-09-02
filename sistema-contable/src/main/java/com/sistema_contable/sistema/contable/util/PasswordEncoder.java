@@ -1,10 +1,9 @@
 package com.sistema_contable.sistema.contable.util;
 
-import org.springframework.stereotype.Component;
-
 import com.password4j.BcryptFunction;
 import com.password4j.Password;
 import com.password4j.types.Bcrypt;
+
 
 public class PasswordEncoder {
 
@@ -14,7 +13,6 @@ public class PasswordEncoder {
     //Methods
     public String encode(String rawPassword){
         BcryptFunction bcrypt = BcryptFunction.getInstance(Bcrypt.B, LOG_ROUNDS);
-        System.out.println(rawPassword);
         return Password.hash(rawPassword).addPepper(SHARED_SECRET).with(bcrypt).getResult();
     }
 
