@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
-import UsuarioServicio from '../servicios/UsuarioServicio'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
 import LoginServicio from "../servicios/LoginServicio";
 
 const LoginFormComponent = () => {
@@ -25,30 +23,6 @@ const LoginFormComponent = () => {
         }).catch(error => {
             console.log(error);
         })
-
-        // axios.post("http://localhost:8080/api/v1/auth/login", {
-        //         usuario,
-        //         password
-        //     })
-        //     .then(response => {
-        //         const token = response.data;
-
-        //         localStorage.setItem('token', token);
-
-        //         navigate('/inicio');
-        //     })
-        //     .catch(err => {
-        //         if (err.response) {
-        //             if (err.response.status === 401) {
-        //                  setError("Credenciales incorrectas. Intente nuevamente.");
-        //             } else {
-        //                  setError("Error en el servidor. Intente más tarde.");
-        //             }
-        //         } else {
-        //             setError("Error de red. Verifique su conexión.");
-        //         }
-        //         console.error("Error detallado", err);
-        //     }), [];
     }
 
     return (

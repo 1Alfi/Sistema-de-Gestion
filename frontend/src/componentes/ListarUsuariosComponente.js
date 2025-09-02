@@ -37,27 +37,27 @@ const ListarUsuariosComponente = () => {
 
                 <table className='table table-bordered table-striped'>
                     <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Username</th>
-                        <th>Rol</th>
-                        <th>Acciones</th>
-                    </tr>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Rol</th>
+                            <th>Acciones</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {
-                        usuarios.map(
-                            user =>
-                                <tr key={user.id}>
-                                    <td>{user.id}</td>
-                                    <td>{user.username}</td>
-                                    <td>{user.role}</td>
-                                    <td>
-                                        <button className='btn btn-danger' onClick={() => deleteUsuario(user.id)}> Eliminar </button>
-                                    </td>
-                                </tr>
-                        )
-                    }
+                        {
+                            usuarios.map(
+                                user =>
+                                    <tr key={user.id}>
+                                        <td>{user.id}</td>
+                                        <td>{user.username}</td>
+                                        <td>{user.role}</td>
+                                        <td>
+                                            <button className='btn btn-danger' onClick={() => deleteUsuario(user.id)}> Eliminar </button>
+                                        </td>
+                                    </tr>
+                            )
+                        }
                     </tbody>
                 </table>
                 <div className=' d-grid d-md-flex justify-content-md-end'>
