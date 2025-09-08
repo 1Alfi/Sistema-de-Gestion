@@ -16,12 +16,20 @@ const LoginFormComponent = () => {
         LoginServicio.authUsuario(user).then((response) => {
             console.log(response.data);
             const token = response.data.token;
-
             localStorage.setItem('token', token)
 
             navigate('/inicio');
-        }).catch(error => {
-            console.log(error);
+        }).catch(err => {
+            console.error(err);
+            if (err.response && err.response.data && err.response.data.message) {
+                // Si el error viene del back
+                setError(err.response.data.message);
+            } else {
+                // Si es un error genérico
+                setError('Ocurrió un error al intentar iniciar sesión. Por favor, intenta de nuevo.');
+            }
+            // Limpia el campo contraseña
+            setPassword('');
         })
     }
 

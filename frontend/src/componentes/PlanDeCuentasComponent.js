@@ -1,13 +1,14 @@
 import React from 'react'
 import SidebarCuentasComponent from './SidebarCuentasComponent'
 import SideBarComponent from './SideBarComponent'
+import InfoCuentasComponent from './InfoCuentasComponent'
 
 const PlanDeCuentasComponent = () => {
   return (
     <div className='d-flex'>
         <SideBarComponent />
         <SidebarCuentasComponent />
-        <h1>Esto es todo lo del plan de cuentas</h1>
+        <InfoCuentasComponent />
     </div>
   )
 }
