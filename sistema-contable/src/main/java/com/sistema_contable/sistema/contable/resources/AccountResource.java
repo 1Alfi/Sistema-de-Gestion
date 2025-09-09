@@ -58,7 +58,7 @@ public class AccountResource {
         }
     }
 
-    @GetMapping(path = "accounts", produces = "application/json")
+    @GetMapping(produces = "application/json")
     public ResponseEntity<?> getAll(@RequestHeader("Authorization") String token){
         try {
             authService.authorize(token);

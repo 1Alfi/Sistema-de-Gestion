@@ -1,10 +1,13 @@
 package com.sistema_contable.sistema.contable.dto;
 
+import com.sistema_contable.sistema.contable.model.AccountType;
+
 public class AccountResponseDTO {
 
+    private Long id;
     private String code;
     private String name;
-    private String type;
+    private AccountType type;
 
     public String getCode() {
         return code;
@@ -20,10 +23,17 @@ public class AccountResponseDTO {
         this.name = name;
     }
 
-    public String getType() {
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public AccountType getType() {
         return type;
     }
-    public void setType(String type) {
+    public void setType(AccountType type) {
         this.type = type;
     }
 }
