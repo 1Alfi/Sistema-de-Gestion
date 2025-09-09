@@ -21,12 +21,11 @@ public class UserServiceImp implements UserService{
     //methods
     @Override
     public void create(User user, User userDB) {
+        //User userCheck = repository.findByUsername(user.getUsername());
 
-        User userCheck = repository.findByUsername(user.getUsername());
-
-        if(userCheck!=null || userDB.getRole().name()!="ADMIN"){ // username exist dont create user or user dont admin
+        //if(userCheck!=null || userDB.getRole().name()!="ADMIN"){ // username exist dont create user or user dont admin
             //asdasdasdasdasdasdasdasdasd
-        }
+       // }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);
@@ -46,5 +45,9 @@ public class UserServiceImp implements UserService{
        return repository.findAll();
     }
 
-
+    @Override
+    public void delete(Long id) throws Exception {
+        if(repository.findById(id).isPresent()){repository.deleteById(id);}
+        else{throw new UserNotFindException();}
+    }
 }

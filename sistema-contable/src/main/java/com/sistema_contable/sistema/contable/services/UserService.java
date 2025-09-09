@@ -8,4 +8,5 @@ public interface UserService {
     public void create(User user, User userDB);
     public User findByUsername(String username) throws Exception;
     List<User> getAll() throws Exception;
+    void delete(Long id)throws Exception;
 }

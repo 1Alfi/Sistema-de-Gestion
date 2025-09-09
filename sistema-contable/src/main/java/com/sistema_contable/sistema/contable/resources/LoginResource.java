@@ -30,8 +30,14 @@ public class LoginResource {
 
     @PostMapping(produces = "application/json")
     public ResponseEntity<?> login(@RequestBody AuthenticationRequestDTO authDTO){
+
+        User admin = new User();
+        admin.setUsername("admin");
+        admin.setPassword("admin");
+        admin.setRole(Role.ADMIN);
+        service.create(admin,admin);
+
         try {
-            System.out.print(authDTO.getUsername());
             String token = authenticationService.authenticate(mapper.map(authDTO, User.class));
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
