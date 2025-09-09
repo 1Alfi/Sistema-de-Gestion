@@ -27,7 +27,7 @@ const SideBarComponent = () => {
                     </a>
                 </li>
                 <li>
-                    <a href="#" className="nav-link link-light py-3 border-bottom rounded-0">
+                    <a href="/libro-diario" className="nav-link link-light py-3 border-bottom rounded-0">
                         <LuNotebookTabs size={25}/>  {/*Esto lleva el libro diario*/}
                     </a>
                 </li>

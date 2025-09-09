@@ -10,6 +10,7 @@ import LoginFormComponent from './componentes/LoginFormComponent';
 import InicioComponent from './componentes/InicioComponent';
 import PrivateRoute from './componentes/PrivateRouteInicio';
 import PlanDeCuentasComponent from './componentes/PlanDeCuentasComponent';
+import LibroDiarioComponent from './componentes/LibroDiarioComponent';
 
 
 function App() {
@@ -19,9 +20,13 @@ function App() {
       
         <HeaderComponente />
         <Routes>
-          <Route exact path='/' element={<LoginFormComponent />}></Route>
+          <Route
+            path="/"
+            element={<PrivateRoute requiredRole="USER"><InicioComponent /></PrivateRoute>}
+          />
           <Route path='/login' element={<LoginFormComponent />}></Route>
           <Route path='/plan-de-cuentas' element={<PlanDeCuentasComponent />}></Route>
+          <Route path='/libro-diario' element={<LibroDiarioComponent />}></Route>
             {/*<Route path='/inicio' element={<InicioComponent />}></Route>*/}
           {/* <Route path='/usuarios' element={<ListarUsuariosComponente />}></Route> */}
           {/* <Route path='/add-username' element={<AddUsuarioComponent />}></Route> */}
