@@ -1,21 +1,34 @@
 import React, { useEffect, useState } from 'react'
 import SideBarComponent from './SideBarComponent';
-import { Link } from 'react-router-dom';
 import LibrosServicio from '../servicios/LibrosServicio';
+import { Link } from 'react-router-dom';
 
-const LibroDiarioComponent = () => {
-
+const LibroMayorComponent = () => {
     const [asientos, setAsientos] = useState([]);
     const [error, setError] = useState('');
+    const [cuentas, setCuentas] = useState([])
+    const [cuenta, setCuenta] = useState({
+        id: 0,
+        nombre: '',
+        saldoParcial: 0
+    })
     const [fechaDesde, setFechaDesde] = useState('');
     const [fechaHasta, setFechaHasta] = useState('');
     const [cargando, setCargando] = useState(false);
-    
+
+    useEffect(() => {
+        PlanDeCuentasServicio.listaCuentas().then((response) => {
+          setCuentas(response.data);
+        }).catch(error => {
+          console.error(error);
+        });
+      }, []);
+
     useEffect(() => {
         // Solo hace la llamada si las fechas están seleccionadas
         if (fechaDesde && fechaHasta) {
             setCargando(true);
-            LibrosServicio.getAsientosPorPeriodo(fechaDesde, fechaHasta)
+            LibrosServicio.getAsientosPorCuentaYPeriodo(cuenta, fechaDesde, fechaHasta)
                 .then((response) => {
                     setAsientos(response.data);
                     setError('');
@@ -36,13 +49,27 @@ const LibroDiarioComponent = () => {
         } else {
             setAsientos([]); // Vacía la tabla si alguna de las fechas no está seteada
         }
-    }, [fechaDesde, fechaHasta]); //Hace que se ejecute, siempre que alguna de las dos fechas cambie su valor
+    }, [cuenta, fechaDesde, fechaHasta]); //Hace que se ejecute, siempre que alguna de las dos fechas cambie su valor
 
     return (
         <div className='d-flex'>
             <SideBarComponent />
             <div className='container'>
                 <div className='d-flex  mb-4'>
+                    <div className='form-group me-3'>
+                        <label className='form-label'>Cuenta:</label>
+                        <select
+                          className="form-select"
+                          name="cuenta"
+                          value={movement.cuenta}
+                          onChange={(e) => setCuenta(e.target.value)}
+                        >
+                          <option value="" disabled>-- Seleccione una cuenta --</option>
+                          {cuentas.map(account => (
+                            <option key={account.id} value={account}>{account.nombre}</option>
+                          ))}
+                        </select>
+                    </div>
                     <div className='form-group me-3'>
                         <label className='form-label'>Desde:</label>
                         <input
@@ -117,7 +144,6 @@ const LibroDiarioComponent = () => {
             </div>
         </div>
     );
-    
 }
 
-export default LibroDiarioComponent
+export default LibroMayorComponent

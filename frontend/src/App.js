@@ -11,13 +11,14 @@ import InicioComponent from './componentes/InicioComponent';
 import PrivateRoute from './componentes/PrivateRouteInicio';
 import PlanDeCuentasComponent from './componentes/PlanDeCuentasComponent';
 import LibroDiarioComponent from './componentes/LibroDiarioComponent';
+import AddAsientoComponent from './componentes/AddAsientoComponent';
+import LibroMayorComponent from './componentes/LibroMayorComponent';
 
 
 function App() {
   return (
     <div>
       <BrowserRouter>
-      
         <HeaderComponente />
         <Routes>
           <Route
@@ -26,7 +27,9 @@ function App() {
           />
           <Route path='/login' element={<LoginFormComponent />}></Route>
           <Route path='/plan-de-cuentas' element={<PlanDeCuentasComponent />}></Route>
+          <Route path='/asientos' element={<AddAsientoComponent />}></Route>
           <Route path='/libro-diario' element={<LibroDiarioComponent />}></Route>
+          <Route path='/libro-mayor' element={<LibroMayorComponent />}></Route>
             {/*<Route path='/inicio' element={<InicioComponent />}></Route>*/}
           {/* <Route path='/usuarios' element={<ListarUsuariosComponente />}></Route> */}
           {/* <Route path='/add-username' element={<AddUsuarioComponent />}></Route> */}
@@ -43,8 +46,8 @@ function App() {
             element={<PrivateRoute requiredRole="ADMIN"><AddUsuarioComponent /></PrivateRoute>}
           />
         </Routes>
-      </BrowserRouter>
       <FooterComponente />
+      </BrowserRouter>
     </div>
   );
 }
