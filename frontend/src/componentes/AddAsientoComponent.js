@@ -57,13 +57,13 @@ const AddAsientoComponent = () => {
     const totalDebe = movements.reduce((sum, movement) => sum + parseFloat(movement.debe || 0), 0);
     const totalHaber = movements.reduce((sum, movement) => sum + parseFloat(movement.haber || 0), 0);
 
-    if (totalDebe !== totalHaber) {
-      setError('Error: Los saldos del Debe y el Haber no coinciden.');
+    if (movements.length < 2) {
+      setError('Error: Un asiento contable debe tener al menos dos movimientos.');
       return;
     }
 
-    if (movements.length < 2) {
-      setError('Error: Un asiento contable debe tener al menos dos movimientos.');
+    if (totalDebe !== totalHaber) {
+      setError('Error: Los saldos del Debe y el Haber no coinciden.');
       return;
     }
 
