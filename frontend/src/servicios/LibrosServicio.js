@@ -10,7 +10,7 @@ class LibrosServicio {
     }
 
     //Libro Mayor
-    getAsientosPorCuentaYPeriodo(cuenta, desde, hasta) {
+    getMovimientosPorCuentaYPeriodo(cuenta, desde, hasta) {
         return axios.get(LIBRO_DIARIO_BASE_REST_API_URL + '-mayor', cuenta, desde, hasta);
     }
 
