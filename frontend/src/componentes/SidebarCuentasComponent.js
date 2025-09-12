@@ -15,7 +15,6 @@ const buildTree = (accounts) => {
             id: account.id,
             code: account.code,
             name: account.name,
-            type: account.type,
             children: []
         };
         map.set(account.code, node);
