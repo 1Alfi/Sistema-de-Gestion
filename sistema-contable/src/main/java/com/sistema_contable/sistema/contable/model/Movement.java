@@ -8,12 +8,12 @@ public class Movement{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_line")
+    @Column(name = "id_movement")
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "line_account_id")
-    private Account account;
+    @JoinColumn(name = "movement_account_id")
+    private BalanceAccount account;
 
     @Column(name = "debit")
     private Double debit;
@@ -41,7 +41,7 @@ public class Movement{
     public Account getAccount() {
         return account;
     }
-    public void setAccount(Account account) {
+    public void setAccount(BalanceAccount account) {
         this.account = account;
     }
 

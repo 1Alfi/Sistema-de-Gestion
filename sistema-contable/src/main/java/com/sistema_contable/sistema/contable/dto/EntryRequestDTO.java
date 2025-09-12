@@ -6,9 +6,9 @@ import java.util.List;
 
 public class EntryRequestDTO {
 
-
     private String description;
     private List<MovementRequestDTO> movements;
+
 
     public String getDescription() {
         return description;

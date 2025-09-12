@@ -33,7 +33,6 @@ public class UserResource {
     @PostMapping(path = "/create")
     public ResponseEntity<?> create(@RequestHeader("Authorization") String token, @RequestBody UserRequestDTO userDTO) {
         try {
-            //Verifica si el user del token es admin y lo retorna para verificar que admin en la db en el service
             User userDB = authService.adminAuthorize(token);
             service.create(mapper.map(userDTO, User.class), userDB);
             return new ResponseEntity<>(null, HttpStatus.CREATED);
@@ -45,7 +44,6 @@ public class UserResource {
    @GetMapping(path = "/usuarios", produces = "application/json")
     public ResponseEntity<?> getAll(@RequestHeader("Authorization") String token){
         try {
-            //Verifica si el user del token es admin y lo retorna para verificar que admin en la db en el service
             User userDB = authService.adminAuthorize(token);
             return new ResponseEntity<>(userResponse(service.getAll()), HttpStatus.OK);
         } catch (ModelExceptions exception) {

@@ -61,15 +61,16 @@ public class Entry {
     }
 
     //lines
-    public List<Movement> getMovements() {
-        return movements;
-    }
-    public void setMovements(List<Movement> movements) {
-        if(doubleEntryCheck(movements)){return;}
-        this.movements = movements;
+    public List<Movement> getMovements() {return movements;}
+    public void setMovements(List<Movement> movements){
+        if(!movements.isEmpty() && doubleEntryCheck(movements)){
+            this.movements = movements;
+        }
+        return;
     }
 
-    private boolean doubleEntryCheck(List<Movement> movements){
+    //check method
+    private boolean doubleEntryCheck(List<Movement> movements){ //Hace el check del principio de partida doble
         Double debit = 0D;
         Double credit = 0D;
         for(Movement movement : movements){
