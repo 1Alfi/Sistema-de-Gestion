@@ -44,8 +44,9 @@ public class LoginResource {
         }
     }
 
+    //secondary methods
     private void emptyDB() throws Exception {
-        if(service.getAll().isEmpty()){
+        if(service.getAll().isEmpty()){ //save admin user if db is empty
             User admin = new User();
             admin.setUsername("admin");
             admin.setPassword("admin");

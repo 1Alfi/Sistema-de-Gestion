@@ -1,6 +1,7 @@
 package com.sistema_contable.sistema.contable.resources;
 
 import com.sistema_contable.sistema.contable.dto.EntryRequestDTO;
+import com.sistema_contable.sistema.contable.dto.Mapper;
 import com.sistema_contable.sistema.contable.exceptions.ModelExceptions;
 import com.sistema_contable.sistema.contable.model.Entry;
 import com.sistema_contable.sistema.contable.model.User;
@@ -21,7 +22,7 @@ public class EntryResource {
     @Autowired
     private EntryService service;
     @Autowired
-    private ModelMapper mapper;
+    private Mapper mapper;
     @Autowired
     private AuthorizationService authService;
 
@@ -29,9 +30,8 @@ public class EntryResource {
     @PostMapping(path = "/create")
     public ResponseEntity<?> create(@RequestHeader("Authorization") String token, @RequestBody EntryRequestDTO entryDTO) {
         try {
-            //Verifica si el user del token es admin y lo retorna para verificar que admin en la db en el service
             User userDB = authService.authorize(token);
-            service.create(mapper.map(entryDTO, Entry.class));
+            service.create(mapper.map(entryDTO, Entry.class), userDB);
             return new ResponseEntity<>(null, HttpStatus.CREATED);
         } catch (ModelExceptions exception){
             return new ResponseEntity<>(null, exception.getHttpStatus());

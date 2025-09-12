@@ -12,7 +12,7 @@ import java.util.List;
 @DiscriminatorValue("balance")
 public class BalanceAccount extends Account{
 
-    //methods
+    //abstract methods
     @Override
     public List<Account> getSubAccounts() {return new ArrayList<Account>();}
 }

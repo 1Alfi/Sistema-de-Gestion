@@ -21,14 +21,12 @@ public abstract class Account {
     @Column(name = "account_name")
     private String name;
 
-    @Column(name = "account_type")
-    @Enumerated(EnumType.STRING)
-    private AccountType type;
-
     @ManyToOne
     @JoinColumn(name = "control_account_id")
     private ControlAccount control_account_id;
 
+
+    //methods
     //id
     public Long getId() {
         return id;
@@ -53,22 +51,11 @@ public abstract class Account {
         this.name = name;
     }
 
-    //type
-    public AccountType getType() {
-        return type;
-    }
-    public void setType(AccountType type) {
-        this.type = type;
-    }
-
     //control id
     public ControlAccount getControl_account_id() {
         return control_account_id;
     }
-
-    public void setControl_account_id(ControlAccount control_account_id) {
-        this.control_account_id = control_account_id;
-    }
+    public void setControl_account_id(ControlAccount control_account_id) {this.control_account_id = control_account_id;}
 
     //childrens
     public abstract List<Account> getSubAccounts();

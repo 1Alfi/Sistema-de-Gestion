@@ -2,7 +2,6 @@ package com.sistema_contable.sistema.contable.resources;
 
 import com.sistema_contable.sistema.contable.dto.AccountRequestDTO;
 import com.sistema_contable.sistema.contable.dto.AccountResponseDTO;
-import com.sistema_contable.sistema.contable.exceptions.Mapper;
 import com.sistema_contable.sistema.contable.exceptions.ModelExceptions;
 import com.sistema_contable.sistema.contable.model.*;
 import com.sistema_contable.sistema.contable.services.accounting.AccountService;

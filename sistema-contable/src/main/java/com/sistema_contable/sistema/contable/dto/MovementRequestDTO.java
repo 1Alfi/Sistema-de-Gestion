@@ -2,7 +2,7 @@ package com.sistema_contable.sistema.contable.dto;
 
 public class MovementRequestDTO {
 
-    private Long Account;
+    private Long account;
     private String debit;
     private String credit;
 
@@ -13,6 +13,6 @@ public class MovementRequestDTO {
     public String getCredit() {return credit;}
     public void setCredit(String credit) {this.credit = credit;}
 
-    public Long getAccount() {return Account;}
-    public void setAccount(Long account) {this.Account = account;}
+    public Long getAccount() {return account;}
+    public void setAccount(Long account) {this.account = account;}
 }
