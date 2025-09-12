@@ -1,6 +1,7 @@
 package com.sistema_contable.sistema.contable.resources;
 
 import com.sistema_contable.sistema.contable.dto.EntryRequestDTO;
+import com.sistema_contable.sistema.contable.exceptions.ModelExceptions;
 import com.sistema_contable.sistema.contable.model.Entry;
 import com.sistema_contable.sistema.contable.model.User;
 import com.sistema_contable.sistema.contable.services.accounting.EntryService;
@@ -32,7 +33,10 @@ public class EntryResource {
             User userDB = authService.authorize(token);
             service.create(mapper.map(entryDTO, Entry.class));
             return new ResponseEntity<>(null, HttpStatus.CREATED);
+        } catch (ModelExceptions exception){
+            return new ResponseEntity<>(null, exception.getHttpStatus());
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -20,7 +20,7 @@ public class EntryServiceImp implements EntryService{
 
     @Override
     public void create(Entry entry)throws Exception{
-        doubleEntryCheck(entry.getMovement());
+        doubleEntryCheck(entry.getMovements());
         repository.save(entry);
     }
 
@@ -29,7 +29,7 @@ public class EntryServiceImp implements EntryService{
         if(repository.findById(id).isEmpty()){throw new ResourceNotFindException();}
         this.doubleEntryCheck(movements);
         Entry entryDB = repository.findById(id).get();
-        entryDB.setLines(movements);
+        entryDB.setMovements(movements);
     }
 
     //secondary methods

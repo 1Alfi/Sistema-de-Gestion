@@ -25,7 +25,7 @@ public class Entry {
     private User userCreator;
 
     @OneToMany(mappedBy = "entry_id", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Movement> lines;
+    private List<Movement> movements;
 
 
     //id
@@ -61,12 +61,12 @@ public class Entry {
     }
 
     //lines
-    public List<Movement> getMovement() {
-        return lines;
+    public List<Movement> getMovements() {
+        return movements;
     }
-    public void setLines(List<Movement> movement) {
-        if(doubleEntryCheck(movement)){return;}
-        this.lines = movement;
+    public void setMovements(List<Movement> movements) {
+        if(doubleEntryCheck(movements)){return;}
+        this.movements = movements;
     }
 
     private boolean doubleEntryCheck(List<Movement> movements){

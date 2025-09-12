@@ -2,9 +2,13 @@ package com.sistema_contable.sistema.contable.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "accounts")
-public class Account {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "account_discriminator") //balance or control
+public abstract class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +24,10 @@ public class Account {
     @Column(name = "account_type")
     @Enumerated(EnumType.STRING)
     private AccountType type;
+
+    @ManyToOne
+    @JoinColumn(name = "control_account_id")
+    private ControlAccount control_account_id;
 
     //id
     public Long getId() {
@@ -52,4 +60,16 @@ public class Account {
     public void setType(AccountType type) {
         this.type = type;
     }
+
+    //control id
+    public ControlAccount getControl_account_id() {
+        return control_account_id;
+    }
+
+    public void setControl_account_id(ControlAccount control_account_id) {
+        this.control_account_id = control_account_id;
+    }
+
+    //childrens
+    public abstract List<Account> getSubAccounts();
 }

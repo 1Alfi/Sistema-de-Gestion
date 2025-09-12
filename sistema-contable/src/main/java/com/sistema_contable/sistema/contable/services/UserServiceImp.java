@@ -21,11 +21,11 @@ public class UserServiceImp implements UserService{
     //methods
     @Override
     public void create(User user, User userDB) {
-        //User userCheck = repository.findByUsername(user.getUsername());
+        User userCheck = repository.findByUsername(user.getUsername());
 
-        //if(userCheck!=null || userDB.getRole().name()!="ADMIN"){ // username exist dont create user or user dont admin
+        if(userCheck!=null){ // username exist dont create user or user dont admin
             //asdasdasdasdasdasdasdasdasd
-       // }
+        }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);

@@ -5,7 +5,7 @@ import com.sistema_contable.sistema.contable.model.Account;
 import java.util.List;
 
 public interface AccountService {
-    public void create(Account account)throws Exception;
+    void create(Account account, Long accountID)throws Exception;
     void delete(Long id)throws Exception;
-    public List<Account> getAll()throws Exception;
+    List<Account> getAll()throws Exception;
 }

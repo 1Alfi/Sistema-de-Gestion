@@ -29,7 +29,7 @@ public class JournalResource {
     //dependencies
     @Autowired
     private JournalService service;
-
+    
     @Autowired
     private AuthorizationService authService;
 

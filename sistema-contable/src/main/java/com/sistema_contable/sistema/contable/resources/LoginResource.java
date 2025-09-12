@@ -30,16 +30,8 @@ public class LoginResource {
 
     @PostMapping(produces = "application/json")
     public ResponseEntity<?> login(@RequestBody AuthenticationRequestDTO authDTO){
-
-        /*
-        User admin = new User();
-        admin.setUsername("admin");
-        admin.setPassword("admin");
-        admin.setRole(Role.ADMIN);
-        service.create(admin,admin);
-         */
-
         try {
+            this.emptyDB();
             String token = authenticationService.authenticate(mapper.map(authDTO, User.class));
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
@@ -49,6 +41,17 @@ public class LoginResource {
         } catch (Exception e) {
             System.out.print(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void emptyDB() throws Exception {
+        if(service.getAll().isEmpty()){
+            User admin = new User();
+            admin.setUsername("admin");
+            admin.setPassword("admin");
+            admin.setRole(Role.ADMIN);
+            service.create(admin, admin);
+
         }
     }
 }
