@@ -8,20 +8,21 @@ const buildTree = (accounts) => {
     const tree = [];
     const map = new Map();
 
-    accounts.sort((a, b) => a.numeroCuenta.localeCompare(b.numeroCuenta));
+    accounts.sort((a, b) => a.code.localeCompare(b.code));
 
     accounts.forEach(account => {
         const node = {
             id: account.id,
-            name: account.nombre,
-            numeroCuenta: account.numeroCuenta,
+            code: account.code,
+            name: account.name,
+            type: account.type,
             children: []
         };
-        map.set(account.numeroCuenta, node);
+        map.set(account.code, node);
     });
 
     accounts.forEach(account => {
-        const numero = account.numeroCuenta;
+        const numero = account.code;
         let parentNode = null;
 
         for (let i = numero.length - 1; i > 0; i--) {
@@ -35,9 +36,9 @@ const buildTree = (accounts) => {
         }
 
         if (parentNode) {
-            parentNode.children.push(map.get(account.numeroCuenta));
+            parentNode.children.push(map.get(account.code));
         } else {
-            tree.push(map.get(account.numeroCuenta));
+            tree.push(map.get(account.code));
         }
     });
 
@@ -90,13 +91,24 @@ const SidebarCuentasComponent = ({ onSelectAccount }) => {
     useEffect(() => {
         const fetchAccounts = async () => {
             try {
-                const response = await PlanDeCuentasServicio.listaCuentas();
+                const response = await PlanDeCuentasServicio.listarCuentas();
                 const accounts = response.data;
-                const transformedData = buildTree(accounts);
-                setTreeData(transformedData);
+                console.log(accounts);
+                
+                // Verifica si la respuesta es un array válido antes de procesar
+                if (Array.isArray(accounts)) {
+                    const transformedData = buildTree(accounts);
+                    setTreeData(transformedData);
+                    setError(''); // Borra cualquier error anterior
+                } else {
+                    // Maneja el caso en que la respuesta no es un array
+                    setError('La respuesta del servidor no es un array de cuentas válido.');
+                    setTreeData([]); // Establece el estado a un array vacío
+                }
+
             } catch (err) {
                 console.error("Error al obtener las cuentas: ", err);
-                setError(err.response?.data?.message || <>Ocurrió un error al cargar el plan de cuentas.<br /> Por favor, recargue la pagina.</>);
+                setError(err.response?.data?.message || 'Ocurrió un error al cargar el plan de cuentas. Por favor, recargue la página.');
             } finally {
                 setLoading(false);
             }

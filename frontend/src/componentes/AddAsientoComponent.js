@@ -1,28 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import PlanDeCuentasServicio from '../servicios/PlanDeCuentasServicio';
 import AsientoServicio from '../servicios/AsientoServicio';
-import FooterComponente from './FooterComponente';
 import SideBarComponent from './SideBarComponent';
 
 const AddAsientoComponent = () => {
-  const [operacion, setOperacion] = useState('');
-  const [cuentas, setCuentas] = useState([]);
-  const [movements, setMovements] = useState([{ cuentaId: '', debe: 0, haber: 0 }]);
+  const [description, setDescription] = useState('');
+  const [accounts, setAccounts] = useState([]);
+  const [movements, setMovements] = useState([{ accountId: '', debit: 0, credit: 0 }]);
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
 
   useEffect(() => {
     AsientoServicio.getCuentasAsiento().then((response) => {
-      setCuentas(response.data);
+      setAccounts(response.data);
     }).catch(error => {
       console.error(error);
     });
   }, []);
 
   const handleAddMovement = () => {
-    setMovements([...movements, { cuentaId: '', debe: 0, haber: 0 }]);
+    setMovements([...movements, { accountId: '', debit: 0, credit: 0 }]);
   };
 
   const handleRemoveMovement = (index) => {
@@ -36,13 +34,13 @@ const AddAsientoComponent = () => {
     const list = [...movements];
 
     // Nueva validación para valores negativos
-    if ((name === 'debe' || name === 'haber') && parseFloat(value) < 0) {
+    if ((name === 'debit' || name === 'credit') && parseFloat(value) < 0) {
       list[index][name] = 0;
     } else {
-      if (name === 'debe') {
-        list[index]['haber'] = 0;
-      } else if (name === 'haber') {
-        list[index]['debe'] = 0;
+      if (name === 'debit') {
+        list[index]['credit'] = 0;
+      } else if (name === 'credit') {
+        list[index]['debit'] = 0;
       }
       list[index][name] = value;
     }
@@ -54,26 +52,26 @@ const AddAsientoComponent = () => {
     e.preventDefault();
     setError('');
 
-    const totalDebe = movements.reduce((sum, movement) => sum + parseFloat(movement.debe || 0), 0);
-    const totalHaber = movements.reduce((sum, movement) => sum + parseFloat(movement.haber || 0), 0);
+    const totaldebit = movements.reduce((sum, movement) => sum + parseFloat(movement.debit || 0), 0);
+    const totalcredit = movements.reduce((sum, movement) => sum + parseFloat(movement.credit || 0), 0);
 
     if (movements.length < 2) {
-      setError('Error: Un asiento contable debe tener al menos dos movimientos.');
+      setError('Error: Un asiento contable debit tener al menos dos movimientos.');
       return;
     }
 
-    if (totalDebe !== totalHaber) {
-      setError('Error: Los saldos del Debe y el Haber no coinciden.');
+    if (totaldebit !== totalcredit) {
+      setError('Error: Los saldos del debit y el credit no coinciden.');
       return;
     }
 
-    const hasUnselectedAccount = movements.some(movement => movement.cuentaId === '');
+    const hasUnselectedAccount = movements.some(movement => movement.accountId === '');
     if (hasUnselectedAccount) {
-      setError('Error: Todos los movimientos deben tener una cuenta seleccionada.');
+      setError('Error: Todos los movimientos debitn tener una cuenta seleccionada.');
       return;
     }
 
-    const asiento = { operacion, movements };
+    const asiento = { description, movements };
     AsientoServicio.crearAsiento(asiento).then(() => {
       navigate('/asientos');
     }).catch(error => {
@@ -96,10 +94,10 @@ const AddAsientoComponent = () => {
                   <input
                     type='text'
                     placeholder='operación...'
-                    name='operacion'
+                    name='description'
                     className='form-control'
-                    value={operacion}
-                    onChange={(e) => setOperacion(e.target.value)}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                   />
                 </div>
                 <h2 className='text mt-3'>Movimientos</h2>
@@ -111,12 +109,12 @@ const AddAsientoComponent = () => {
                         <label className='form-label'>Cuenta</label>
                         <select
                           className="form-select"
-                          name="cuentaId"
-                          value={movement.cuentaId}
+                          name="accountId"
+                          value={movement.accountId}
                           onChange={(e) => handleMovementChange(index, e)}
                         >
                           <option value="" disabled>-- Seleccione una cuenta --</option>
-                          {cuentas.map(cuenta => (
+                          {accounts.map(cuenta => (
                             <option key={cuenta.id} value={cuenta.id}>{cuenta.nombre}</option>
                           ))}
                         </select>
@@ -125,10 +123,10 @@ const AddAsientoComponent = () => {
                         <label className='form-label'>Debe</label>
                         <input
                           type='number'
-                          placeholder='Debe...'
-                          name='debe'
+                          placeholder='debit...'
+                          name='debit'
                           className='form-control'
-                          value={movement.debe}
+                          value={movement.debit}
                           onChange={(e) => handleMovementChange(index, e)}
                           step="0.01"
                         />
@@ -137,10 +135,10 @@ const AddAsientoComponent = () => {
                         <label className='form-label'>Haber</label>
                         <input
                           type='number'
-                          placeholder='Haber...'
-                          name='haber'
+                          placeholder='credit...'
+                          name='credit'
                           className='form-control'
-                          value={movement.haber}
+                          value={movement.credit}
                           onChange={(e) => handleMovementChange(index, e)}
                           step="0.01"
                         />

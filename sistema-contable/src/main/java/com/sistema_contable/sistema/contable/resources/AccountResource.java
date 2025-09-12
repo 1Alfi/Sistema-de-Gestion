@@ -60,8 +60,6 @@ public class AccountResource {
         }
     }
 
-
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@RequestHeader("Authorization") String token,@PathVariable Long id) {
         try {

@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import PlanDeCuentasServicio from '../servicios/PlanDeCuentasServicio';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import SideBarComponent from './SideBarComponent';
-import SidebarCuentasComponent from './SidebarCuentasComponent';
 
 const AddCuentaComponent = () => {
 
@@ -18,14 +17,14 @@ const AddCuentaComponent = () => {
 
     const saveAccount = (e) => {
         e.preventDefault();
-        const account = { name, code, type };
+        const account = { code, name, type };
         let serviceCall;
 
         if (controlCheck) {
             //Cuenta contenedora
             if (idParent) {
                 //Contenedora con padre
-                serviceCall = PlanDeCuentasServicio.crearCuentaControl(account, idParent);
+                serviceCall = PlanDeCuentasServicio.crearCuentaControlId(account, idParent);
             } else {
                 //Contenedora sin padre
                 serviceCall = PlanDeCuentasServicio.crearCuentaControl(account);

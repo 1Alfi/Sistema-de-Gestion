@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 // Recibe la prop 'id'
 const InfoCuentasComponent = ({ id }) => { 
     const [cuenta, setCuenta] = useState(null);
-    const [saldo, setSaldoCuenta] = useState(0);
+    // const [saldo, setSaldoCuenta] = useState(0);
     const navigate = useNavigate();
     const [error, setError] = useState('');
 
@@ -13,11 +13,11 @@ const InfoCuentasComponent = ({ id }) => {
         // La llamada a los servicios se ejecuta solo si hay un id válido
         if (id) {
             infoCuenta(id);
-            saldoCuenta(id);
+            // saldoCuenta(id);
         } else {
             // Si no hay id, limpia el estado para no mostrar info de una cuenta anterior
             setCuenta(null);
-            setSaldoCuenta(0);
+            // setSaldoCuenta(0);
         }
     }, [id]); // 2. Ahora, la dependencia es el 'id'
 
@@ -32,13 +32,13 @@ const InfoCuentasComponent = ({ id }) => {
         });
     };
     
-    const saldoCuenta = (accountId) => {
-        PlanDeCuentasServicio.getSaldoCuenta(accountId).then((response) => {
-            setSaldoCuenta(response.data);
-        }).catch(err => {
-            console.error(err);
-        });
-    };
+    // const saldoCuenta = (accountId) => {
+    //     PlanDeCuentasServicio.getSaldoCuenta(accountId).then((response) => {
+    //         setSaldoCuenta(response.data);
+    //     }).catch(err => {
+    //         console.error(err);
+    //     });
+    // };
 
     const handleAddCuenta = () => {
         if (cuenta) {
@@ -54,7 +54,7 @@ const InfoCuentasComponent = ({ id }) => {
                 <br />
                 <h3>Tipo {cuenta.tipo}</h3>
                 <br />
-                <h3>$ {saldo}</h3>
+                {/* <h3>$ {saldo}</h3> */}
                 <button
                     className='btn btn-success mt-2 me-2'
                     onClick={handleAddCuenta}
