@@ -13,6 +13,7 @@ import PlanDeCuentasComponent from './componentes/PlanDeCuentasComponent';
 import LibroDiarioComponent from './componentes/LibroDiarioComponent';
 import AddAsientoComponent from './componentes/AddAsientoComponent';
 import LibroMayorComponent from './componentes/LibroMayorComponent';
+import AddCuentaComponent from './componentes/AddCuentaComponent';
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
           />
           <Route path='/login' element={<LoginFormComponent />}></Route>
           <Route path='/plan-de-cuentas' element={<PlanDeCuentasComponent />}></Route>
+          <Route path='/add-account' element={<AddCuentaComponent />}></Route>
           <Route path='/asientos' element={<AddAsientoComponent />}></Route>
           <Route path='/libro-diario' element={<LibroDiarioComponent />}></Route>
           <Route path='/libro-mayor' element={<LibroMayorComponent />}></Route>
