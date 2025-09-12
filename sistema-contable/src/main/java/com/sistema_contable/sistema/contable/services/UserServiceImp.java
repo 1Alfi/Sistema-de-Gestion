@@ -23,7 +23,7 @@ public class UserServiceImp implements UserService{
     public void create(User user, User userDB) {
         User userCheck = repository.findByUsername(user.getUsername());
 
-        if(userCheck!=null || userDB.getRole().name()!="ADMIN"){ // username exist dont create user or user dont admin
+        if(userCheck!=null){ // username exist dont create user or user dont admin
             //asdasdasdasdasdasdasdasdasd
         }
 
@@ -45,5 +45,9 @@ public class UserServiceImp implements UserService{
        return repository.findAll();
     }
 
-
+    @Override
+    public void delete(Long id) throws Exception {
+        if(repository.findById(id).isPresent()){repository.deleteById(id);}
+        else{throw new UserNotFindException();}
+    }
 }

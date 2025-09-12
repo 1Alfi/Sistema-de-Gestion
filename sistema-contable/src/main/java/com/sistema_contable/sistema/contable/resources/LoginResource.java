@@ -2,6 +2,7 @@ package com.sistema_contable.sistema.contable.resources;
 
 import com.sistema_contable.sistema.contable.dto.AuthenticationRequestDTO;
 import com.sistema_contable.sistema.contable.exceptions.ModelExceptions;
+import com.sistema_contable.sistema.contable.model.Role;
 import com.sistema_contable.sistema.contable.model.User;
 import com.sistema_contable.sistema.contable.services.security.AuthenticationService;
 import com.sistema_contable.sistema.contable.services.UserService;
@@ -30,7 +31,7 @@ public class LoginResource {
     @PostMapping(produces = "application/json")
     public ResponseEntity<?> login(@RequestBody AuthenticationRequestDTO authDTO){
         try {
-            System.out.print(authDTO.getUsername());
+            this.emptyDB();
             String token = authenticationService.authenticate(mapper.map(authDTO, User.class));
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
@@ -40,6 +41,17 @@ public class LoginResource {
         } catch (Exception e) {
             System.out.print(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void emptyDB() throws Exception {
+        if(service.getAll().isEmpty()){
+            User admin = new User();
+            admin.setUsername("admin");
+            admin.setPassword("admin");
+            admin.setRole(Role.ADMIN);
+            service.create(admin, admin);
+
         }
     }
 }
