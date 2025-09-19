@@ -9,6 +9,9 @@ const AddAsientoComponent = () => {
   const [movements, setMovements] = useState([{ accountId: '', debit: 0, credit: 0 }]);
   const [error, setError] = useState('');
 
+  const [hasCredit, setHasCredit] = useState(false);
+  const [checkDouble, setCheckDouble] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,23 +30,45 @@ const AddAsientoComponent = () => {
     const list = [...movements];
     list.splice(index, 1);
     setMovements(list);
+
+    // Al eliminar un movimiento recalcula, por las dudas que el movimiento eliminado sea uno con saldo haber
+    // y no queden con saldo haber, para que no siga bloqueando la posibilidad de generar movimientos con saldo debe
+    const updatedHasCredit = list.some(m => m.credit > 0);
+    setHasCredit(updatedHasCredit);
   };
 
   const handleMovementChange = (index, event) => {
     const { name, value } = event.target;
-    const list = [...movements];
+    let list = [...movements];
+    
+    const numericValue = parseFloat(value) || 0;
 
-    // Nueva validación para valores negativos
-    if ((name === 'debit' || name === 'credit') && parseFloat(value) < 0) {
-      list[index][name] = 0;
-    } else {
-      if (name === 'debit') {
-        list[index]['credit'] = 0;
-      } else if (name === 'credit') {
-        list[index]['debit'] = 0;
-      }
-      list[index][name] = value;
+    // Para que solo un campo tenga valor
+    if (name === 'debit') {
+      list[index]['credit'] = 0;
+    } else if (name === 'credit') {
+      list[index]['debit'] = 0;
     }
+
+    // Valida que no se ingrese un valor negativo
+    if (numericValue < 0) {
+      list[index][name] = 0;
+      setMovements(list);
+      return; // Detiene la ejecución si lo hay
+    }
+
+    // Lógica para no agregar debe si ya hay un haber y no es asiento doble
+    if (name === 'debit' && numericValue > 0 && hasCredit && !checkDouble) {
+      list[index][name] = 0;
+      setError('Error: No puedes agregar un movimiento con debe después de uno con haber. Sino marque "Asiento doble"!');
+    } else {
+      list[index][name] = value;
+      setError('');
+    }
+
+    // Actualizar el estado hasCredit cada vez que se agrega un valor debe o haber en un movimiento
+    const updatedHasCredit = list.some(m => parseFloat(m.credit) > 0);
+    setHasCredit(updatedHasCredit);
 
     setMovements(list);
   };
@@ -52,22 +77,27 @@ const AddAsientoComponent = () => {
     e.preventDefault();
     setError('');
 
+    if (!description.trim()) {
+        setError('Error: La operación no puede estar vacía.');
+        return;
+    }
+
     const totaldebit = movements.reduce((sum, movement) => sum + parseFloat(movement.debit || 0), 0);
     const totalcredit = movements.reduce((sum, movement) => sum + parseFloat(movement.credit || 0), 0);
 
     if (movements.length < 2) {
-      setError('Error: Un asiento contable debit tener al menos dos movimientos.');
+      setError('Error: Un asiento contable debe tener al menos dos movimientos.');
       return;
     }
 
     if (totaldebit !== totalcredit) {
-      setError('Error: Los saldos del debit y el credit no coinciden.');
+      setError('Error: Los saldos del debe y el haber no coinciden.');
       return;
     }
 
     const hasUnselectedAccount = movements.some(movement => movement.accountId === '');
     if (hasUnselectedAccount) {
-      setError('Error: Todos los movimientos debitn tener una cuenta seleccionada.');
+      setError('Error: Todos los movimientos deben tener una cuenta seleccionada.');
       return;
     }
 
@@ -157,6 +187,16 @@ const AddAsientoComponent = () => {
                     </div>
                   ))}
                 </div>
+                <div className='form-group mb-2'>
+                  <input
+                      type='checkbox'
+                      name='checkDouble'
+                      className='form-check-input me-2'
+                      checked={checkDouble}
+                      onChange={(e) => setCheckDouble(e.target.checked)}
+                  />
+                  <label className='form-check-label'>Asiento doble</label>
+              </div>
                 <button
                   type="button"
                   className='btn btn-secondary mt-2 mb-3'
