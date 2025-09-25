@@ -79,7 +79,7 @@ const renderTree = (data, onSelectAccount) => {
 const SidebarCuentasComponent = ({ onSelectAccount }) => {
 
     const [treeData, setTreeData] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const navigate = useNavigate('');
 
@@ -108,22 +108,23 @@ const SidebarCuentasComponent = ({ onSelectAccount }) => {
             } catch (err) {
                 console.error("Error al obtener las cuentas: ", err);
                 setError(err.response?.data?.message || 'Ocurrió un error al cargar el plan de cuentas. Por favor, recargue la página.');
-            } finally {
-                setLoading(false);
             }
+            // finally {
+            //     setLoading(false);
+            // }
         };
         fetchAccounts();
     }, []);
     
-    if (loading) {
-        return (
-            <div className='rounded shadow p-3 bg-light d-flex justify-content-center align-items-center' style={{ padding: '20px', height: '100vh' }}>
-                <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Cargando...</span>
-                </div>
-            </div>
-        );
-    }
+    // if (loading) {
+    //     return (
+    //         <div className='rounded shadow p-3 bg-light d-flex justify-content-center align-items-center' style={{ padding: '20px', height: '100vh' }}>
+    //             <div className="spinner-border text-primary" role="status">
+    //                 <span className="visually-hidden">Cargando...</span>
+    //             </div>
+    //         </div>
+    //     );
+    // }
     
     return (
         <div className='rounded shadow p-3 bg-light' style={{ padding: '20px', height: '100vh' }}>

@@ -2,21 +2,27 @@ import axios from 'axios';
 
 const ASIENTO_BASE_REST_API_URL = "http://localhost:8080/entry";
 
-const config = {
-    headers: {
-        'Authorization': `${localStorage.getItem('token')}`
-    }
-};
-
 class AsientoServicio {
 
-    //Me envia las cuentas que son hojas, es decir las cuentas que tienen saldo propio
+    getAuthHeaders() {
+        const token = localStorage.getItem('token');
+        if (token) {
+            return {
+                headers: {
+                    'Authorization': token
+                }
+            };
+        }
+        return {}; // Devuelve un objeto vacío si no hay token
+    }
+
+    //Recibo las BalanceAccounts
     getCuentasAsiento() {
-        return axios.get(ASIENTO_BASE_REST_API_URL);
+        return axios.get(ASIENTO_BASE_REST_API_URL + '/accounts');
     }
 
     crearAsiento(entry) {
-        return axios.post(ASIENTO_BASE_REST_API_URL + '/create', entry, config);
+        return axios.post(ASIENTO_BASE_REST_API_URL + '/create', this.getAuthHeaders(), entry);
     }
 
 }

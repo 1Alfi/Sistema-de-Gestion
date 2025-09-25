@@ -18,7 +18,7 @@ const AddCuentaComponent = () => {
         e.preventDefault();
         const account = { code, name }; 
         let serviceCall;
-
+        
         if (controlCheck) {
             //Cuenta contenedora
             if (idParent) {

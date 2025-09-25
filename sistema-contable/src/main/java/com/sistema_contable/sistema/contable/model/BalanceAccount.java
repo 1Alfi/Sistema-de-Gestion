@@ -16,3 +16,14 @@ public class BalanceAccount extends Account{
     @Override
     public List<Account> getSubAccounts() {return new ArrayList<Account>();}
 }
+
+/* 
+    account {
+        id,    
+        name,
+        code,
+        balance
+    }
+
+    balance = account.calcularSaldo();
+*/
