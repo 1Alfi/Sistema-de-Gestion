@@ -3,6 +3,7 @@ import TreeView from 'react-treeview';
 import 'react-treeview/react-treeview.css';
 import PlanDeCuentasServicio from '../servicios/PlanDeCuentasServicio';
 import { useNavigate } from 'react-router-dom';
+import { getRoleFromToken } from '../utiles/authUtils';
 
 const buildTree = (accounts) => {
     const tree = [];
@@ -83,6 +84,9 @@ const SidebarCuentasComponent = ({ onSelectAccount }) => {
     const [error, setError] = useState('');
     const navigate = useNavigate('');
 
+    const userRole = getRoleFromToken();
+    const isAdmin = userRole === 'ADMIN';
+
     const handleAddCuenta = () => {
         navigate('/add-account');
     };
@@ -133,12 +137,14 @@ const SidebarCuentasComponent = ({ onSelectAccount }) => {
             {/* Pasa la prop onSelectAccount a la función renderTree */}
             {renderTree(treeData, onSelectAccount)}
             {error && <div className='alert alert-danger'>{error}</div>}
-            <button
-                className='btn btn-success mt-2 me-2'
-                onClick={handleAddCuenta}
-            >
-                Agregar cuenta...
-            </button>
+            {isAdmin && (
+                <button
+                    className='btn btn-success mt-2 me-2'
+                    onClick={handleAddCuenta}
+                >
+                    Agregar cuenta...
+                </button>
+            )}
         </div>
     );
 };
