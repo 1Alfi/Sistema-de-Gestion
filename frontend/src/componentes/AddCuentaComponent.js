@@ -18,7 +18,7 @@ const AddCuentaComponent = () => {
         const account = { name }; 
         let serviceCall;
         
-        if (controlCheck) {
+        if (!controlCheck) {
             //Cuenta contenedora
             if (idParent) {
                 //Contenedora con padre
@@ -69,7 +69,7 @@ const AddCuentaComponent = () => {
                                         checked={controlCheck}
                                         onChange={(e) => setControlCheck(e.target.checked)}
                                     />
-                                    <label className='form-check-label'>Contenedor</label>
+                                    <label className='form-check-label'>Recibe saldo</label>
                                 </div>
                                 <div className=' d-grid d-md-flex justify-content-md-end'>
                                     <button className='btn btn-secondary mt-2 me-2' onClick={(e) => saveAccount(e)}>Guardar</button>

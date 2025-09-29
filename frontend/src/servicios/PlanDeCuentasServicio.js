@@ -22,7 +22,7 @@ class PlanDeCuentasServicio {
     }
 
     getCuentaById(cuentaId) {
-        return axios.get(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/' + cuentaId);
+        return axios.get(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/' + cuentaId, this.getAuthHeaders());
     }
     
     //Retorna el saldo de la funcion calcular saldo de cada cuenta

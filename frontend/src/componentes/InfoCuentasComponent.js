@@ -4,7 +4,11 @@ import { useNavigate } from 'react-router-dom';
 
 // Recibe la prop 'id'
 const InfoCuentasComponent = ({ id }) => { 
-    const [cuenta, setCuenta] = useState(null);
+    const [cuenta, setCuenta] = useState({
+        code: "",
+        name: "",
+        childAccounts : []
+    });
     // const [saldo, setSaldoCuenta] = useState(0);
     const navigate = useNavigate();
     const [error, setError] = useState('');
@@ -47,19 +51,48 @@ const InfoCuentasComponent = ({ id }) => {
     };
 
     if (cuenta) {
+    const hasChildren = cuenta.childAccounts && cuenta.childAccounts.length > 0;
+    
         return (
             <div>
-                <h1>Cuenta {cuenta.nombre}</h1>
-                <h4>número cuenta {cuenta.numero}</h4>
+                <h1>Cuenta {cuenta.name}</h1>
+                <h4>Código cuenta {cuenta.code}</h4>
                 <br />
-                <h3>Tipo {cuenta.tipo}</h3>
+                
+                {hasChildren ? (
+                    <div>
+                        <h3>Subcuentas {/*({cuenta.childAccounts.length})*/}</h3>
+                        <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+                            {
+                                cuenta.childAccounts.map(child => (
+                                    <li key={child.id} style={{ marginBottom: '5px' }}>
+                                        {/* Muestra el código y el nombre del hijo */}
+                                        <span style={{ fontWeight: 'bold' }}>{child.code}</span> - {child.name}
+                                    </li>
+                                ))
+                            }
+                        </ul>
+                    </div>
+                ) : (
+                    // B. Renderizar Saldo si es Cuenta Hoja (no tiene hijos)
+                    <div>
+                        <h3>Saldo de la cuenta:</h3>
+                        {/* <h4 style={{ color: saldo >= 0 ? 'green' : 'red' }}>$ {saldo.toFixed(2)}</h4> */}
+                    </div>
+                )}
+                
                 <br />
-                {/* <h3>$ {saldo}</h3> */}
+                {/* El botón de agregar cuenta es para crear una subcuenta. 
+                    Debe aparecer solo si es una Cuenta Contenedora, pero si 
+                    quieres permitir agregar una subcuenta debajo de una hoja,
+                    puedes dejar el botón aquí sin condición. 
+                    Si solo quieres agregar hijos a cuentas contenedoras: {hasChildren && ( ... )}
+                */}
                 <button
                     className='btn btn-success mt-2 me-2'
                     onClick={handleAddCuenta}
                 >
-                    Agregar cuenta...
+                    Agregar subcuenta
                 </button>
             </div>
         );
