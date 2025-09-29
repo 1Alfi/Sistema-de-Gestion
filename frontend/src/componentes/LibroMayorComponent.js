@@ -16,7 +16,7 @@ const LibroMayorComponent = () => {
 
     // Carga las cuentas al inicio
     useEffect(() => {
-        PlanDeCuentasServicio.listaCuentas().then((response) => {
+        PlanDeCuentasServicio.listarCuentas().then((response) => {
             setCuentas(response.data);
         }).catch(error => {
             console.error("Error al cargar las cuentas:", error);
