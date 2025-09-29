@@ -9,14 +9,13 @@ const AddCuentaComponent = () => {
     const idParent = location.state?.idParent || null;
 
     const [name, setName] = useState('');
-    const [code, setCode] = useState('');
     const [controlCheck, setControlCheck] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const saveAccount = (e) => {
         e.preventDefault();
-        const account = { code, name }; 
+        const account = { name }; 
         let serviceCall;
         
         if (controlCheck) {
@@ -60,17 +59,6 @@ const AddCuentaComponent = () => {
                                         className='form-control'
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
-                                    />
-                                </div>
-                                <div className='form-group mb-2'>
-                                    <label className='form-label'>Codigo:</label>
-                                    <input
-                                        type='text'
-                                        placeholder='Codigo cuenta...'
-                                        name='code'
-                                        className='form-control'
-                                        value={code}
-                                        onChange={(e) => setCode(e.target.value)}
                                     />
                                 </div>
                                 <div className='form-group mb-2'>
