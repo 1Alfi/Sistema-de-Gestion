@@ -1,8 +1,10 @@
 package com.sistema_contable.sistema.contable.services.security;
 
 import com.sistema_contable.sistema.contable.exceptions.AuthorizationException;
+import com.sistema_contable.sistema.contable.model.Role;
 import com.sistema_contable.sistema.contable.model.User;
 import com.sistema_contable.sistema.contable.services.UserService;
+import com.sistema_contable.sistema.contable.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +13,7 @@ public class AuthorizationServiceImp implements AuthorizationService {
 
     //dependencies
     @Autowired
-    private com.sistema_contable.sistema.contable.util.JwtTokenUtil jwtTokenUtil;
+    private JwtTokenUtil jwtTokenUtil;
     @Autowired
     private UserService service;
 
@@ -19,19 +21,19 @@ public class AuthorizationServiceImp implements AuthorizationService {
     //methods
     @Override
     public User authorize(String token) throws Exception {
+        //search the user in the db
         User userDB = service.findByUsername(jwtTokenUtil.getSubject(token));
+        //check the token and the user existence in the db
         if (!jwtTokenUtil.verify(token) || userDB == null ){throw new AuthorizationException();}
         else{return userDB;}
     }
 
     @Override
     public User adminAuthorize(String token) throws Exception {
-
+        //search the user in the db
         User userDB = service.findByUsername(jwtTokenUtil.getSubject(token));
-        String role = jwtTokenUtil.getRole(token);
-
-        //Verifica que el token sea valido, el usuario exista y el rol sea admin
-        if (!jwtTokenUtil.verify(token) || userDB == null || !role.equals("ADMIN")){throw new AuthorizationException();}
+        //check the token, user existence and the role
+        if (!jwtTokenUtil.verify(token) || userDB == null || !userDB.getRole().equals(Role.ADMIN)){throw new AuthorizationException();}
         else{return userDB;}
     }
 

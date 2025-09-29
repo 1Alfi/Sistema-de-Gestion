@@ -3,7 +3,7 @@ package com.sistema_contable.sistema.contable.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "movement")
+@Table(name = "movements")
 public class Movement{
 
     @Id
@@ -22,7 +22,7 @@ public class Movement{
     private Double credit;
 
     @ManyToOne
-    @JoinColumn(name = "entry_id")
+    @JoinColumn(name = "movement_entry_id")
     private Entry entry_id;
 
     @Column(name = "account_balance")

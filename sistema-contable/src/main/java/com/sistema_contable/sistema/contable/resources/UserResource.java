@@ -28,13 +28,13 @@ public class UserResource {
     private ModelMapper mapper;
     @Autowired
     private AuthorizationService authService;
-
+    
     //endpoints
     @PostMapping(path = "/create")
     public ResponseEntity<?> create(@RequestHeader("Authorization") String token, @RequestBody UserRequestDTO userDTO) {
         try {
-            User userDB = authService.adminAuthorize(token);
-            service.create(mapper.map(userDTO, User.class), userDB);
+            authService.adminAuthorize(token);
+            service.create(mapper.map(userDTO, User.class));
             return new ResponseEntity<>(null, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -44,7 +44,7 @@ public class UserResource {
    @GetMapping(path = "/usuarios", produces = "application/json")
     public ResponseEntity<?> getAll(@RequestHeader("Authorization") String token){
         try {
-            User userDB = authService.adminAuthorize(token);
+            authService.adminAuthorize(token);
             return new ResponseEntity<>(userResponse(service.getAll()), HttpStatus.OK);
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
@@ -56,7 +56,7 @@ public class UserResource {
     @DeleteMapping("/usuarios/{id}")
     public ResponseEntity<?> delete(@RequestHeader("Authorization") String token,@PathVariable Long id) {
         try {
-            User userDB = authService.adminAuthorize(token);
+            authService.adminAuthorize(token);
             service.delete(id);
             return new ResponseEntity<>(null, HttpStatus.OK);
         } catch (ModelExceptions exception) {

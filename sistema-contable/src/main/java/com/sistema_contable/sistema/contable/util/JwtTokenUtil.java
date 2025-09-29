@@ -9,7 +9,7 @@ import java.util.Date;
 public class JwtTokenUtil {
 
     public static final String SECRET = "SOII2025";
-    public static final long EXPIRATION_TIME = 864_000_000;
+    public static final long EXPIRATION_TIME = 86_400_000; // Token expire 1 day after
     public static final String TOKEN_PREFIX = "Bearer ";
 
     public String generateToken(String subject, String role){

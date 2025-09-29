@@ -39,7 +39,6 @@ public class AccountResource {
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -54,13 +53,11 @@ public class AccountResource {
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-
-
+    //delete account
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@RequestHeader("Authorization") String token,@PathVariable Long id) {
         try {
@@ -74,6 +71,7 @@ public class AccountResource {
         }
     }
 
+    //get all accounts
     @GetMapping(produces = "application/json")
     public ResponseEntity<?> getAll(@RequestHeader("Authorization") String token){
         try {
