@@ -26,8 +26,10 @@ const buildTree = (accounts) => {
         let parentNode = null;
 
         for (let i = numero.length - 1; i > 0; i--) {
-            if (numero[i] !== '0') {
-                const parentNumero = numero.substring(0, i) + '0'.repeat(numero.length - i);
+            if (numero[i] !== '.' && numero[i] !== '0') {
+                // Encuentra el primer digito diferente de 0 y de un punto, cuando lo encuentra corta la cadena hasta el indice - 3
+                // De esa manera se asegura de cortar la cadena justo antes del punto y dsp rellena con .00 por cada 
+                const parentNumero = numero.substring(0, i-2);      //01.01.00.00   i=4 --> i=2     + '.00'.repeat((numero.length - i-3)/3)
                 if (map.has(parentNumero)) {
                     parentNode = map.get(parentNumero);
                     break;
