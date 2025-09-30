@@ -1,41 +1,50 @@
 import React, { useEffect, useState } from 'react';
 import PlanDeCuentasServicio from '../servicios/PlanDeCuentasServicio';
 import { useNavigate } from 'react-router-dom';
+import { LuPencilLine } from "react-icons/lu";
 
 // Recibe la prop 'id'
-const InfoCuentasComponent = ({ id }) => { 
+const InfoCuentasComponent = ({ id }) => {
     const [cuenta, setCuenta] = useState({
         code: "",
         name: "",
-        childAccounts : []
+        childAccounts: []
     });
+    
     // const [saldo, setSaldoCuenta] = useState(0);
+
     const navigate = useNavigate();
     const [error, setError] = useState('');
+
+    const [isEditing, setIsEditing] = useState(false);
+    const [tempName, setTempName] = useState("");
+
 
     useEffect(() => {
         // La llamada a los servicios se ejecuta solo si hay un id válido
         if (id) {
             infoCuenta(id);
-            // saldoCuenta(id);
         } else {
             // Si no hay id, limpia el estado para no mostrar info de una cuenta anterior
             setCuenta(null);
-            // setSaldoCuenta(0);
         }
-    }, [id]); // 2. Ahora, la dependencia es el 'id'
+    }, [id]);
 
     // Pasa el id como parámetro a las funciones de servicio
     const infoCuenta = (accountId) => {
         PlanDeCuentasServicio.getCuentaById(accountId).then((response) => {
             setCuenta(response.data);
+            setTempName(response.data.name);
             setError('');
         }).catch(err => {
             console.error(err);
             setError(err.response?.data?.message || 'Ocurrió un error al cargar los datos de la cuenta.');
         });
     };
-    
+
+    const userRole = getRoleFromToken();
+    const isAdmin = userRole === 'ADMIN';
+
     // const saldoCuenta = (accountId) => {
     //     PlanDeCuentasServicio.getSaldoCuenta(accountId).then((response) => {
     //         setSaldoCuenta(response.data);
@@ -50,15 +59,80 @@ const InfoCuentasComponent = ({ id }) => {
         }
     };
 
+    const handleEditClick = () => {
+        // Solo permite la edición si el usuario es Admin
+        if (isAdmin) {
+            setIsEditing(true);
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setIsEditing(false);
+        // Revertir el nombre temporal al nombre original de la cuenta
+        setTempName(cuenta.name); 
+    };
+
+    const handleSaveEdit = () => {
+        if (!tempName.trim() || tempName === cuenta.name) {
+            setIsEditing(false);
+            return;
+        }
+
+        PlanDeCuentasServicio.modificarCuenta(cuenta.id, tempName)
+            .then(() => {
+                // Actualizar el estado de la cuenta y sale del modo edición
+                setCuenta(prev => ({ ...prev, name: tempName }));
+                setIsEditing(false);
+                setError('');
+            })
+            .catch(err => {
+                setError(err.response?.data?.message || 'Error al actualizar el nombre.');
+                console.error(err);
+            });
+    };
+
     if (cuenta) {
-    const hasChildren = cuenta.childAccounts && cuenta.childAccounts.length > 0;
-    
+        const hasChildren = cuenta.childAccounts && cuenta.childAccounts.length > 0;
+
         return (
             <div>
-                <h1>Cuenta {cuenta.name}</h1>
-                <h4>Código cuenta {cuenta.code}</h4>
-                <br />
-                
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    {isEditing ? (
+                        // MODO EDICIÓN
+                        <input
+                            type="text"
+                            className="form-control"
+                            value={tempName}
+                            onChange={(e) => setTempName(e.target.value)}
+                            onKeyDown={(e) => { 
+                                if (e.key === 'Enter') handleSaveEdit(); // Guardar al presionar Enter
+                                if (e.key === 'Escape') handleCancelEdit(); // Cancelar al presionar Esc
+                            }}
+                            style={{ fontSize: '2em', fontWeight: 'bold', flexGrow: 1 }}
+                        />
+                    ) : (
+                        // MODO VISUALIZACIÓN
+                        <h1>Cuenta {cuenta.name}</h1>
+                    )}
+
+                    <div style={{ marginLeft: '10px' }}>
+                        {isEditing ? (
+                            // MODO EDICIÓN: Botones de Guardar y de Cancelar
+                            <>
+                                <button className="btn btn-success me-2" onClick={handleSaveEdit}>Guardar</button>
+                                <button className="btn btn-danger" onClick={handleCancelEdit}>Cancelar</button>
+                            </>
+                        ) : (
+                            // MODO VISUALIZACIÓN: Botón para Modificar (Lápiz)
+                            isAdmin && (
+                                <span onClick={handleEditClick} style={{ cursor: 'pointer' }}>
+                                    <LuPencilLine size={24} />
+                                </span>
+                            )
+                        )}
+                    </div>
+                </div>
+
                 {hasChildren ? (
                     <div>
                         <h3>Subcuentas {/*({cuenta.childAccounts.length})*/}</h3>
@@ -66,7 +140,6 @@ const InfoCuentasComponent = ({ id }) => {
                             {
                                 cuenta.childAccounts.map(child => (
                                     <li key={child.id} style={{ marginBottom: '5px' }}>
-                                        {/* Muestra el código y el nombre del hijo */}
                                         <span style={{ fontWeight: 'bold' }}>{child.code}</span> - {child.name}
                                     </li>
                                 ))
@@ -74,33 +147,27 @@ const InfoCuentasComponent = ({ id }) => {
                         </ul>
                     </div>
                 ) : (
-                    // B. Renderizar Saldo si es Cuenta Hoja (no tiene hijos)
+                    // Renderizar Saldo si no tiene hijos
                     <div>
                         <h3>Saldo de la cuenta:</h3>
                         {/* <h4 style={{ color: saldo >= 0 ? 'green' : 'red' }}>$ {saldo.toFixed(2)}</h4> */}
                     </div>
                 )}
-                
                 <br />
-                {/* El botón de agregar cuenta es para crear una subcuenta. 
-                    Debe aparecer solo si es una Cuenta Contenedora, pero si 
-                    quieres permitir agregar una subcuenta debajo de una hoja,
-                    puedes dejar el botón aquí sin condición. 
-                    Si solo quieres agregar hijos a cuentas contenedoras: {hasChildren && ( ... )}
-                */}
-                <button
-                    className='btn btn-success mt-2 me-2'
-                    onClick={handleAddCuenta}
-                >
-                    Agregar subcuenta
-                </button>
+                {isAdmin && (
+                    <button
+                        className='btn btn-success mt-2 me-2'
+                        onClick={handleAddCuenta}
+                    >
+                        Agregar cuenta
+                    </button>
+                )}
             </div>
         );
     }
-    
+
     return (
         <div>
-            {/* Mensaje si no hay cuenta seleccionada o si hay un error */}
             {error && <div className='alert alert-danger mt-4 ms-5'>{error}</div>}
             {!error && !cuenta && <div className='alert alert-info mt-4 ms-5'>Seleccione una cuenta para ver su información.</div>}
         </div>
