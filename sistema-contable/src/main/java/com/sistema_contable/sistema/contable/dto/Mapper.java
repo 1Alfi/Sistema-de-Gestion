@@ -1,5 +1,6 @@
 package com.sistema_contable.sistema.contable.dto;
 
+import com.sistema_contable.sistema.contable.model.Account;
 import com.sistema_contable.sistema.contable.model.Entry;
 import com.sistema_contable.sistema.contable.model.Movement;
 import org.hibernate.annotations.Comment;
@@ -27,4 +28,6 @@ public class Mapper extends ModelMapper {
         this.createTypeMap(MovementRequestDTO.class, Movement.class)
                 .addMapping(dto -> dto.getAccount(), (movement, v)->movement.getAccount().setId((Long)v));
     }
+
+
 }

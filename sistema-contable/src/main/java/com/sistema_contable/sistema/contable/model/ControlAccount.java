@@ -24,7 +24,8 @@ public class ControlAccount extends Account{
             List<Account> subAccounts = new ArrayList<Account>();
             this.setChildAccounts(subAccounts);
         }
-        this.getChildAccounts().add(children);}
+        else{this.getChildAccounts().add(children);}
+        }
 
     public void deleteChildren(Account children){this.getSubAccounts().remove(children);}
 
@@ -33,4 +34,6 @@ public class ControlAccount extends Account{
     public List<Account> getSubAccounts(){
         return this.getChildAccounts();
     }
+
+    //secondary methods
 }
