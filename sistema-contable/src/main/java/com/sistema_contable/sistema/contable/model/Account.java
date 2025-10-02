@@ -28,35 +28,29 @@ public abstract class Account {
 
     //methods
     //id
-    public Long getId() {
-        return id;
-    }
+    public Long getId() {return id;}
     public void setId(Long id) {
         this.id = id;
     }
 
     //code
-    public String   getCode() {
-        return code;
-    }
+    public String   getCode() {return code;}
     public void setCode(String code) {
         this.code = code;
     }
 
     //name
-    public String getName() {
-        return name;
-    }
+    public String getName() {return name;}
     public void setName(String name) {
         this.name = name;
     }
 
     //control id
-    public ControlAccount getControl_account_id() {
-        return control_account_id;
-    }
+    public ControlAccount getControl_account_id() {return control_account_id;}
     public void setControl_account_id(ControlAccount control_account_id) {this.control_account_id = control_account_id;}
 
     //childrens
     public abstract List<Account> getSubAccounts();
+
+
 }

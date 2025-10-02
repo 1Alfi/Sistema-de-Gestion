@@ -50,20 +50,34 @@ public class AccountResource {
             authService.adminAuthorize(token);
             service.create(mapper.map(accountDTO, ControlAccount.class), id);
             return new ResponseEntity<>(null, HttpStatus.CREATED);
-        } catch (ModelExceptions exception) {
-            return new ResponseEntity<>(null, exception.getHttpStatus());
+        } catch (ModelExceptions e) {
+            return new ResponseEntity<>(null, e.getHttpStatus());
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     //delete account
+    @PutMapping("/{id}")
+    public ResponseEntity<?> delete(@RequestHeader("Authorization") String token,@PathVariable Long id, @RequestParam(name = "name", required = true) String name) {
+        try {
+            authService.adminAuthorize(token);
+            service.update(id,name);
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        } catch (ModelExceptions exception) {
+            return new ResponseEntity<>(null, exception.getHttpStatus());
+        }catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //change name account
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@RequestHeader("Authorization") String token,@PathVariable Long id) {
+    public ResponseEntity<?> ChangeName(@RequestHeader("Authorization") String token,@PathVariable Long id) {
         try {
             authService.adminAuthorize(token);
             service.delete(id);
-            return new ResponseEntity<>(null, HttpStatus.OK);
+            return new ResponseEntity<>(null, HttpStatus.RESET_CONTENT);
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         }catch (Exception e) {
@@ -76,13 +90,48 @@ public class AccountResource {
     public ResponseEntity<?> getAll(@RequestHeader("Authorization") String token){
         try {
             authService.authorize(token);
-            return new ResponseEntity<>(accountResponse(service.getAll()), HttpStatus.CREATED);
-        } catch (Exception e) {
+            return new ResponseEntity<>(accountResponse(service.getAll()), HttpStatus.OK);
+        } catch (ModelExceptions exception) {
+            return new ResponseEntity<>(null, exception.getHttpStatus());
+        }catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //get account by ID
+    @GetMapping(path = "/{id}",produces = "application/json")
+    public ResponseEntity<?> getAccountById(@RequestHeader("Authorization") String token,@PathVariable Long id){
+        try {
+            authService.authorize(token);
+            return new ResponseEntity<>(accountResponse(service.findByID(id)), HttpStatus.OK);
+        } catch (ModelExceptions exception) {
+            return new ResponseEntity<>(null, exception.getHttpStatus());
+        }catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //get balance accounts
+    @GetMapping(path = "/balance",produces = "application/json")
+    public ResponseEntity<?> getBalanceAccounts(@RequestHeader("Authorization") String token){
+        try {
+            authService.authorize(token);
+            return new ResponseEntity<>(accountResponse(service.getBalanceAccounts()), HttpStatus.OK);
+        } catch (ModelExceptions exception) {
+            return new ResponseEntity<>(null, exception.getHttpStatus());
+        }catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     //secondary methods
+    private AccountResponseDTO accountResponse(Account account){
+        AccountResponseDTO dto = mapper.map(account, AccountResponseDTO.class);
+        List<AccountResponseDTO> dtos = account.getSubAccounts().stream().map(aux -> mapper.map(aux, AccountResponseDTO.class)).toList();
+        dto.setChildAccounts(dtos);
+        return dto;
+    }
+
     private List<AccountResponseDTO> accountResponse(List<Account> accounts){
         List<AccountResponseDTO> dtos = accounts.stream().map(account -> mapper.map(account, AccountResponseDTO.class)).toList();
         return dtos;

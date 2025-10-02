@@ -28,6 +28,4 @@ public class Mapper extends ModelMapper {
         this.createTypeMap(MovementRequestDTO.class, Movement.class)
                 .addMapping(dto -> dto.getAccount(), (movement, v)->movement.getAccount().setId((Long)v));
     }
-
-
 }

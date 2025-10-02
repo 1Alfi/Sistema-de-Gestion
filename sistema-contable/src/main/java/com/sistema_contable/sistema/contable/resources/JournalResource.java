@@ -32,7 +32,6 @@ public class JournalResource {
     
     @Autowired
     private AuthorizationService authService;
-
     @Autowired
     private ModelMapper mapper;
 
@@ -54,8 +53,6 @@ public class JournalResource {
     //secondary methods
     //create the body for the response and map the entry
     private List<EntryResponseDTO> entryResponse(List<Entry> entrys) {
-        List<EntryResponseDTO> dtos = entrys.stream().map(entry-> mapper.map(entry, EntryResponseDTO.class)).toList();
-        return dtos;
-
+        return entrys.stream().map(entry-> mapper.map(entry, EntryResponseDTO.class)).toList();
     }
 }
