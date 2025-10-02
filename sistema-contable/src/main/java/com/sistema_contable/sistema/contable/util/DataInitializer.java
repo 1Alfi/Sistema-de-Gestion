@@ -5,7 +5,7 @@ import com.sistema_contable.sistema.contable.model.ControlAccount;
 import com.sistema_contable.sistema.contable.model.Role;
 import com.sistema_contable.sistema.contable.model.User;
 import com.sistema_contable.sistema.contable.services.UserService;
-import com.sistema_contable.sistema.contable.services.accounting.AccountService;
+import com.sistema_contable.sistema.contable.services.accounting.interfaces.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -46,22 +46,27 @@ public class DataInitializer implements CommandLineRunner {
     private void addAccounts() throws Exception{
         Account asset = new ControlAccount();
         asset.setName("Activo");
+        asset.setPlus(true);
         accountService.create(asset,null);
 
         Account pasivo = new ControlAccount();
         pasivo.setName("Pasivo");
+        pasivo.setPlus(false);
         accountService.create(pasivo,null);
 
         Account patrimonio = new ControlAccount();
         patrimonio.setName("Patrimonio");
+        patrimonio.setPlus(false);
         accountService.create(patrimonio,null);
 
         Account ingresos = new ControlAccount();
         ingresos.setName("Resultado Positivo");
+        ingresos.setPlus(false);
         accountService.create(ingresos,null);
 
         Account egreso = new ControlAccount();
         egreso.setName("Resultado Negativo");
+        egreso.setPlus(true);
         accountService.create(egreso,null);
     }
 }

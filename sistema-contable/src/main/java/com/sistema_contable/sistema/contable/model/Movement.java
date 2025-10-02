@@ -23,7 +23,7 @@ public class Movement{
 
     @ManyToOne
     @JoinColumn(name = "movement_entry_id")
-    private Entry entry_id;
+    private Entry entry;
 
     @Column(name = "account_balance")
     private Double accountBalance;
@@ -62,11 +62,11 @@ public class Movement{
     }
 
     //entry
-    public Entry getEntry_id() {
-        return entry_id;
+    public Entry getEntry() {
+        return entry;
     }
-    public void setEntry_id(Entry entry_id) {
-        this.entry_id = entry_id;
+    public void setEntry(Entry entry_id) {
+        this.entry = entry_id;
     }
 
     //account balance
@@ -76,4 +76,11 @@ public class Movement{
     public void setAccountBalance(Double accountBalance) {
         this.accountBalance = accountBalance;
     }
+
+    //SECONDARY METHODS
+    public void addAccountBalance(Double balance) {
+        if(this.getAccount().isPlus()){
+            this.setAccountBalance(balance+this.getDebit()-this.getCredit());}
+        else {
+            this.setAccountBalance(balance+this.getCredit()-this.getDebit());}}
 }

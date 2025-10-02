@@ -1,25 +1,25 @@
 package com.sistema_contable.sistema.contable.services.accounting;
 
+import com.sistema_contable.sistema.contable.exceptions.AccountNotFindException;
 import com.sistema_contable.sistema.contable.exceptions.BadAccountException;
 import com.sistema_contable.sistema.contable.exceptions.ResourceNotFindException;
 import com.sistema_contable.sistema.contable.model.Account;
+import com.sistema_contable.sistema.contable.model.BalanceAccount;
 import com.sistema_contable.sistema.contable.model.ControlAccount;
 import com.sistema_contable.sistema.contable.repository.AccountRepository;
-import jakarta.servlet.Servlet;
-import org.hibernate.Hibernate;
+import com.sistema_contable.sistema.contable.services.accounting.interfaces.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class AccountServiceImp implements AccountService{
+public class AccountServiceImp implements AccountService {
 
     @Autowired
     private AccountRepository repository;
-    @Autowired
-    private Servlet servlet;
 
+    //CRUD
     @Override
     public void create(Account account, Long accountID)throws Exception{
         //formats the name
@@ -27,72 +27,85 @@ public class AccountServiceImp implements AccountService{
         String aux = name.substring(0, 1).toUpperCase() + name.substring(1);
         account.setName(aux);
         //check that there are no accounts with the same name
-        if(this.findByName(account.getName())!=null) {
-            throw new BadAccountException();}
+        if(this.searchByName(account.getName())!=null) {throw new AccountNotFindException();}
         //new account with father
         if(accountID!=null){
             //search in db the "father" account
-            ControlAccount accountBD = (ControlAccount) Hibernate.unproxy(repository.getById(accountID));
-            if(accountBD==null){
-                throw new BadAccountException();}
+            ControlAccount accountBD = this.searchControlAccount(accountID);
+            if(accountBD==null){throw new AccountNotFindException();}
+            int longestCode = this.longestCode();
             accountBD.addChildren(account);
+            account.setPlus(accountBD.isPlus());
             //check if the account code is larger than others
-            if (this.longestCode()<accountBD.getCode().length()){
-                this.refreshCodes();}
+            if (longestCode<accountBD.getCode().length()){this.refreshCodes();}
             repository.save(accountBD);}
         //new root account
         else{
             this.rootCode(account);
             repository.save(account);}}
 
-
     @Override
     public void delete(Long id)throws Exception{
         if(repository.findById(id).isPresent()){repository.deleteById(id);}
-        else {throw new ResourceNotFindException();}
-    }
+        else {throw new ResourceNotFindException();}}
 
     @Override
     public void update(Long id, String nombre) throws Exception {
-        if(this.findByName(nombre)!=null){throw new BadAccountException();}
-        Account account = this.findByID(id);
+        if(this.searchByName(nombre)!=null){throw new BadAccountException();}
+        Account account = this.searchById(id);
         account.setName(nombre);
-        repository.save(account);
-    }
+        repository.save(account);}
 
+
+    //GETTERS
+    //get all
     @Override
-    public List<Account> getAll() throws Exception {
-        return repository.findAll();
-    }
+    public List<Account> getAll() throws Exception {return repository.findAll();}
 
+    //get all balance accounts
     @Override
-    public Account findByID(Long id) throws Exception{
-        return repository.getById(id);
-    }
+    public List<BalanceAccount> getBalanceAccounts() throws Exception {return repository.getBalanceAccounts();}
 
+    //get all control accounts
     @Override
-    public Account findByName(String name) throws Exception{
-        return repository.findByName(name);
-    }
+    public List<ControlAccount> getRootAccounts()throws Exception{return repository.getRootAccounts();}
 
+
+    //SEARCHES
+    //by id all types
     @Override
-    public List<Account> getBalanceAccounts() throws Exception {
-        return repository.getBalanceAccounts();
+    public Account searchById(Long id) throws Exception{return repository.searchById(id);}
+
+    //by name
+    @Override
+    public Account searchByName(String name) throws Exception{return repository.searchByName(name);}
+
+    //balance accounts by id
+    @Override
+    public BalanceAccount searchBalanceAccount(Long id) throws Exception {return repository.searchBalanceAccount(id);}
+
+    //control accounts by id
+    @Override
+    public ControlAccount searchControlAccount(Long id) throws Exception {return repository.searchControlAccount(id);}
+
+
+    //SECONDARY METHODS
+    //search last balance of account
+    @Override
+    public Double lastBalance(Long id) throws Exception {
+        Double lastBalance = repository.searchLastBalance(id);
+        if(lastBalance==null){return 0D;}
+        return lastBalance;
     }
 
-    public List<Account> getRootAccounts()throws Exception{
-        return repository.getRootAccounts();
-    }
-
-    //secondary methods
+    //return the longest code of all accounts
     private int longestCode() throws Exception {
         int longest = 0;
         for (Account account : this.getAll()){
-            if(account.getCode().length()>longest){longest=account.getCode().length();}
-        }
-        return longest;
-    }
+            if(account.getCode().length()>longest){longest=account.getCode().length();}}
+        return longest;}
 
+    //logic for root accounts code
     private void rootCode(Account account) throws Exception {
         int accountCode = this.getRootAccounts().size()+1;
         if(accountCode>=10) {
@@ -101,17 +114,12 @@ public class AccountServiceImp implements AccountService{
             account.setCode(0+String.valueOf(accountCode));}
         int codeLength = this.longestCode();
         while(account.getCode().length()<codeLength){
-            account.setCode(account.getCode()+".00");
-        }
-    }
+            account.setCode(account.getCode()+".00");}}
 
-
+    //formats all accounts code
     private void refreshCodes() throws Exception {
         int codeLength = this.longestCode();
         for (Account account : this.getAll()){
              while(account.getCode().length()<codeLength){
-                 account.setCode(account.getCode()+".00");
-             }
-        }
-    }
+                 account.setCode(account.getCode()+".00");}}}
 }

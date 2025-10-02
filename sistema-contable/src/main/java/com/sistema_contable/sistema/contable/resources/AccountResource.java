@@ -4,7 +4,7 @@ import com.sistema_contable.sistema.contable.dto.AccountRequestDTO;
 import com.sistema_contable.sistema.contable.dto.AccountResponseDTO;
 import com.sistema_contable.sistema.contable.exceptions.ModelExceptions;
 import com.sistema_contable.sistema.contable.model.*;
-import com.sistema_contable.sistema.contable.services.accounting.AccountService;
+import com.sistema_contable.sistema.contable.services.accounting.interfaces.AccountService;
 import com.sistema_contable.sistema.contable.services.security.AuthorizationService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -39,6 +40,8 @@ public class AccountResource {
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         } catch (Exception e) {
+            System.out.println(Arrays.toString(e.getStackTrace()));
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -53,6 +56,8 @@ public class AccountResource {
         } catch (ModelExceptions e) {
             return new ResponseEntity<>(null, e.getHttpStatus());
         } catch (Exception e) {
+            System.out.println(Arrays.toString(e.getStackTrace()));
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -103,26 +108,17 @@ public class AccountResource {
     public ResponseEntity<?> getAccountById(@RequestHeader("Authorization") String token,@PathVariable Long id){
         try {
             authService.authorize(token);
-            return new ResponseEntity<>(accountResponse(service.findByID(id)), HttpStatus.OK);
+            return new ResponseEntity<>(accountResponse(service.searchById(id)), HttpStatus.OK);
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         }catch (Exception e) {
+
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     //get balance accounts
-    @GetMapping(path = "/balance",produces = "application/json")
-    public ResponseEntity<?> getBalanceAccounts(@RequestHeader("Authorization") String token){
-        try {
-            authService.authorize(token);
-            return new ResponseEntity<>(accountResponse(service.getBalanceAccounts()), HttpStatus.OK);
-        } catch (ModelExceptions exception) {
-            return new ResponseEntity<>(null, exception.getHttpStatus());
-        }catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+
 
     //secondary methods
     private AccountResponseDTO accountResponse(Account account){

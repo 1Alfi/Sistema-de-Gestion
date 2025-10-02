@@ -14,5 +14,7 @@ public class BalanceAccount extends Account{
 
     //abstract methods
     @Override
-    public List<Account> getSubAccounts() {return null;}
+    public List<Account> getSubAccounts() {return new ArrayList<Account>();}
+
+
 }

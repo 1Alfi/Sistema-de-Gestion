@@ -24,7 +24,7 @@ public class Entry {
     @JoinColumn(name = "entry_user_creator_id")
     private User userCreator;
 
-    @OneToMany(mappedBy = "entry_id", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "entry", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Movement> movements;
 
 
@@ -60,7 +60,7 @@ public class Entry {
         this.userCreator = userCreator;
     }
 
-    //lines
+    //movements
     public List<Movement> getMovements() {return movements;}
     public void setMovements(List<Movement> movements){
         if(!movements.isEmpty() && doubleEntryCheck(movements)){
@@ -77,7 +77,6 @@ public class Entry {
             debit += movement.getDebit();
             credit += movement.getCredit();
         }
-        if(debit-credit != 0){return false;}
-        else {return true;}
+        return debit - credit == 0;
     }
 }

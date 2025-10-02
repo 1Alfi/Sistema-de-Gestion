@@ -12,6 +12,9 @@ import java.util.List;
 @Repository
 public interface EntryRepository extends JpaRepository<Entry, Long> {
 
+    @Query("SELECT e FROM Entry e ORDER BY e.dateCreated ASC LIMIT 10")
+    List<Entry> lastEntrys();
+
     @Query("SELECT e FROM Entry e WHERE e.dateCreated BETWEEN :before AND :after")
     List<Entry> findBetweenDate(@Param("before") Date before, @Param("after") Date after);
 }

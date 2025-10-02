@@ -1,17 +1,21 @@
 package com.sistema_contable.sistema.contable.resources;
 
+import com.sistema_contable.sistema.contable.dto.AccountResponseDTO;
 import com.sistema_contable.sistema.contable.dto.EntryRequestDTO;
+import com.sistema_contable.sistema.contable.dto.EntryResponseDTO;
 import com.sistema_contable.sistema.contable.dto.Mapper;
 import com.sistema_contable.sistema.contable.exceptions.ModelExceptions;
+import com.sistema_contable.sistema.contable.model.Account;
 import com.sistema_contable.sistema.contable.model.Entry;
 import com.sistema_contable.sistema.contable.model.User;
-import com.sistema_contable.sistema.contable.services.accounting.EntryService;
+import com.sistema_contable.sistema.contable.services.accounting.interfaces.EntryService;
 import com.sistema_contable.sistema.contable.services.security.AuthorizationService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/entry")
@@ -31,6 +35,7 @@ public class EntryResource {
     public ResponseEntity<?> create(@RequestHeader("Authorization") String token, @RequestBody EntryRequestDTO entryDTO) {
         try {
             User userDB = authService.authorize(token);
+            System.out.println(entryDTO.toString());
             service.create(mapper.map(entryDTO, Entry.class), userDB);
             return new ResponseEntity<>(null, HttpStatus.CREATED);
         } catch (ModelExceptions exception){
@@ -40,5 +45,7 @@ public class EntryResource {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 
 }
