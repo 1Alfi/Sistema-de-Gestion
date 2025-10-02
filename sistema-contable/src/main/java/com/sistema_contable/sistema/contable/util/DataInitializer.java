@@ -46,27 +46,22 @@ public class DataInitializer implements CommandLineRunner {
     private void addAccounts() throws Exception{
         Account asset = new ControlAccount();
         asset.setName("Activo");
-        asset.setCode("01");
         accountService.create(asset,null);
 
         Account pasivo = new ControlAccount();
         pasivo.setName("Pasivo");
-        pasivo.setCode("02");
         accountService.create(pasivo,null);
 
         Account patrimonio = new ControlAccount();
         patrimonio.setName("Patrimonio");
-        patrimonio.setCode("03");
         accountService.create(patrimonio,null);
 
         Account ingresos = new ControlAccount();
-        ingresos.setName("Ingresos");
-        ingresos.setCode("04");
+        ingresos.setName("Resultado Positivo");
         accountService.create(ingresos,null);
 
         Account egreso = new ControlAccount();
-        egreso.setName("Egresos");
-        egreso.setCode("05");
+        egreso.setName("Resultado Negativo");
         accountService.create(egreso,null);
     }
 }

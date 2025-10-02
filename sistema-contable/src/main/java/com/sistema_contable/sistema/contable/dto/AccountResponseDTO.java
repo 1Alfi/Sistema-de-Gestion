@@ -1,10 +1,14 @@
 package com.sistema_contable.sistema.contable.dto;
 
+import java.util.List;
+
 public class AccountResponseDTO {
 
     private Long id;
     private String code;
     private String name;
+    private List<AccountResponseDTO> childAccounts;
+
 
     public String getCode() {
         return code;
@@ -26,4 +30,8 @@ public class AccountResponseDTO {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public List<AccountResponseDTO> getChildAccounts() {return childAccounts;}
+
+    public void setChildAccounts(List<AccountResponseDTO> childAccounts) {this.childAccounts = childAccounts;}
 }
