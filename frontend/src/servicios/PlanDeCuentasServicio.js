@@ -34,18 +34,15 @@ class PlanDeCuentasServicio {
         return axios.post(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/control', account, this.getAuthHeaders());
     }
     crearCuentaControlId(account, id) {
-        return axios.post(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/control', this.getAuthHeaders(), account, {
-            params: {
-                id: id
-            }
-        });
+        const config = this.getAuthHeaders();
+        config.params = { id: id };
+
+        return axios.post(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/control', account, config);
     }
     crearCuentaBalance(account, id) {
-        return axios.post(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/balance', this.getAuthHeaders(), account, {
-            params: {
-                id: id
-            }
-        });
+        const config = this.getAuthHeaders();
+        config.params = { id: id };
+        return axios.post(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/balance', account, config);
     }
 
     modificarCuenta(cuentaId, name){

@@ -11,6 +11,7 @@ const buildTree = (accounts) => {
 
     accounts.sort((a, b) => a.code.localeCompare(b.code));
 
+    //Carga todo el map con todas las cuentas que recibimos del back
     accounts.forEach(account => {
         const node = {
             id: account.id,
@@ -21,22 +22,62 @@ const buildTree = (accounts) => {
         map.set(account.code, node);
     });
 
+    //A cada cuenta la enlaza con su respectivo padre y la almacena dentro de sus childrens
     accounts.forEach(account => {
         const numero = account.code;
         let parentNode = null;
 
-        for (let i = numero.length - 1; i > 0; i--) {
-            if (numero[i] !== '.' && numero[i] !== '0') {
-                // Encuentra el primer digito diferente de 0 y de un punto, cuando lo encuentra corta la cadena hasta el indice - 3
-                // De esa manera se asegura de cortar la cadena justo antes del punto y dsp rellena con .00 por cada 
-                const parentNumero = numero.substring(0, i-2) + '.00'.repeat((numero.length - i-3)/3);      //01.01.00.00   i=4 --> i=2
-                if (map.has(parentNumero)) {
-                    parentNode = map.get(parentNumero);
-                    break;
+        const parts = numero.split('.');    //Divide en partes codigo de la cuenta separadas por donde habia un "."
+        
+        let levelToZero = -1;   //Inicializo en -1 para corroborar que se haya encontrado un padre o en su defecto saber que es una raiz
+        
+        // Encuentra el indice de la ultima parte que es != de '00' y a ese indice lo setea en levelToZero
+        for (let i = parts.length - 1; i >= 0; i--) {
+            if (parts[i] !== '00' && i > 0) { 
+                levelToZero = i;
+                break;
+            }
+        }
+        
+        // Crea el código del padre si es que no es toda una secuencia de 00.00.00 y así
+        if (levelToZero !== -1) { 
+            const parentParts = [...parts];     //Setea las partes del padre, con las partes que se habían obtenido previamente
+            
+            parentParts[levelToZero] = '00';    //Cambia por 00 la parte que esta en el indice encontrado de levelToZero
+            
+            const parentBaseParts = parentParts.slice(0, levelToZero + 1);  //Corta la partes del padre desde el indice encontrado
+            
+            let parentCode = parentBaseParts.join('.');     //Junta las partes con un "." de por medio
+            
+            //Si encuentra al padre lo setea en parentNode
+            if (map.has(parentCode)) {
+                parentNode = map.get(parentCode);
+            } 
+            
+            //Si no encotro el padre y el codigo sigue teniendo mas de una parte, acorta aun mas las partes para ver si ahi si es el padre
+            if (!parentNode && parentBaseParts.length > 1) {
+                const shorterParentCode = parentBaseParts.slice(0, parentBaseParts.length - 1).join('.');
+                //Si lo es lo setea en parentNode
+                if (map.has(shorterParentCode)) {
+                    parentNode = map.get(shorterParentCode);
+                }
+            }
+            //Verifica que no sea una cuenta raiz
+            if (levelToZero > 0) {
+                const strictParentParts = [...parts]; 
+                strictParentParts[levelToZero] = '00';  //Cambia la parte significativa para que sea 00
+                //Cambio a 00 a todas las partes desde levelToZero en adelante por si existe alguna parte posterior y es != de 00
+                for(let i = levelToZero + 1; i < strictParentParts.length; i++) {
+                    strictParentParts[i] = '00';
+                }
+                const strictParentCode = strictParentParts.join('.');   //Y hago el join con los "." de por medio
+
+                if (map.has(strictParentCode)) {
+                    parentNode = map.get(strictParentCode);
                 }
             }
         }
-
+        
         if (parentNode) {
             parentNode.children.push(map.get(account.code));
         } else {
@@ -49,32 +90,34 @@ const buildTree = (accounts) => {
 
 const renderTree = (data, onSelectAccount) => {
     return data.map((node) => {
-        const isFolder = node.children && node.children.length > 0;
+        // Indica si el nodo tiene hijos para desplegar.
+        const hasChildrenToRender = node.children && node.children.length > 0;
         
+        // Etiqueta: SOLO el nombre de la cuenta (Requisito 5)
+        // Ya no necesitamos estilos complejos aquí, ya que TreeView maneja el layout.
         const labelAndButton = (
-            <span onClick={() => onSelectAccount(node.id)} style={{ cursor: 'pointer' }}>
+            <span 
+                onClick={() => onSelectAccount(node.id)} 
+                style={{ cursor: 'pointer' }}
+            >
                 {node.name}
             </span>
         );
         
-        if (isFolder) {
-            return (
-                <TreeView
-                    key={node.id}
-                    nodeLabel={labelAndButton}
-                    defaultCollapsed={false}
-                >
-                    {renderTree(node.children, onSelectAccount)}
-                </TreeView>
-            );
-        }
-
+        // Usar TreeView para TODOS los nodos (hojas y carpetas). 
+        // Esto corrige la anidación visual y la posición del desplegable.
         return (
-            <div key={node.id} style={{ marginLeft: '20px' }}>
-                <span onClick={() => onSelectAccount(node.id)} style={{ cursor: 'pointer' }}>
-                    {node.name}
-                </span>
-            </div>
+            <TreeView
+                key={node.id}
+                nodeLabel={labelAndButton}
+                
+                // Despliegue: Usamos 'true' para que por defecto TODAS las cuentas 
+                // estén colapsadas (Requisito 4).
+                defaultCollapsed={true} 
+            >
+                {/* Renderiza recursivamente SOLO si tiene hijos */}
+                {hasChildrenToRender && renderTree(node.children, onSelectAccount)}
+            </TreeView>
         );
     });
 };

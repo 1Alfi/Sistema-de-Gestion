@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PlanDeCuentasServicio from '../servicios/PlanDeCuentasServicio';
 import { useNavigate } from 'react-router-dom';
 import { LuPencilLine } from "react-icons/lu";
+import { getRoleFromToken } from '../utiles/authUtils';
 
 // Recibe la prop 'id'
 const InfoCuentasComponent = ({ id }) => {
@@ -55,7 +56,7 @@ const InfoCuentasComponent = ({ id }) => {
 
     const handleAddCuenta = () => {
         if (cuenta) {
-            navigate('/add-cuenta', { state: { idParent: cuenta.id } });
+            navigate('/add-account', { state: { idParent: cuenta.id } });
         }
     };
 
