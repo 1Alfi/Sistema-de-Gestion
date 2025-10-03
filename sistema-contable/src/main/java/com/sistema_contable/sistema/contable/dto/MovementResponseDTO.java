@@ -3,7 +3,7 @@ package com.sistema_contable.sistema.contable.dto;
 public class MovementResponseDTO {
 
     private Long id;
-    private AccountResponseDTO accountDTO;
+    private String account;
     private Double debit;
     private Double credit;
 
@@ -14,12 +14,9 @@ public class MovementResponseDTO {
         this.id = id;
     }
 
-    public AccountResponseDTO getAccountDTO() {
-        return accountDTO;
-    }
-    public void setAccountDTO(AccountResponseDTO accountDTO) {
-        this.accountDTO = accountDTO;
-    }
+    public String getAccount() {return account;}
+
+    public void setAccount(String account) {this.account = account;}
 
     public Double getDebit() {
         return debit;

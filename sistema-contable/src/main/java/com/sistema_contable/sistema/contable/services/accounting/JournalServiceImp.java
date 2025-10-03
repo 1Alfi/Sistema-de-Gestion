@@ -1,8 +1,8 @@
 package com.sistema_contable.sistema.contable.services.accounting;
 
-import com.sistema_contable.sistema.contable.model.Account;
 import com.sistema_contable.sistema.contable.model.Entry;
 import com.sistema_contable.sistema.contable.repository.EntryRepository;
+import com.sistema_contable.sistema.contable.services.accounting.interfaces.JournalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,12 +10,16 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class JournalServiceImp implements JournalService{
+public class JournalServiceImp implements JournalService {
 
     //dependencies
     @Autowired
     private EntryRepository entryRepository;
 
+    @Override
+    public List<Entry> getLastEntrys()throws Exception{
+        return entryRepository.lastEntrys();
+    }
 
     @Override
     public List<Entry> getJournalBetween(Date before, Date after) throws Exception{

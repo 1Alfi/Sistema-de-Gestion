@@ -25,8 +25,11 @@ public abstract class Account {
     @JoinColumn(name = "control_account_id")
     private ControlAccount control_account_id;
 
+    @Column(name = "plus")
+    private boolean plus;
 
-    //methods
+
+    //METHODS
     //id
     public Long getId() {return id;}
     public void setId(Long id) {
@@ -49,8 +52,11 @@ public abstract class Account {
     public ControlAccount getControl_account_id() {return control_account_id;}
     public void setControl_account_id(ControlAccount control_account_id) {this.control_account_id = control_account_id;}
 
+    //plus
+    public boolean isPlus() {return plus;}
+    public void setPlus(boolean plus) {this.plus = plus;}
+
+    //abstract methods
     //childrens
     public abstract List<Account> getSubAccounts();
-
-
 }
