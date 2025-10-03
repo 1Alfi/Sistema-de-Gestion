@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import SideBarComponent from './SideBarComponent';
 import { Link } from 'react-router-dom';
-import LibrosServicio from '../servicios/LibrosServicio';
+import LibroDiarioServicio from '../servicios/LibroDiarioServicio';
+
+
 
 const LibroDiarioComponent = () => {
 
@@ -15,7 +17,7 @@ const LibroDiarioComponent = () => {
         // Solo hace la llamada si las fechas están seleccionadas
         if (fechaDesde && fechaHasta) {
             setCargando(true);
-            LibrosServicio.getAsientosPorPeriodo(fechaDesde, fechaHasta)
+            LibroDiarioServicio.getAsientosPorPeriodo(fechaDesde, fechaHasta)
                 .then((response) => {
                     setAsientos(response.data);
                     setError('');
@@ -34,7 +36,28 @@ const LibroDiarioComponent = () => {
                     setCargando(false);
                 });
         } else {
-            setAsientos([]); // Vacía la tabla si alguna de las fechas no está seteada
+            setCargando(true);
+            LibroDiarioServicio.getLastAsientos()
+                .then((response) => {
+                    setAsientos(response.data);
+                    setError('');
+                    if(response.data === null){
+                        console.error("No hay asientos");
+                    }
+                    console.log(response.data);
+                })
+                .catch(err => {
+                    console.error(err);
+                    setAsientos([]); // Vacía los asientos en caso de error
+                    if (err.response && err.response.data && err.response.data.message) {
+                        setError(err.response.data.message);
+                    } else {
+                        setError('Ocurrió un error al cargar los datos.');
+                    }
+                })
+                .finally(() => {
+                    setCargando(false);
+                });
         }
     }, [fechaDesde, fechaHasta]); //Hace que se ejecute, siempre que alguna de las dos fechas cambie su valor
 

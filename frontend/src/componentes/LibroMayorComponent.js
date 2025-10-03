@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import SideBarComponent from './SideBarComponent';
-import LibrosServicio from '../servicios/LibrosServicio';
+
 import PlanDeCuentasServicio from '../servicios/PlanDeCuentasServicio';
 import { Link } from 'react-router-dom';
+import LibroMayorServicio from '../servicios/LibroMayorServicio';
 
 const LibroMayorComponent = () => {
     const [movimientos, setMovimientos] = useState([]);
@@ -27,7 +28,7 @@ const LibroMayorComponent = () => {
     useEffect(() => {
         if (selectedCuentaId && fechaDesde && fechaHasta) {
             setCargando(true);
-            LibrosServicio.getLibroMayor(selectedCuentaId, fechaDesde, fechaHasta)
+            LibroMayorServicio.getMovimientosPorCuentaYPeriodo(selectedCuentaId, fechaDesde, fechaHasta)
                 .then((response) => {
                     const data = response.data;
                     setSaldoInicial(data.saldoInicial);
