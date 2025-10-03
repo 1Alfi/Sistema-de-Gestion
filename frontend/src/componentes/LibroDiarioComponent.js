@@ -113,19 +113,19 @@ const LibroDiarioComponent = () => {
                         <tbody>
                             {
                                 asientos.map(asiento => (
-                                    asiento.movimientos.map((movimiento, index) => (
+                                    asiento.movement.map((movimiento, index) => (
                                         <tr key={`${asiento.id}-${movimiento.id}`}>
                                             {index === 0 ? (
                                                 <>
-                                                    <td rowSpan={asiento.movimientos.length}>{asiento.fecha}</td>
-                                                    <td rowSpan={asiento.movimientos.length}>{asiento.operacion}</td>
+                                                    <td rowSpan={asiento.movimientos.length}>{asiento.date}</td>
+                                                    <td rowSpan={asiento.movimientos.length}>{asiento.description}</td>
                                                 </>
                                             ) : null}
-                                            <td className={movimiento.haber > 0 ? 'indentado' : ''}>
-                                                {movimiento.cuenta.nombre}
+                                            <td className={movimiento.credit > 0 ? 'indentado' : ''}>
+                                                {movimiento.account}
                                             </td>
-                                            <td>{movimiento.debe > 0 ? movimiento.debe : ''}</td>
-                                            <td>{movimiento.haber > 0 ? movimiento.haber : ''}</td>
+                                            <td>{movimiento.debit > 0 ? movimiento.debit : ''}</td>
+                                            <td>{movimiento.credit > 0 ? movimiento.credit : ''}</td>
                                         </tr>
                                     ))
                                 ))
