@@ -12,7 +12,7 @@ const LibroDiarioComponent = () => {
     const [fechaDesde, setFechaDesde] = useState('');
     const [fechaHasta, setFechaHasta] = useState('');
     const [cargando, setCargando] = useState(false);
-    
+
     useEffect(() => {
         // Solo hace la llamada si las fechas están seleccionadas
         if (fechaDesde && fechaHasta) {
@@ -41,7 +41,7 @@ const LibroDiarioComponent = () => {
                 .then((response) => {
                     setAsientos(response.data);
                     setError('');
-                    if(response.data === null){
+                    if (response.data === null) {
                         console.error("No hay asientos");
                     }
                     console.log(response.data);
@@ -111,14 +111,18 @@ const LibroDiarioComponent = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {
-                                asientos.map(asiento => (
-                                    asiento.movement.map((movimiento, index) => (
+                            {asientos.map(asiento => (
+                                <tbody key={asiento.id}>
+                                    {asiento.movements.map((movimiento, index) => (
                                         <tr key={`${asiento.id}-${movimiento.id}`}>
                                             {index === 0 ? (
                                                 <>
-                                                    <td rowSpan={asiento.movimientos.length}>{asiento.date}</td>
-                                                    <td rowSpan={asiento.movimientos.length}>{asiento.description}</td>
+                                                    <td rowSpan={asiento.movements.length}>
+                                                        {asiento.date.split('T')[0]}
+                                                    </td>
+                                                    <td rowSpan={asiento.movements.length}>
+                                                        {asiento.description}
+                                                    </td>
                                                 </>
                                             ) : null}
                                             <td className={movimiento.credit > 0 ? 'indentado' : ''}>
@@ -127,9 +131,9 @@ const LibroDiarioComponent = () => {
                                             <td>{movimiento.debit > 0 ? movimiento.debit : ''}</td>
                                             <td>{movimiento.credit > 0 ? movimiento.credit : ''}</td>
                                         </tr>
-                                    ))
-                                ))
-                            }
+                                    ))}
+                                </tbody>
+                            ))}
                         </tbody>
                     </table>
                 ) : (
@@ -140,7 +144,7 @@ const LibroDiarioComponent = () => {
             </div>
         </div>
     );
-    
+
 }
 
 export default LibroDiarioComponent
