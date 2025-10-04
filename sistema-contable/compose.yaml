@@ -12,9 +12,9 @@ services:
     environment:
       # Provee CUALQUIERA de estas variables. El entrypoint se encarga del resto:
       # 1) URL de Render en formato postgres://...
-      - RENDER_DATABASE_URL=${RENDER_DATABASE_URL:-}
+      #- RENDER_DATABASE_URL=${RENDER_DATABASE_URL:-}
       # 2) O bien URL JDBC directa (si prefieres ya convertirla):
-      #- DATABASE_URL=${DATABASE_URL:-}
+      - DATABASE_URL=${DATABASE_URL:-}
       # 3) Usuario/clave (si no vienen embebidos en la URL)
       #- DATABASE_USER=${DATABASE_USER:-}
       #- DATABASE_PASSWORD=${DATABASE_PASSWORD:-}
