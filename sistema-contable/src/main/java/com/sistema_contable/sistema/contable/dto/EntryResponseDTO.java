@@ -8,7 +8,7 @@ public class EntryResponseDTO {
     private String date;
     private String description;
     private String userCreator;
-    private List<MovementResponseDTO> movementDTOS;
+    private List<MovementResponseDTO> movements;
 
 
     public String getDate() {
@@ -39,10 +39,10 @@ public class EntryResponseDTO {
         this.id = id;
     }
 
-    public List<MovementResponseDTO> getMovementDTOS() {
-        return movementDTOS;
+    public List<MovementResponseDTO> getMovements() {
+        return movements;
     }
-    public void setMovementDTOS(List<MovementResponseDTO> movementDTOS) {
-        this.movementDTOS = movementDTOS;
+    public void setMovements(List<MovementResponseDTO> movements) {
+        this.movements = movements;
     }
 }

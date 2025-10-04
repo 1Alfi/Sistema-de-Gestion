@@ -34,7 +34,7 @@ public class Mapper extends ModelMapper {
 
     private void configEntryDTO(){
         this.createTypeMap(Entry.class, EntryResponseDTO.class)
-                .addMapping(entry -> entry.getMovements(), (dto, v)->dto.setMovementDTOS((List<MovementResponseDTO>) v))
+                .addMapping(entry -> entry.getMovements(), (dto, v)->dto.setMovements((List<MovementResponseDTO>) v))
                 .addMapping(entry -> entry.getUserCreator().getUsername(),(dto, username)->dto.setUserCreator((String) username) );
     }
 
