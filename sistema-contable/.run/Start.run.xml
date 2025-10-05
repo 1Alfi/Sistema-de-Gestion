@@ -1,9 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Start" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="com.sistema_contable.sistema.contable.SistemaContableApplication" />
-    <module name="sistema-contable" />
-    <method v="2">
-      <option name="Make" enabled="true" />
-    </method>
-  </configuration>
-</component>

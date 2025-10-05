@@ -19,13 +19,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/journal")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "${FRONT_URL}")
 public class JournalResource {
 
 
     //dependencies
     @Autowired
     private JournalService service;
+    
     @Autowired
     private AuthorizationService authService;
     @Autowired

@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "${FRONT_URL}")
 public class UserResource {
 
     //dependencies

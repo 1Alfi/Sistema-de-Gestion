@@ -17,7 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/login")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "${FRONT_URL}")
 public class LoginResource {
 
     //dependencies

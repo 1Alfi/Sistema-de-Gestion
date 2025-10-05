@@ -2,7 +2,6 @@ package com.sistema_contable.sistema.contable.resources;
 
 import com.sistema_contable.sistema.contable.dto.AccountRequestDTO;
 import com.sistema_contable.sistema.contable.dto.AccountResponseDTO;
-import com.sistema_contable.sistema.contable.dto.BalanceAccountResponseDTO;
 import com.sistema_contable.sistema.contable.exceptions.ModelExceptions;
 import com.sistema_contable.sistema.contable.model.*;
 import com.sistema_contable.sistema.contable.services.accounting.interfaces.AccountService;
@@ -18,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/accounts")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "${FRONT_URL}")
 public class AccountResource {
 
     //dependencies
@@ -113,28 +112,15 @@ public class AccountResource {
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         }catch (Exception e) {
+
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     //get balance accounts
-    @GetMapping(path = "/balance",produces = "application/json")
-    public ResponseEntity<?> getBalanceAccounts(@RequestHeader("Authorization") String token){
-        try {
-            authService.authorize(token);
-            return new ResponseEntity<>(balanceAccountResponse(service.getBalanceAccounts()), HttpStatus.OK);
-        } catch (ModelExceptions exception) {
-            return new ResponseEntity<>(null, exception.getHttpStatus());
-        }catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+
 
     //secondary methods
-    private List<BalanceAccountResponseDTO> balanceAccountResponse(List<BalanceAccount> balanceAccounts){
-        return balanceAccounts.stream().map(account -> mapper.map(account,BalanceAccountResponseDTO.class)).toList();
-    }
-
     private AccountResponseDTO accountResponse(Account account){
         AccountResponseDTO dto = mapper.map(account, AccountResponseDTO.class);
         List<AccountResponseDTO> dtos = account.getSubAccounts().stream().map(aux -> mapper.map(aux, AccountResponseDTO.class)).toList();
