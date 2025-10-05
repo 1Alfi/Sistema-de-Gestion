@@ -1,131 +1,195 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import TreeView from 'react-treeview';
 import 'react-treeview/react-treeview.css';
+import PlanDeCuentasServicio from '../servicios/PlanDeCuentasServicio';
+import { useNavigate } from 'react-router-dom';
+import { getRoleFromToken } from '../utiles/authUtils';
 
-const initialData = [
-    {
-        name: 'Activo',
-        children: [
-            {
-                name: 'Caja y Banco',
-                children: [
-                    { name: 'Caja' },
-                    {
-                        name: 'Banco',
-                        children: [
-                            { name: 'Banco c/c' },
-                            { name: 'Banco p. fijo' }
-                        ]
-                    }
-                ]
-            },
-            {
-                name: 'Creditos',
-                children: [
-                    { name: 'Deudores por venta' },
-                    { name: 'Documentos por cobrar' },
-                    { name: 'Valores a depositar' }
-                ]
-            },
-            {
-                name: 'Bienes de cambio',
-                children: [
-                    { name: 'Mercaderias' }
-                ]
-            },
-            {
-                name: 'Bienes de uso',
-                children: [
-                    { name: 'Inmuebles' },
-                    { name: 'Rodados' },
-                    { name: 'Instalaciones' }
-                ]
-            },
-        ]
-    },
-    { 
-        name: 'Pasivo',
-        children: [
-            { 
-                name: 'Deudas comerciales',
-                children: [
-                    { name: 'Proveedores'},
-                    { name: 'Sueldos a pagar' }
-                ]
-            },
-            {
-                name: 'Deudas fiscales',
-                children: [
-                    { name: 'Impuestos a pagar'},
-                    { name: 'Moratorias' }
-                ]
-            },
-            { name: 'Prestamos bancarios'}
-        ] 
-    },
-    { 
-        name: 'Patrimonio',
-        children: [
-            { name: 'Capital' },
-            { name: 'Resultados' }
-        ]  
-    },
-    { 
-        name: 'Ingresos' ,
-        children: [
-            { 
-                name: 'Ventas',
-                children: [
-                    { name: 'Ventas'},
-                ]
-            },
-            { name: 'Otros ingresos' },
-            { name: 'Intereses ganados' }
-        ] 
-    },
-    { 
-        name: 'Egresos' ,
-        children: [
-            { name: 'Costo de mercaderias vendidas' },
-            { name: 'Impuestos' },
-            { name: 'Sueldos' },
-            { name: 'Intereses' },
-            { name: 'Alquileres' }
-        ] 
-    }
-];
+const buildTree = (accounts) => {
+    const tree = [];
+    const map = new Map();
 
-const renderTree = (data) => {
-    return data.map((node, i) => {
-        const isFolder = node.children && node.children.length > 0;
+    accounts.sort((a, b) => a.code.localeCompare(b.code));
 
-        // If the node has children, render it as a collapsible TreeView
-        if (isFolder) {
-            return (
-                <TreeView
-                    key={i}
-                    nodeLabel={<span style={{ cursor: 'pointer' }}>{node.name}</span>}
-                    defaultCollapsed={false} // You can change this to `true` to have them initially collapsed
-                >
-                    {renderTree(node.children)}
-                </TreeView>
-            );
+    //Carga todo el map con todas las cuentas que recibimos del back
+    accounts.forEach(account => {
+        const node = {
+            id: account.id,
+            code: account.code,
+            name: account.name,
+            children: []
+        };
+        map.set(account.code, node);
+    });
+
+    //A cada cuenta la enlaza con su respectivo padre y la almacena dentro de sus childrens
+    accounts.forEach(account => {
+        const numero = account.code;
+        let parentNode = null;
+
+        const parts = numero.split('.');    //Divide en partes codigo de la cuenta separadas por donde habia un "."
+        
+        let levelToZero = -1;   //Inicializo en -1 para corroborar que se haya encontrado un padre o en su defecto saber que es una raiz
+        
+        // Encuentra el indice de la ultima parte que es != de '00' y a ese indice lo setea en levelToZero
+        for (let i = parts.length - 1; i >= 0; i--) {
+            if (parts[i] !== '00' && i > 0) { 
+                levelToZero = i;
+                break;
+            }
         }
+        
+        // Crea el código del padre si es que no es toda una secuencia de 00.00.00 y así
+        if (levelToZero !== -1) { 
+            const parentParts = [...parts];     //Setea las partes del padre, con las partes que se habían obtenido previamente
+            
+            parentParts[levelToZero] = '00';    //Cambia por 00 la parte que esta en el indice encontrado de levelToZero
+            
+            const parentBaseParts = parentParts.slice(0, levelToZero + 1);  //Corta la partes del padre desde el indice encontrado
+            
+            let parentCode = parentBaseParts.join('.');     //Junta las partes con un "." de por medio
+            
+            //Si encuentra al padre lo setea en parentNode
+            if (map.has(parentCode)) {
+                parentNode = map.get(parentCode);
+            } 
+            
+            //Si no encotro el padre y el codigo sigue teniendo mas de una parte, acorta aun mas las partes para ver si ahi si es el padre
+            if (!parentNode && parentBaseParts.length > 1) {
+                const shorterParentCode = parentBaseParts.slice(0, parentBaseParts.length - 1).join('.');
+                //Si lo es lo setea en parentNode
+                if (map.has(shorterParentCode)) {
+                    parentNode = map.get(shorterParentCode);
+                }
+            }
+            //Verifica que no sea una cuenta raiz
+            if (levelToZero > 0) {
+                const strictParentParts = [...parts]; 
+                strictParentParts[levelToZero] = '00';  //Cambia la parte significativa para que sea 00
+                //Cambio a 00 a todas las partes desde levelToZero en adelante por si existe alguna parte posterior y es != de 00
+                for(let i = levelToZero + 1; i < strictParentParts.length; i++) {
+                    strictParentParts[i] = '00';
+                }
+                const strictParentCode = strictParentParts.join('.');   //Y hago el join con los "." de por medio
 
-        // If the node has no children, render it as a simple list item
+                if (map.has(strictParentCode)) {
+                    parentNode = map.get(strictParentCode);
+                }
+            }
+        }
+        
+        if (parentNode) {
+            parentNode.children.push(map.get(account.code));
+        } else {
+            tree.push(map.get(account.code));
+        }
+    });
+
+    return tree;
+};
+
+const renderTree = (data, onSelectAccount) => {
+    return data.map((node) => {
+        // Indica si el nodo tiene hijos para desplegar.
+        const hasChildrenToRender = node.children && node.children.length > 0;
+        
+        // Etiqueta: SOLO el nombre de la cuenta (Requisito 5)
+        // Ya no necesitamos estilos complejos aquí, ya que TreeView maneja el layout.
+        const labelAndButton = (
+            <span 
+                onClick={() => onSelectAccount(node.id)} 
+                style={{ cursor: 'pointer' }}
+            >
+                {node.name}
+            </span>
+        );
+        
+        // Usar TreeView para TODOS los nodos (hojas y carpetas). 
+        // Esto corrige la anidación visual y la posición del desplegable.
         return (
-            <div key={i}>
-                <span style={{ marginLeft: '20px' }}>{node.name}</span>
-            </div>
+            <TreeView
+                key={node.id}
+                nodeLabel={labelAndButton}
+                
+                // Despliegue: Usamos 'true' para que por defecto TODAS las cuentas 
+                // estén colapsadas (Requisito 4).
+                defaultCollapsed={true} 
+            >
+                {/* Renderiza recursivamente SOLO si tiene hijos */}
+                {hasChildrenToRender && renderTree(node.children, onSelectAccount)}
+            </TreeView>
         );
     });
 };
 
-const SidebarCuentasComponent = () => {
+const SidebarCuentasComponent = ({ onSelectAccount }) => {
+
+    const [treeData, setTreeData] = useState([]);
+    // const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const navigate = useNavigate('');
+
+    const userRole = getRoleFromToken();
+    const isAdmin = userRole === 'ADMIN';
+
+    const handleAddCuenta = () => {
+        navigate('/add-account');
+    };
+
+    useEffect(() => {
+        const fetchAccounts = async () => {
+            try {
+                const response = await PlanDeCuentasServicio.listarCuentas();
+                const accounts = response.data;
+                console.log(accounts);
+                
+                // Verifica si la respuesta es un array válido antes de procesar
+                if (Array.isArray(accounts)) {
+                    const transformedData = buildTree(accounts);
+                    setTreeData(transformedData);
+                    setError(''); // Borra cualquier error anterior
+                } else {
+                    // Maneja el caso en que la respuesta no es un array
+                    setError('La respuesta del servidor no es un array de cuentas válido.');
+                    setTreeData([]); // Establece el estado a un array vacío
+                }
+
+            } catch (err) {
+                console.error("Error al obtener las cuentas: ", err);
+                setError(err.response?.data?.message || 'Ocurrió un error al cargar el plan de cuentas. Por favor, recargue la página.');
+            }
+            // finally {
+            //     setLoading(false);
+            // }
+        };
+        fetchAccounts();
+    }, []);
+    
+    // if (loading) {
+    //     return (
+    //         <div className='rounded shadow p-3 bg-light d-flex justify-content-center align-items-center' style={{ padding: '20px', height: '100vh' }}>
+    //             <div className="spinner-border text-primary" role="status">
+    //                 <span className="visually-hidden">Cargando...</span>
+    //             </div>
+    //         </div>
+    //     );
+    // }
+    
     return (
         <div className='rounded shadow p-3 bg-light' style={{ padding: '20px', height: '100vh' }}>
             <h2>Plan de Cuentas</h2>
-            {renderTree(initialData)}
+            
+            {/* Pasa la prop onSelectAccount a la función renderTree */}
+            {renderTree(treeData, onSelectAccount)}
+            {error && <div className='alert alert-danger'>{error}</div>}
+            {isAdmin && (
+                <button
+                    className='btn btn-success mt-2 me-2'
+                    onClick={handleAddCuenta}
+                >
+                    Agregar cuenta...
+                </button>
+            )}
         </div>
     );
 };

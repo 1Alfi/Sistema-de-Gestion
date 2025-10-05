@@ -15,7 +15,7 @@ const PrivateRoute = ({ children, requiredRole}) => {
   const userRole = getRoleFromToken();
 
     if (userRole === "ADMIN") {
-        return children;
+      return children;
     }
 
   if (requiredRole && userRole !== requiredRole) {

@@ -1,15 +1,18 @@
-import React from 'react'
-import SidebarCuentasComponent from './SidebarCuentasComponent'
-import SideBarComponent from './SideBarComponent'
+import React, { useState } from 'react';
+import SidebarCuentasComponent from './SidebarCuentasComponent';
+import SideBarComponent from './SideBarComponent';
+import InfoCuentasComponent from './InfoCuentasComponent';
 
 const PlanDeCuentasComponent = () => {
+  const [selectedAccountId, setSelectedAccountId] = useState(null);
+
   return (
     <div className='d-flex'>
         <SideBarComponent />
-        <SidebarCuentasComponent />
-        <h1>Esto es todo lo del plan de cuentas</h1>
+        <SidebarCuentasComponent onSelectAccount={setSelectedAccountId} />
+        <InfoCuentasComponent id={selectedAccountId} />
     </div>
-  )
-}
+  );
+};
 
-export default PlanDeCuentasComponent
+export default PlanDeCuentasComponent;

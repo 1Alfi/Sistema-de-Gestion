@@ -1,59 +1,73 @@
-import React from 'react'
-
+import React from 'react';
+import { useLocation, Link } from 'react-router-dom';
+import { IoHomeOutline } from "react-icons/io5";
 import { FaRegAddressBook } from 'react-icons/fa';
 import { LuBookOpenCheck, LuNotebookTabs } from 'react-icons/lu';
 import { MdAccountTree } from "react-icons/md";
 import { TbMapDollar } from 'react-icons/tb';
 import { getRoleFromToken } from '../utiles/authUtils';
-import {useNavigate} from "react-router-dom";
 
 const SideBarComponent = () => {
 
     const userRole = getRoleFromToken();
-    const navigate = useNavigate();
+    const location = useLocation(); // Obtiene la ubicación actual
 
     return (
-        <div className="d-flex flex-column flex-shrink-0 bg-secondary vh-100" style={{width: '4.5rem'}}>
-            <a href="/" className="d-block p-3 link-dark text-decoration-none" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Icon-only">
-            </a>
+        <div className="d-flex flex-column flex-shrink-0 bg-secondary vh-100" style={{ width: '4.5rem' }}>
             <ul className="nav nav-pills nav-flush flex-column mb-auto text-center">
                 <li className="nav-item">
-                    <a href="#" className="nav-link link-light active py-3 border-bottom rounded-0" >
-                        <MdAccountTree size={25}/>   {/*Esto lleva el plan de cuentas*/}
-                    </a>
+                    <Link 
+                        to="/inicio"
+                        className={`nav-link link-light py-3 border-bottom rounded-0 ${location.pathname === '/inicio' ? 'active' : ''}`}
+                    >
+                        <IoHomeOutline size={25} color='white'/>
+                    </Link>
+                </li>
+                <li className="nav-item">
+                    <Link 
+                        to="/plan-de-cuentas"
+                        className={`nav-link link-light py-3 border-bottom rounded-0 ${location.pathname === '/plan-de-cuentas' ? 'active' : ''}`}
+                    >
+                        <MdAccountTree size={25} />
+                    </Link>
                 </li>
                 <li>
-                    <a href="#" className="nav-link link-light py-3 border-bottom rounded-0" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="asientos" data-bs-original-title="asientos">
-                        <LuBookOpenCheck size={25}/>
-                    </a>
+                    <Link
+                        to="/asientos"
+                        className={`nav-link link-light py-3 border-bottom rounded-0 ${location.pathname === '/asientos' ? 'active' : ''}`}
+                    >
+                        <LuBookOpenCheck size={25} />
+                    </Link>
                 </li>
                 <li>
-                    <a href="#" className="nav-link link-light py-3 border-bottom rounded-0" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="libro-diario" data-bs-original-title="libro-diario">
-                        <LuNotebookTabs size={25}/>  {/*Esto lleva el libro diario*/}
-                    </a>
+                    <Link
+                        to="/libro-diario"
+                        className={`nav-link link-light py-3 border-bottom rounded-0 ${location.pathname === '/libro-diario' ? 'active' : ''}`}
+                    >
+                        <LuNotebookTabs size={25} />
+                    </Link>
                 </li>
                 <li>
-                    <a href="#" className="nav-link link-light py-3 border-bottom rounded-0" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="libro-mayor" data-bs-original-title="libro-mayor">
-                        <TbMapDollar size={25}/>  {/*Esto lleva el libro mayor*/}
-                    </a>
+                    <Link
+                        to="/libro-mayor" // Cambié 'href="#"' por 'to="/libro-mayor"'
+                        className={`nav-link link-light py-3 border-bottom rounded-0 ${location.pathname === '/libro-mayor' ? 'active' : ''}`}
+                    >
+                        <TbMapDollar size={25} />
+                    </Link>
                 </li>
-                {/* 
-                <li>
-                    <a href="#" className="nav-link py-3 border-bottom rounded-0" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="listado-de-usuarios" data-bs-original-title="listado-de-usuarios">
-                        <FaRegAddressBook />
-                    </a>
-                </li> 
-                */}
                 {userRole === 'ADMIN' && (
                     <li>
-                        <a href="/usuarios" className="nav-link link-light py-3 border-bottom rounded-0" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="listado-de-usuarios" data-bs-original-title="listado-de-usuarios">
-                            <FaRegAddressBook size={25}/>{/* Esto tiene el acceso al listado de usuarios */}
-                        </a>
+                        <Link
+                            to="/usuarios"
+                            className={`nav-link link-light py-3 border-bottom rounded-0 ${location.pathname === '/usuarios' ? 'active' : ''}`}
+                        >
+                            <FaRegAddressBook size={25} />
+                        </Link>
                     </li>
                 )}
             </ul>
         </div>
-    )
-}
+    );
+};
 
-export default SideBarComponent
+export default SideBarComponent;

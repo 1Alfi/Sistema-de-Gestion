@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const USUARIO_BASE_REST_API_URL = "http://localhost:8080/user";
+const USUARIO_BASE_REST_API_URL = `${process.env.REACT_APP_BACK_URL}/user`;
 
 const config = {
     headers: {
@@ -10,8 +10,6 @@ const config = {
 
 
 class UsuarioServicio {
-
-
 
     getAllUsuarios() {
         return axios.get(USUARIO_BASE_REST_API_URL+'/usuarios',config);

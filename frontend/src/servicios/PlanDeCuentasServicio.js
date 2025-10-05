@@ -1,0 +1,54 @@
+import React from 'react'
+import axios from 'axios'
+
+const PLAN_DE_CUENTAS_BASE_REST_API_URL = `${process.env.REACT_APP_BACK_URL}/accounts`;
+
+class PlanDeCuentasServicio {
+
+    getAuthHeaders() {
+        const token = localStorage.getItem('token');
+        if (token) {
+            return {
+                headers: {
+                    'Authorization': token
+                }
+            };
+        }
+        return {}; // Devuelve un objeto vacío si no hay token
+    }
+
+    listarCuentas() {
+        return axios.get(PLAN_DE_CUENTAS_BASE_REST_API_URL, this.getAuthHeaders());
+    }
+
+    getCuentaById(cuentaId) {
+        return axios.get(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/' + cuentaId, this.getAuthHeaders());
+    }
+    
+    //Retorna el saldo de la funcion calcular saldo de cada cuenta
+    getSaldoCuenta(cuentaId) {
+        return axios.get(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/' + cuentaId  + '/get-saldo');
+    }
+
+    crearCuentaControl(account) {
+        return axios.post(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/control', account, this.getAuthHeaders());
+    }
+    crearCuentaControlId(account, id) {
+        const config = this.getAuthHeaders();
+        config.params = { id: id };
+
+        return axios.post(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/control', account, config);
+    }
+    crearCuentaBalance(account, id) {
+        const config = this.getAuthHeaders();
+        config.params = { id: id };
+        return axios.post(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/balance', account, config);
+    }
+
+    modificarCuenta(cuentaId, name){
+        return axios.put(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/modificar/' + cuentaId + '?name=' + name, this.getAuthHeaders());
+    }
+
+}
+
+export default new PlanDeCuentasServicio();
