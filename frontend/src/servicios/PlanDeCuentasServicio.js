@@ -46,7 +46,7 @@ class PlanDeCuentasServicio {
     }
 
     modificarCuenta(cuentaId, name){
-        return axios.put(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/modificar/' + cuentaId + '?name=' + name, this.getAuthHeaders());
+        return axios.put(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/' + cuentaId + '?name=' + name, null, this.getAuthHeaders());
     }
 
 }

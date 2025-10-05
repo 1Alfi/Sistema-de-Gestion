@@ -12,7 +12,7 @@ const InfoCuentasComponent = ({ id }) => {
         childAccounts: []
     });
     
-    // const [saldo, setSaldoCuenta] = useState(0);
+    // const [saldo, setSaldo] = useState(0);
 
     const navigate = useNavigate();
     const [error, setError] = useState('');
@@ -47,7 +47,7 @@ const InfoCuentasComponent = ({ id }) => {
     const isAdmin = userRole === 'ADMIN';
 
     // const saldoCuenta = (accountId) => {
-    //     PlanDeCuentasServicio.getSaldoCuenta(accountId).then((response) => {
+    //     PlanDeCuentasServicio.getSaldo(accountId).then((response) => {
     //         setSaldoCuenta(response.data);
     //     }).catch(err => {
     //         console.error(err);

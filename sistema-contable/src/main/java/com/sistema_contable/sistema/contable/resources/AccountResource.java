@@ -62,9 +62,9 @@ public class AccountResource {
         }
     }
 
-    //delete account
+    //change name account
     @PutMapping("/{id}")
-    public ResponseEntity<?> delete(@RequestHeader("Authorization") String token,@PathVariable Long id, @RequestParam(name = "name", required = true) String name) {
+    public ResponseEntity<?> changeName(@RequestHeader("Authorization") String token,@PathVariable Long id, @RequestParam(name = "name", required = true) String name) {
         try {
             authService.adminAuthorize(token);
             service.update(id,name);
@@ -76,9 +76,9 @@ public class AccountResource {
         }
     }
 
-    //change name account
+    //delete account
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> ChangeName(@RequestHeader("Authorization") String token,@PathVariable Long id) {
+    public ResponseEntity<?> delete(@RequestHeader("Authorization") String token,@PathVariable Long id) {
         try {
             authService.adminAuthorize(token);
             service.delete(id);
