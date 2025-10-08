@@ -40,8 +40,6 @@ public class AccountResource {
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         } catch (Exception e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-            System.out.println(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -56,8 +54,6 @@ public class AccountResource {
         } catch (ModelExceptions e) {
             return new ResponseEntity<>(null, e.getHttpStatus());
         } catch (Exception e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-            System.out.println(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -112,15 +108,24 @@ public class AccountResource {
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         }catch (Exception e) {
-
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     //get balance accounts
-
+    public ResponseEntity<?> getBalanceAccounts(@RequestHeader("Authorization") String token){
+        try {
+            authService.authorize(token);
+            return new ResponseEntity<>(accountResponse(service.getBalanceAccounts()), HttpStatus.OK);
+        }catch (ModelExceptions exception) {
+            return new ResponseEntity<>(null, exception.getHttpStatus());
+        }catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     //secondary methods
+
     private AccountResponseDTO accountResponse(Account account){
         AccountResponseDTO dto = mapper.map(account, AccountResponseDTO.class);
         List<AccountResponseDTO> dtos = account.getSubAccounts().stream().map(aux -> mapper.map(aux, AccountResponseDTO.class)).toList();
@@ -128,7 +133,8 @@ public class AccountResource {
         return dto;
     }
 
-    private List<AccountResponseDTO> accountResponse(List<Account> accounts){
+    // ? extends accounts accept superclass and subclasses
+    private List<AccountResponseDTO> accountResponse(List<? extends Account> accounts){
         List<AccountResponseDTO> dtos = accounts.stream().map(account -> mapper.map(account, AccountResponseDTO.class)).toList();
         return dtos;
     }
