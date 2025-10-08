@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/entry")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "${FRONT_URL}")
 public class EntryResource {
 
     //dependencies
