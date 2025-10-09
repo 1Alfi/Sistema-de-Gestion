@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AsientoServicio from '../servicios/AsientoServicio';
 import SideBarComponent from './SideBarComponent';
+import PlanDeCuentasServicio from '../servicios/PlanDeCuentasServicio';
 
 const AddAsientoComponent = () => {
   const [description, setDescription] = useState('');
@@ -15,8 +16,9 @@ const AddAsientoComponent = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    AsientoServicio.getCuentasAsiento().then((response) => {
+    PlanDeCuentasServicio.getBalanceAccounts().then((response) => {
       setAccounts(response.data);
+      console.log(accounts);
     }).catch(error => {
       console.error(error);
     });
@@ -145,7 +147,7 @@ const AddAsientoComponent = () => {
                         >
                           <option value="" disabled>-- Seleccione una cuenta --</option>
                           {accounts.map(cuenta => (
-                            <option key={cuenta.id} value={cuenta.id}>{cuenta.nombre}</option>
+                            <option key={cuenta.id} value={cuenta.id}>{cuenta.name}</option>
                           ))}
                         </select>
                       </div>

@@ -49,6 +49,10 @@ class PlanDeCuentasServicio {
         return axios.put(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/' + cuentaId + '?name=' + name, null, this.getAuthHeaders());
     }
 
+    getBalanceAccounts() {
+        return axios.get(PLAN_DE_CUENTAS_BASE_REST_API_URL + "/balance", this.getAuthHeaders());
+    }
+
 }
 
 export default new PlanDeCuentasServicio();

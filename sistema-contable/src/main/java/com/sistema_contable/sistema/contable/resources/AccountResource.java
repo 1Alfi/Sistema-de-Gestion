@@ -113,6 +113,8 @@ public class AccountResource {
     }
 
     //get balance accounts
+    
+    @GetMapping(path = "/balance", produces = "application/json")
     public ResponseEntity<?> getBalanceAccounts(@RequestHeader("Authorization") String token){
         try {
             authService.authorize(token);
