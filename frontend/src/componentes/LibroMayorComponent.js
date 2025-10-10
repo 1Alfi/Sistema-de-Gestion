@@ -17,8 +17,9 @@ const LibroMayorComponent = () => {
 
     // Carga las cuentas al inicio
     useEffect(() => {
-        PlanDeCuentasServicio.listarCuentas().then((response) => {
+        PlanDeCuentasServicio.getBalanceAccounts().then((response) => {
             setCuentas(response.data);
+            console.log(response.data);
         }).catch(error => {
             console.error("Error al cargar las cuentas:", error);
         });
@@ -73,7 +74,7 @@ const LibroMayorComponent = () => {
                         >
                             <option value="" disabled>-- Seleccione una cuenta --</option>
                             {cuentas.map(account => (
-                                <option key={account.id} value={account.id}>{account.nombre}</option>
+                                <option key={account.id} value={account.id}>{account.name}</option>
                             ))}
                         </select>
                     </div>

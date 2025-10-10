@@ -18,7 +18,7 @@ const AddAsientoComponent = () => {
   useEffect(() => {
     PlanDeCuentasServicio.getBalanceAccounts().then((response) => {
       setAccounts(response.data);
-      console.log(accounts);
+      console.log(response.data);
     }).catch(error => {
       console.error(error);
     });
