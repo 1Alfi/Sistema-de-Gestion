@@ -28,6 +28,9 @@ public abstract class Account {
     @Column(name = "plus")
     private boolean plus;
 
+    @Column(name = "active")
+    private boolean active;
+
 
     //METHODS
     //id
@@ -56,7 +59,12 @@ public abstract class Account {
     public boolean isPlus() {return plus;}
     public void setPlus(boolean plus) {this.plus = plus;}
 
+    //active (state of the account)
+    public boolean isActive() {return active;}
+    public void setActive(boolean active) {this.active = active;}
+
     //abstract methods
     //childrens
     public abstract List<Account> getSubAccounts();
+    public abstract String getType();
 }

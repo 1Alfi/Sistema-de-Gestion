@@ -80,7 +80,20 @@ public class Movement{
     //SECONDARY METHODS
     public void addAccountBalance(Double balance) {
         if(this.getAccount().isPlus()){
-            this.setAccountBalance(balance+this.getDebit()-this.getCredit());}
+
+            this.setAccountBalance(balance+this.getDebit()-this.getCredit());
+        }
         else {
-            this.setAccountBalance(balance+this.getCredit()-this.getDebit());}}
+            this.setAccountBalance(balance+this.getCredit()-this.getDebit());}
+    }
+
+
+    public boolean balanceEnough(Double balance){
+        if(this.getAccount().isPlus()){
+            return !(balance < this.getCredit());
+        }
+        else {
+            return !(balance < this.getDebit());
+        }
+    }
 }

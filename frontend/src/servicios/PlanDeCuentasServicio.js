@@ -1,7 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 
-const PLAN_DE_CUENTAS_BASE_REST_API_URL = `${process.env.REACT_APP_BACK_URL}/accounts`;
+const PLAN_DE_CUENTAS_BASE_REST_API_URL = "http://localhost:8080/accounts";
 
 class PlanDeCuentasServicio {
 
@@ -46,7 +46,11 @@ class PlanDeCuentasServicio {
     }
 
     modificarCuenta(cuentaId, name){
-        return axios.put(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/modificar/' + cuentaId + '?name=' + name, this.getAuthHeaders());
+        return axios.put(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/' + cuentaId + '?name=' + name, null, this.getAuthHeaders());
+    }
+
+    getBalanceAccounts() {
+        return axios.get(PLAN_DE_CUENTAS_BASE_REST_API_URL + "/balance", this.getAuthHeaders());
     }
 
 }

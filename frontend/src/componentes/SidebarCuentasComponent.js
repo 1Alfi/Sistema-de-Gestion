@@ -125,7 +125,7 @@ const renderTree = (data, onSelectAccount) => {
 const SidebarCuentasComponent = ({ onSelectAccount }) => {
 
     const [treeData, setTreeData] = useState([]);
-    // const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const navigate = useNavigate('');
 
@@ -136,52 +136,53 @@ const SidebarCuentasComponent = ({ onSelectAccount }) => {
         navigate('/add-account');
     };
 
-    useEffect(() => {
-        const fetchAccounts = async () => {
-            try {
-                const response = await PlanDeCuentasServicio.listarCuentas();
-                const accounts = response.data;
-                console.log(accounts);
-                
-                // Verifica si la respuesta es un array válido antes de procesar
-                if (Array.isArray(accounts)) {
-                    const transformedData = buildTree(accounts);
-                    setTreeData(transformedData);
-                    setError(''); // Borra cualquier error anterior
-                } else {
-                    // Maneja el caso en que la respuesta no es un array
-                    setError('La respuesta del servidor no es un array de cuentas válido.');
-                    setTreeData([]); // Establece el estado a un array vacío
-                }
-
-            } catch (err) {
-                console.error("Error al obtener las cuentas: ", err);
-                setError(err.response?.data?.message || 'Ocurrió un error al cargar el plan de cuentas. Por favor, recargue la página.');
+    const fetchAccounts = async () => {
+        setLoading(true); // Iniciar la carga
+        try {
+            const response = await PlanDeCuentasServicio.listarCuentas();
+            const accounts = response.data;
+            
+            if (Array.isArray(accounts)) {
+                const transformedData = buildTree(accounts);
+                setTreeData(transformedData);
+                setError('');
+            } else {
+                setError('La respuesta del servidor no es un array de cuentas válido.');
+                setTreeData([]);
             }
-            // finally {
-            //     setLoading(false);
-            // }
-        };
+        } catch (err) {
+            console.error("Error al obtener las cuentas: ", err);
+            setError(err.response?.data?.message || 'Ocurrió un error al cargar el plan de cuentas.');
+        } finally {
+            setLoading(false); // <--- Finalizar la carga, siempre
+        }
+    };
+    
+    // 2. Uso de useEffect: Se ejecuta solo en el montaje
+    useEffect(() => {
         fetchAccounts();
     }, []);
+
+    // 3. Renderizado Condicional: Muestra el spinner si está cargando
+    if (loading) {
+        return (
+            <div className='rounded shadow p-3 bg-light d-flex justify-content-center align-items-center' style={{ padding: '20px', height: '100vh' }}>
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Cargando...</span>
+                </div>
+            </div>
+        );
+    }
     
-    // if (loading) {
-    //     return (
-    //         <div className='rounded shadow p-3 bg-light d-flex justify-content-center align-items-center' style={{ padding: '20px', height: '100vh' }}>
-    //             <div className="spinner-border text-primary" role="status">
-    //                 <span className="visually-hidden">Cargando...</span>
-    //             </div>
-    //         </div>
-    //     );
-    // }
-    
+    // Renderizado principal (solo si loading es false)
     return (
         <div className='rounded shadow p-3 bg-light' style={{ padding: '20px', height: '100vh' }}>
             <h2>Plan de Cuentas</h2>
             
-            {/* Pasa la prop onSelectAccount a la función renderTree */}
+            {/* Si no está cargando, muestra el árbol */}
             {renderTree(treeData, onSelectAccount)}
             {error && <div className='alert alert-danger'>{error}</div>}
+            
             {isAdmin && (
                 <button
                     className='btn btn-success mt-2 me-2'

@@ -14,7 +14,6 @@ import LibroDiarioComponent from './componentes/LibroDiarioComponent';
 import AddAsientoComponent from './componentes/AddAsientoComponent';
 import LibroMayorComponent from './componentes/LibroMayorComponent';
 import AddCuentaComponent from './componentes/AddCuentaComponent';
-import LandingPage from "./componentes/LandingPage";
 
 
 function App() {
@@ -25,7 +24,7 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={<LandingPage />}
+            element={<PrivateRoute requiredRole="USER"><InicioComponent /></PrivateRoute>}
           />
           <Route path='/login' element={<LoginFormComponent />}></Route>
           <Route path='/libro-mayor' element={<LibroMayorComponent />}></Route> {/* Hacer PrivateRoute */}
@@ -61,7 +60,7 @@ function App() {
             element={<PrivateRoute requiredRole="ADMIN"><AddUsuarioComponent /></PrivateRoute>}
           />
         </Routes>
-          {/*<FooterComponente />*/}
+      <FooterComponente />
       </BrowserRouter>
     </div>
   );

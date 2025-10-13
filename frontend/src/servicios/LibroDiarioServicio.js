@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const LIBRO_DIARIO_BASE_REST_API_URL = `${process.env.REACT_APP_BACK_URL}/journal`;
+const LIBRO_DIARIO_BASE_REST_API_URL = "http://localhost:8080/journal";
 
 class LibroDiarioServicio {
 

@@ -117,7 +117,8 @@ public class AccountServiceImp implements AccountService {
             account.setCode(account.getCode()+".00");}}
 
     //formats all accounts code
-    private void refreshCodes() throws Exception {
+    @Override
+    public void refreshCodes() throws Exception {
         int codeLength = this.longestCode();
         for (Account account : this.getAll()){
              while(account.getCode().length()<codeLength){

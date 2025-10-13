@@ -12,11 +12,13 @@ const LibroDiarioComponent = () => {
     const [fechaDesde, setFechaDesde] = useState('');
     const [fechaHasta, setFechaHasta] = useState('');
     const [cargando, setCargando] = useState(false);
-    
+
     useEffect(() => {
         // Solo hace la llamada si las fechas están seleccionadas
         if (fechaDesde && fechaHasta) {
             setCargando(true);
+            const minDelay = new Promise((resolve) => setTimeout(resolve, 6000));
+
             LibroDiarioServicio.getAsientosPorPeriodo(fechaDesde, fechaHasta)
                 .then((response) => {
                     setAsientos(response.data);
@@ -33,15 +35,18 @@ const LibroDiarioComponent = () => {
                     }
                 })
                 .finally(() => {
-                    setCargando(false);
+                    // Mantener spinner al menos 6s
+                    minDelay.then(() => setCargando(false));
                 });
         } else {
             setCargando(true);
+            const minDelay = new Promise((resolve) => setTimeout(resolve, 6000));
+
             LibroDiarioServicio.getLastAsientos()
                 .then((response) => {
                     setAsientos(response.data);
                     setError('');
-                    if(response.data === null){
+                    if (response.data === null) {
                         console.error("No hay asientos");
                     }
                     console.log(response.data);
@@ -56,7 +61,8 @@ const LibroDiarioComponent = () => {
                     }
                 })
                 .finally(() => {
-                    setCargando(false);
+                    // Mantener spinner al menos 6s
+                    minDelay.then(() => setCargando(false));
                 });
         }
     }, [fechaDesde, fechaHasta]); //Hace que se ejecute, siempre que alguna de las dos fechas cambie su valor
@@ -111,14 +117,18 @@ const LibroDiarioComponent = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {
-                                asientos.map(asiento => (
-                                    asiento.movements.map((movimiento, index) => (
+                            {asientos.map(asiento => (
+                                <tbody key={asiento.id}>
+                                    {asiento.movementDTOS.map((movimiento, index) => (
                                         <tr key={`${asiento.id}-${movimiento.id}`}>
                                             {index === 0 ? (
                                                 <>
-                                                    <td rowSpan={asiento.movements.length}>{asiento.date.split(' ')[0]}</td>
-                                                    <td rowSpan={asiento.movements.length}>{asiento.description}</td>
+                                                    <td rowSpan={asiento.movementDTOS.length}>
+                                                        {asiento.date.split(' ')[0]}
+                                                    </td>
+                                                    <td rowSpan={asiento.movementDTOS.length}>
+                                                        {asiento.description}
+                                                    </td>
                                                 </>
                                             ) : null}
                                             <td className={movimiento.credit > 0 ? 'indentado' : ''}>
@@ -127,9 +137,9 @@ const LibroDiarioComponent = () => {
                                             <td>{movimiento.debit > 0 ? movimiento.debit : ''}</td>
                                             <td>{movimiento.credit > 0 ? movimiento.credit : ''}</td>
                                         </tr>
-                                    ))
-                                ))
-                            }
+                                    ))}
+                                </tbody>
+                            ))}
                         </tbody>
                     </table>
                 ) : (
@@ -140,7 +150,7 @@ const LibroDiarioComponent = () => {
             </div>
         </div>
     );
-    
+
 }
 
 export default LibroDiarioComponent
