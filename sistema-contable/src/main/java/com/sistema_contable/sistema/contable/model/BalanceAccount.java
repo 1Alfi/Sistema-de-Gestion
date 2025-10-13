@@ -16,6 +16,10 @@ public class BalanceAccount extends Account{
     @Override
     public List<Account> getSubAccounts() {return new ArrayList<Account>();}
 
+    @Override
+    public String getType() {
+        return "Balance";
+    }
 
 }
 

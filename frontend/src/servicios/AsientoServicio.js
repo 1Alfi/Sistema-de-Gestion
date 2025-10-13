@@ -17,7 +17,7 @@ class AsientoServicio {
     }
 
     crearAsiento(entry) {
-        return axios.post(ASIENTO_BASE_REST_API_URL + '/create', this.getAuthHeaders(), entry);
+        return axios.post(ASIENTO_BASE_REST_API_URL + '/create', entry, this.getAuthHeaders());
     }
 
 }

@@ -7,7 +7,7 @@ import PlanDeCuentasServicio from '../servicios/PlanDeCuentasServicio';
 const AddAsientoComponent = () => {
   const [description, setDescription] = useState('');
   const [accounts, setAccounts] = useState([]);
-  const [movements, setMovements] = useState([{ accountId: '', debit: 0, credit: 0 }]);
+  const [movements, setMovements] = useState([{ account: '', debit: 0, credit: 0 }]);
   const [error, setError] = useState('');
 
   const [hasCredit, setHasCredit] = useState(false);
@@ -25,7 +25,7 @@ const AddAsientoComponent = () => {
   }, []);
 
   const handleAddMovement = () => {
-    setMovements([...movements, { accountId: '', debit: 0, credit: 0 }]);
+    setMovements([...movements, { account: '', debit: 0, credit: 0 }]);
   };
 
   const handleRemoveMovement = (index) => {
@@ -141,8 +141,8 @@ const AddAsientoComponent = () => {
                         <label className='form-label'>Cuenta</label>
                         <select
                           className="form-select"
-                          name="accountId"
-                          value={movement.accountId}
+                          name="account"
+                          value={movement.account}
                           onChange={(e) => handleMovementChange(index, e)}
                         >
                           <option value="" disabled>-- Seleccione una cuenta --</option>

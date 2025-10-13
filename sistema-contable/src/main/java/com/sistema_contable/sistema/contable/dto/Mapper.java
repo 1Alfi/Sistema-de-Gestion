@@ -19,6 +19,7 @@ public class Mapper extends ModelMapper {
         configMovement();
         configEntryDTO();
         configMovementDTO();
+        configAccountDTO();
     }
 
     //custom mapping
@@ -41,5 +42,10 @@ public class Mapper extends ModelMapper {
     private void configMovementDTO(){
         this.createTypeMap(Movement.class, MovementResponseDTO.class)
                 .addMapping(movement -> movement.getAccount().getName(),(dto, v)->dto.setAccount((String) v));
+    }
+
+    private void configAccountDTO(){
+        this.createTypeMap(Account.class, AccountResponseDTO.class)
+                .addMapping(account -> account.getType(),(dto,type)->dto.setType((String) type));
     }
 }

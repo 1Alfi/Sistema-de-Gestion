@@ -14,7 +14,6 @@ public class ControlAccount extends Account{
     @OneToMany(mappedBy = "control_account_id",fetch = FetchType.EAGER ,cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Account> subAccounts = new ArrayList<>();
 
-
     //methods
     //children
     public List<Account> getChildAccounts() {return subAccounts;}
@@ -45,13 +44,18 @@ public class ControlAccount extends Account{
 
     //abstract methods
     @Override
+    public String getType() {
+        return "Control";
+    }
+
+    @Override
     public List<Account> getSubAccounts(){
         return this.getChildAccounts();}
 
     //secondary methods
     private boolean brotherHaveChilds(){
         for (Account brother : this.getControl_account_id().getSubAccounts()){
-            if( !brother.equals(this) && !brother.getSubAccounts().isEmpty()){
+            if( brother.getCode().equals(this.getCode()) && !brother.getSubAccounts().isEmpty()){
                 return true;}}
         return false;}
 
@@ -96,4 +100,7 @@ public class ControlAccount extends Account{
         //set the finals digit of the code
         if (code.length()>childrenCode.length()){
             childrenCode = childrenCode + code.substring(childrenCode.length());}
-        children.setCode(childrenCode);}}
+        children.setCode(childrenCode);}
+
+
+}

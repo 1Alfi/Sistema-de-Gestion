@@ -25,5 +25,6 @@ public interface AccountService {
 
     //secondary
     Double lastBalance(Long id) throws Exception;
+    void refreshCodes()throws Exception;
 
 }

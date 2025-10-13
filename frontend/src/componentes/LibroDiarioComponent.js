@@ -17,6 +17,8 @@ const LibroDiarioComponent = () => {
         // Solo hace la llamada si las fechas están seleccionadas
         if (fechaDesde && fechaHasta) {
             setCargando(true);
+            const minDelay = new Promise((resolve) => setTimeout(resolve, 6000));
+
             LibroDiarioServicio.getAsientosPorPeriodo(fechaDesde, fechaHasta)
                 .then((response) => {
                     setAsientos(response.data);
@@ -33,10 +35,13 @@ const LibroDiarioComponent = () => {
                     }
                 })
                 .finally(() => {
-                    setCargando(false);
+                    // Mantener spinner al menos 6s
+                    minDelay.then(() => setCargando(false));
                 });
         } else {
             setCargando(true);
+            const minDelay = new Promise((resolve) => setTimeout(resolve, 6000));
+
             LibroDiarioServicio.getLastAsientos()
                 .then((response) => {
                     setAsientos(response.data);
@@ -56,7 +61,8 @@ const LibroDiarioComponent = () => {
                     }
                 })
                 .finally(() => {
-                    setCargando(false);
+                    // Mantener spinner al menos 6s
+                    minDelay.then(() => setCargando(false));
                 });
         }
     }, [fechaDesde, fechaHasta]); //Hace que se ejecute, siempre que alguna de las dos fechas cambie su valor
@@ -113,14 +119,14 @@ const LibroDiarioComponent = () => {
                         <tbody>
                             {asientos.map(asiento => (
                                 <tbody key={asiento.id}>
-                                    {asiento.movements.map((movimiento, index) => (
+                                    {asiento.movementDTOS.map((movimiento, index) => (
                                         <tr key={`${asiento.id}-${movimiento.id}`}>
                                             {index === 0 ? (
                                                 <>
-                                                    <td rowSpan={asiento.movements.length}>
-                                                        {asiento.date.split('T')[0]}
+                                                    <td rowSpan={asiento.movementDTOS.length}>
+                                                        {asiento.date.split(' ')[0]}
                                                     </td>
-                                                    <td rowSpan={asiento.movements.length}>
+                                                    <td rowSpan={asiento.movementDTOS.length}>
                                                         {asiento.description}
                                                     </td>
                                                 </>
