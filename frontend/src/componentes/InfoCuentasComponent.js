@@ -9,9 +9,11 @@ const InfoCuentasComponent = ({ id }) => {
     const [cuenta, setCuenta] = useState({
         code: "",
         name: "",
+        active: false,
+        type: "",
         childAccounts: []
     });
-    
+
     // const [saldo, setSaldo] = useState(0);
 
     const navigate = useNavigate();
@@ -70,7 +72,7 @@ const InfoCuentasComponent = ({ id }) => {
     const handleCancelEdit = () => {
         setIsEditing(false);
         // Revertir el nombre temporal al nombre original de la cuenta
-        setTempName(cuenta.name); 
+        setTempName(cuenta.name);
     };
 
     const handleSaveEdit = () => {
@@ -105,7 +107,7 @@ const InfoCuentasComponent = ({ id }) => {
                             className="form-control"
                             value={tempName}
                             onChange={(e) => setTempName(e.target.value)}
-                            onKeyDown={(e) => { 
+                            onKeyDown={(e) => {
                                 if (e.key === 'Enter') handleSaveEdit(); // Guardar al presionar Enter
                                 if (e.key === 'Escape') handleCancelEdit(); // Cancelar al presionar Esc
                             }}
@@ -134,8 +136,14 @@ const InfoCuentasComponent = ({ id }) => {
                     </div>
                 </div>
 
-                {hasChildren ? (
+                {cuenta.type === 'Control' ? (
+                    // Renderiza las cuentas hijas, el saldo y el boton de agregar una cuenta si es de control
                     <div>
+                        <div>
+                            <h3>Saldo de la cuenta:</h3>
+                            {/* <h4 style={{ color: saldo >= 0 ? 'green' : 'red' }}>$ {saldo.toFixed(2)}</h4> */}
+                        </div>
+                        <br />
                         <h3>Subcuentas {/*({cuenta.childAccounts.length})*/}</h3>
                         <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
                             {
@@ -146,23 +154,23 @@ const InfoCuentasComponent = ({ id }) => {
                                 ))
                             }
                         </ul>
+                        {isAdmin && (
+                            <button
+                                className='btn btn-success mt-2 me-2'
+                                onClick={handleAddCuenta}
+                            >
+                                Agregar cuenta
+                            </button>
+                        )}
                     </div>
                 ) : (
-                    // Renderizar Saldo si no tiene hijos
+                    //Renderiza solo el saldo si es una balance
                     <div>
                         <h3>Saldo de la cuenta:</h3>
                         {/* <h4 style={{ color: saldo >= 0 ? 'green' : 'red' }}>$ {saldo.toFixed(2)}</h4> */}
                     </div>
                 )}
-                <br />
-                {isAdmin && (
-                    <button
-                        className='btn btn-success mt-2 me-2'
-                        onClick={handleAddCuenta}
-                    >
-                        Agregar cuenta
-                    </button>
-                )}
+
             </div>
         );
     }

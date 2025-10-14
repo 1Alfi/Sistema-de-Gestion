@@ -11,13 +11,12 @@ const AddCuentaComponent = () => {
     const [name, setName] = useState('');
     const [controlCheck, setControlCheck] = useState(false);
     const [error, setError] = useState('');
-    const [isSaving, setIsSaving] = useState(false); // <--- NUEVO ESTADO PARA SPINNER
+    const [isSaving, setIsSaving] = useState(false);
     const navigate = useNavigate();
 
-    // HACEMOS LA FUNCIÓN ASÍNCRONA
     const saveAccount = async (e) => {
         e.preventDefault();
-        setError(''); // Limpiamos errores previos
+        setError('');
 
         if (!controlCheck && controlCheck !== true && !name) {
              setError("Por favor, ingrese un nombre para la cuenta.");
@@ -47,13 +46,10 @@ const AddCuentaComponent = () => {
                 serviceCall = PlanDeCuentasServicio.crearCuentaBalance(account, idParent);
             }
             
-            // Await es crucial para esperar la respuesta del servidor
             await serviceCall; 
             
-            // 2. RETARDO PARA SINCRONIZACIÓN (800ms)
             await new Promise(resolve => setTimeout(resolve, 800));
 
-            // 3. Redirigir SOLO después de que el guardado y el retardo terminen
             navigate('/plan-de-cuentas'); 
 
         } catch (err) {

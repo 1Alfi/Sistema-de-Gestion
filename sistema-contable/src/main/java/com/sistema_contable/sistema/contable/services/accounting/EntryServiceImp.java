@@ -38,7 +38,7 @@ public class EntryServiceImp implements EntryService {
             if(account==null){throw new AccountNotFindException();}
             else{
                 //check the state of account
-                if (account.isActive()){throw new AccountNotActiveException();}
+                if (!account.isActive()){throw new AccountNotActiveException();}
                 movement.setEntry(entry);
                 movement.setAccount(account);
                 //check the balance of the account

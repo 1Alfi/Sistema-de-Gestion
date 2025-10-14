@@ -13,14 +13,15 @@ const buildTree = (accounts) => {
 
     //Carga todo el map con todas las cuentas que recibimos del back
     accounts.forEach(account => {
-        const node = {
-            id: account.id,
-            code: account.code,
-            name: account.name,
-            children: []
-        };
-        map.set(account.code, node);
-    });
+    const node = {
+        id: account.id,
+        code: account.code,
+        name: account.name,
+        type: account.type,
+        children: []
+    };
+    map.set(account.code, node);
+});
 
     //A cada cuenta la enlaza con su respectivo padre y la almacena dentro de sus childrens
     accounts.forEach(account => {
@@ -90,33 +91,38 @@ const buildTree = (accounts) => {
 
 const renderTree = (data, onSelectAccount) => {
     return data.map((node) => {
-        // Indica si el nodo tiene hijos para desplegar.
-        const hasChildrenToRender = node.children && node.children.length > 0;
+        const isControlAccount = node.type === 'Control';
         
-        // Etiqueta: SOLO el nombre de la cuenta (Requisito 5)
-        // Ya no necesitamos estilos complejos aquí, ya que TreeView maneja el layout.
-        const labelAndButton = (
+        const labelContent = (
             <span 
                 onClick={() => onSelectAccount(node.id)} 
                 style={{ cursor: 'pointer' }}
             >
-                {node.name}
+                {node.name} {/* <--- MODIFICADO: Solo se muestra node.name */}
             </span>
         );
         
-        // Usar TreeView para TODOS los nodos (hojas y carpetas). 
-        // Esto corrige la anidación visual y la posición del desplegable.
+        if (!isControlAccount) {
+            return (
+                <div 
+                    key={node.id} 
+                    style={{ marginLeft: '16px' }} // Indenta manualmente (ajusta si es necesario)
+                >
+                    {labelContent}
+                </div>
+            );
+        }
+
+        const hasChildrenToRender = node.children && node.children.length > 0;
+        
         return (
             <TreeView
                 key={node.id}
-                nodeLabel={labelAndButton}
-                
-                // Despliegue: Usamos 'true' para que por defecto TODAS las cuentas 
-                // estén colapsadas (Requisito 4).
+                nodeLabel={labelContent}
                 defaultCollapsed={true} 
             >
-                {/* Renderiza recursivamente SOLO si tiene hijos */}
-                {hasChildrenToRender && renderTree(node.children, onSelectAccount)}
+                {/* Renderiza recursivamente SOLO si es de Control Y tiene hijos */}
+                {isControlAccount && hasChildrenToRender && renderTree(node.children, onSelectAccount)}
             </TreeView>
         );
     });

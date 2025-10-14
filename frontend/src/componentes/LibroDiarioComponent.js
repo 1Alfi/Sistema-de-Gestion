@@ -17,7 +17,7 @@ const LibroDiarioComponent = () => {
         // Solo hace la llamada si las fechas están seleccionadas
         if (fechaDesde && fechaHasta) {
             setCargando(true);
-            const minDelay = new Promise((resolve) => setTimeout(resolve, 6000));
+            const minDelay = new Promise((resolve) => setTimeout(resolve, 1000));
 
             LibroDiarioServicio.getAsientosPorPeriodo(fechaDesde, fechaHasta)
                 .then((response) => {
@@ -40,7 +40,7 @@ const LibroDiarioComponent = () => {
                 });
         } else {
             setCargando(true);
-            const minDelay = new Promise((resolve) => setTimeout(resolve, 6000));
+            const minDelay = new Promise((resolve) => setTimeout(resolve, 1000));
 
             LibroDiarioServicio.getLastAsientos()
                 .then((response) => {
@@ -109,38 +109,36 @@ const LibroDiarioComponent = () => {
                     <table>
                         <thead>
                             <tr>
-                                <th>Fecha</th>
-                                <th>Operacion</th>
-                                <th>Cuentas</th>
-                                <th>Debe</th>
-                                <th>Haber</th>
+                                <th style={{ width: '15%' }}>Fecha</th>
+                                <th style={{ width: '35%'}}>Operacion</th>
+                                <th style={{ width: '32%' }}>Cuentas</th>
+                                <th style={{ width: '12.5%', textAlign: 'left', paddingRight: '15px' }}>Debe</th>
+                                <th style={{ width: '12.5%', textAlign: 'left', paddingRight: '15px' }}>Haber</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {asientos.map(asiento => (
-                                <tbody key={asiento.id}>
-                                    {asiento.movementDTOS.map((movimiento, index) => (
-                                        <tr key={`${asiento.id}-${movimiento.id}`}>
-                                            {index === 0 ? (
-                                                <>
-                                                    <td rowSpan={asiento.movementDTOS.length}>
-                                                        {asiento.date.split(' ')[0]}
-                                                    </td>
-                                                    <td rowSpan={asiento.movementDTOS.length}>
-                                                        {asiento.description}
-                                                    </td>
-                                                </>
-                                            ) : null}
-                                            <td className={movimiento.credit > 0 ? 'indentado' : ''}>
-                                                {movimiento.account}
-                                            </td>
-                                            <td>{movimiento.debit > 0 ? movimiento.debit : ''}</td>
-                                            <td>{movimiento.credit > 0 ? movimiento.credit : ''}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            ))}
-                        </tbody>
+                        {asientos.map(asiento => (
+                            <tbody key={asiento.id}>
+                                {asiento.movementDTOS.map((movimiento, index) => (
+                                    <tr key={`${asiento.id}-${movimiento.id}`}>
+                                        {index === 0 ? (
+                                            <>
+                                                <td rowSpan={asiento.movementDTOS.length}>
+                                                    {asiento.date.split(' ')[0]}
+                                                </td>
+                                                <td rowSpan={asiento.movementDTOS.length}>
+                                                    {asiento.description}
+                                                </td>
+                                            </>
+                                        ) : null}
+                                        <td className={movimiento.credit > 0 ? 'indentado' : ''}>
+                                            {movimiento.account}
+                                        </td>
+                                        <td>{movimiento.debit > 0 ? movimiento.debit : ''}</td>
+                                        <td>{movimiento.credit > 0 ? movimiento.credit : ''}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        ))}
                     </table>
                 ) : (
                     <div className='alert alert-info mt-3' role='alert'>

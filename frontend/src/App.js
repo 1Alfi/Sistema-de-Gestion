@@ -14,6 +14,7 @@ import LibroDiarioComponent from './componentes/LibroDiarioComponent';
 import AddAsientoComponent from './componentes/AddAsientoComponent';
 import LibroMayorComponent from './componentes/LibroMayorComponent';
 import AddCuentaComponent from './componentes/AddCuentaComponent';
+import LandingPage from './componentes/LandingPage';
 
 
 function App() {
@@ -24,7 +25,7 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={<PrivateRoute requiredRole="USER"><InicioComponent /></PrivateRoute>}
+            element={<LandingPage />}
           />
           <Route path='/login' element={<LoginFormComponent />}></Route>
           <Route path='/libro-mayor' element={<LibroMayorComponent />}></Route> {/* Hacer PrivateRoute */}

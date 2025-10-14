@@ -105,7 +105,7 @@ const AddAsientoComponent = () => {
 
     const asiento = { description, movements };
     AsientoServicio.crearAsiento(asiento).then(() => {
-      navigate('/asientos');
+      navigate('/libro-diario');
     }).catch(error => {
       console.log(error);
       setError('Ocurrió un error al guardar el asiento.');
