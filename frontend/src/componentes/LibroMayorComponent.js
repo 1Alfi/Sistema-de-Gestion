@@ -14,6 +14,7 @@ const LibroMayorComponent = () => {
     const [fechaHasta, setFechaHasta] = useState('');
     const [cargando, setCargando] = useState(false);
     const [saldoInicial, setSaldoInicial] = useState(0);
+    const [saldoFinal, setSaldoFinal] = useState(0);
 
     // Carga las cuentas al inicio
     useEffect(() => {
@@ -32,8 +33,19 @@ const LibroMayorComponent = () => {
             LibroMayorServicio.getMovimientosPorCuentaYPeriodo(selectedCuentaId, fechaDesde, fechaHasta)
                 .then((response) => {
                     const data = response.data;
-                    setSaldoInicial(data.saldoInicial);
-                    setMovimientos(data.movimientosPeriodo);
+                    const fetchedMovements = data.movements;
+                    
+                    setMovimientos(fetchedMovements);
+                    setSaldoInicial(data.initialBalance);
+
+                    //Setea el saldo final
+                    if (fetchedMovements && fetchedMovements.length > 0) {
+                        const ultimoMovimiento = fetchedMovements[fetchedMovements.length - 1];
+                        setSaldoFinal(ultimoMovimiento.account_balance);
+                    } else {
+                        setSaldoFinal(data.initialBalance || 0); 
+                    }
+                    
                     setError('');
                 })
                 .catch(err => {
@@ -48,15 +60,9 @@ const LibroMayorComponent = () => {
         } else {
             setMovimientos([]);
             setSaldoInicial(0);
+            setSaldoFinal(0);
         }
     }, [selectedCuentaId, fechaDesde, fechaHasta]);
-
-    // Cálculo del saldo final en el frontend (es opcional, el backend podría enviarlo)
-    const saldoFinal = movimientos.reduce((total, movimiento) => {
-        // En el backend se debería enviar el tipo de cuenta para un cálculo correcto
-        return total + parseFloat(movimiento.debe || 0) - parseFloat(movimiento.haber || 0);
-    }, saldoInicial);
-
 
     return (
         <div className='d-flex'>
@@ -119,11 +125,11 @@ const LibroMayorComponent = () => {
                             <table className="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Fecha</th>
-                                        <th>Operación</th>
-                                        <th>Debe</th>
-                                        <th>Haber</th>
-                                        <th>Saldo</th>
+                                        <th style={{ width: '15%' }}>Fecha</th>
+                                        <th style={{ width: '42%'}}>Operacion</th>
+                                        <th style={{ width: '12.5%', textAlign: 'left', paddingRight: '15px' }}>Debe</th>
+                                        <th style={{ width: '12.5%', textAlign: 'left', paddingRight: '15px' }}>Haber</th>
+                                        <th style={{ width: '15%' }}>Saldo</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -135,16 +141,13 @@ const LibroMayorComponent = () => {
                                         <td>{saldoInicial.toFixed(2)}</td>
                                     </tr>
                                     {movimientos.map((mov, index) => {
-                                        const saldoParcial = movimientos.slice(0, index + 1).reduce((total, current) =>
-                                            total + parseFloat(current.debe || 0) - parseFloat(current.haber || 0), saldoInicial);
-                                        
                                         return (
                                             <tr key={index}>
-                                                <td>{mov.fechaAsiento}</td>
-                                                <td>{mov.operacion}</td>
-                                                <td>{mov.debe > 0 ? mov.debe.toFixed(2) : ''}</td>
-                                                <td>{mov.haber > 0 ? mov.haber.toFixed(2) : ''}</td>
-                                                <td>{saldoParcial.toFixed(2)}</td>
+                                                <td>{mov.dateCreated}</td>
+                                                <td>{mov.description}</td>
+                                                <td>{mov.debit > 0 ? mov.debit.toFixed(2) : ''}</td>
+                                                <td>{mov.credit > 0 ? mov.credit.toFixed(2) : ''}</td>
+                                                <td>{mov.account_balance.toFixed(2)}</td>
                                             </tr>
                                         );
                                     })}

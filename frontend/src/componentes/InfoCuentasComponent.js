@@ -3,6 +3,7 @@ import PlanDeCuentasServicio from '../servicios/PlanDeCuentasServicio';
 import { useNavigate } from 'react-router-dom';
 import { LuPencilLine } from "react-icons/lu";
 import { getRoleFromToken } from '../utiles/authUtils';
+import RefreshService from '../servicios/RefreshService';
 
 // Recibe la prop 'id'
 const InfoCuentasComponent = ({ id }) => {
@@ -87,6 +88,8 @@ const InfoCuentasComponent = ({ id }) => {
                 setCuenta(prev => ({ ...prev, name: tempName }));
                 setIsEditing(false);
                 setError('');
+
+                RefreshService.triggerRefresh();
             })
             .catch(err => {
                 setError(err.response?.data?.message || 'Error al actualizar el nombre.');

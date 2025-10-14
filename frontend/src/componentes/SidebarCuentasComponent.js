@@ -4,6 +4,7 @@ import 'react-treeview/react-treeview.css';
 import PlanDeCuentasServicio from '../servicios/PlanDeCuentasServicio';
 import { useNavigate } from 'react-router-dom';
 import { getRoleFromToken } from '../utiles/authUtils';
+import RefreshService from '../servicios/RefreshService';
 
 const buildTree = (accounts) => {
     const tree = [];
@@ -160,13 +161,23 @@ const SidebarCuentasComponent = ({ onSelectAccount }) => {
             console.error("Error al obtener las cuentas: ", err);
             setError(err.response?.data?.message || 'Ocurrió un error al cargar el plan de cuentas.');
         } finally {
-            setLoading(false); // <--- Finalizar la carga, siempre
+            setLoading(false);
         }
     };
     
     // 2. Uso de useEffect: Se ejecuta solo en el montaje
     useEffect(() => {
         fetchAccounts();
+
+        const unsubscribe = RefreshService.subscribe(() => {
+            // Cuando InfoCuentasComponent llama a triggerRefresh, esta función se ejecuta.
+            console.log("Señal de refresco recibida. Recargando cuentas...");
+            fetchAccounts(); 
+        });
+
+        return () => {
+            unsubscribe();
+        };
     }, []);
 
     // 3. Renderizado Condicional: Muestra el spinner si está cargando

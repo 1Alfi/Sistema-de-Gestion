@@ -18,7 +18,7 @@ class LibroMayorServicio {
 
     //Libro Mayor
     getMovimientosPorCuentaYPeriodo(cuentaId, desde, hasta) {
-        return axios.get(LIBRO_DIARIO_BASE_REST_API_URL, this.getAuthHeaders());
+        return axios.get(LIBRO_DIARIO_BASE_REST_API_URL+ "/" + cuentaId + "?before=" + desde + "&after=" + hasta, this.getAuthHeaders());
     }
 
 }
