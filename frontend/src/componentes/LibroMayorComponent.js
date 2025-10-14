@@ -138,16 +138,16 @@ const LibroMayorComponent = () => {
                                         <td>Saldo Inicial</td>
                                         <td></td>
                                         <td></td>
-                                        <td>{saldoInicial.toFixed(2)}</td>
+                                        <td>{saldoInicial}</td>
                                     </tr>
                                     {movimientos.map((mov, index) => {
                                         return (
                                             <tr key={index}>
                                                 <td>{mov.dateCreated}</td>
                                                 <td>{mov.description}</td>
-                                                <td>{mov.debit > 0 ? mov.debit.toFixed(2) : ''}</td>
-                                                <td>{mov.credit > 0 ? mov.credit.toFixed(2) : ''}</td>
-                                                <td>{mov.account_balance.toFixed(2)}</td>
+                                                <td>{mov.debit > 0 ? mov.debit : ''}</td>
+                                                <td>{mov.credit > 0 ? mov.credit : ''}</td>
+                                                <td>{mov.account_balance}</td>
                                             </tr>
                                         );
                                     })}
@@ -156,7 +156,7 @@ const LibroMayorComponent = () => {
                                         <td>Saldo Final</td>
                                         <td></td>
                                         <td></td>
-                                        <td>{saldoFinal.toFixed(2)}</td>
+                                        <td>{saldoFinal}</td>
                                     </tr>
                                 </tbody>
                             </table>

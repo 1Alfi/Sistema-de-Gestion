@@ -22,13 +22,8 @@ class LibroDiarioServicio {
     }
 
     getAsientosPorPeriodo(desde, hasta) {
-        return axios.get(LIBRO_DIARIO_BASE_REST_API_URL + "?before=" + desde + "&after=" + hasta);
+        return axios.get(LIBRO_DIARIO_BASE_REST_API_URL + "?before=" + desde + "&after=" + hasta, this.getAuthHeaders());
     }
-
-    //Libro Mayor
-    // getMovimientosPorCuentaYPeriodo(cuenta, desde, hasta) {
-    //     return axios.get(LIBRO_DIARIO_BASE_REST_API_URL + '-mayor', cuenta, desde, hasta);
-    // }
 
 }
 
