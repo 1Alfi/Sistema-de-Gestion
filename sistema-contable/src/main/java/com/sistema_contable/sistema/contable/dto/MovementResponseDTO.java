@@ -6,6 +6,7 @@ public class MovementResponseDTO {
     private String account;
     private Double debit;
     private Double credit;
+    private Double account_balance;
 
     public Long getId() {
         return id;
@@ -31,4 +32,7 @@ public class MovementResponseDTO {
     public void setCredit(Double credit) {
         this.credit = credit;
     }
+
+    public Double getAccount_balance() {return account_balance;}
+    public void setAccount_balance(Double account_balance) {this.account_balance = account_balance;}
 }

@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface EntryRepository extends JpaRepository<Entry, Long> {
 
-    @Query("SELECT e FROM Entry e ORDER BY e.dateCreated ASC LIMIT 10")
+    @Query(value = "SELECT * FROM entrys e ORDER BY e.date_created ASC LIMIT 10", nativeQuery = true)
     List<Entry> lastEntrys();
 
     @Query("SELECT e FROM Entry e WHERE e.dateCreated BETWEEN :before AND :after")

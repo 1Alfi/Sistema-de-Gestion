@@ -27,7 +27,7 @@ public class ControlAccount extends Account{
         Account father = this.getControl_account_id();
         //formats the code
         if(childAccounts.isEmpty()){
-            if(father== null){
+            if(father == null){
                 this.setCode(ownCode+".00");}
             else{
                 if(!brotherHaveChilds()){
@@ -55,7 +55,7 @@ public class ControlAccount extends Account{
     //secondary methods
     private boolean brotherHaveChilds(){
         for (Account brother : this.getControl_account_id().getSubAccounts()){
-            if( brother.getCode().equals(this.getCode()) && !brother.getSubAccounts().isEmpty()){
+            if( !brother.getCode().equals(this.getCode()) && !brother.getSubAccounts().isEmpty()){
                 return true;}}
         return false;}
 

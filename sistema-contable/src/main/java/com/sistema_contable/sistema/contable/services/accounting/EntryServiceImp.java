@@ -35,14 +35,13 @@ public class EntryServiceImp implements EntryService {
     private void configMovements(Entry entry)throws Exception{
         for (Movement movement : entry.getMovements()){
             BalanceAccount account = accountService.searchBalanceAccount(movement.getAccount().getId());
-            if(account==null){throw new AccountNotFindException();}
+            if(account==null){;throw new AccountNotFindException();}
             else{
                 //check the state of account
-                if (account.isActive()){throw new AccountNotActiveException();}
+                if (!account.isActive()){throw new AccountNotActiveException();}
                 movement.setEntry(entry);
                 movement.setAccount(account);
                 //check the balance of the account
-                if (!movement.balanceEnough(accountService.lastBalance(account.getId()))){
-                    throw new NotEnoughBalanceException();}
+                if (!movement.balanceEnough(accountService.lastBalance(account.getId()))){throw new NotEnoughBalanceException();}
                 movement.addAccountBalance(accountService.lastBalance(account.getId()));}}}
 }

@@ -26,6 +26,7 @@ public class AccountServiceImp implements AccountService {
         String name = account.getName().strip();
         String aux = name.substring(0, 1).toUpperCase() + name.substring(1);
         account.setName(aux);
+        account.setActive(true);
         //check that there are no accounts with the same name
         if(this.searchByName(account.getName())!=null) {throw new AccountNotFindException();}
         //new account with father
