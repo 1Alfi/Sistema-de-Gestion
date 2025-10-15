@@ -12,11 +12,11 @@ const config = {
 class UsuarioServicio {
 
     getAllUsuarios() {
-        return axios.get(USUARIO_BASE_REST_API_URL+'/usuarios',config);
+        return axios.get(USUARIO_BASE_REST_API_URL+'/usuarios', config);
     }
 
     getUsuarioById(usuarioId) {
-        return axios.get(USUARIO_BASE_REST_API_URL + '/' + usuarioId);
+        return axios.get(USUARIO_BASE_REST_API_URL + '/' + usuarioId, config);
     }
 
     crearUsuario(usuario) {
@@ -25,7 +25,7 @@ class UsuarioServicio {
     }
 
     deleteUsuario(usuarioId) {
-        return axios.delete(USUARIO_BASE_REST_API_URL + '/usuarios/' + usuarioId);
+        return axios.delete(USUARIO_BASE_REST_API_URL + '/usuarios/' + usuarioId, config);
     }
 
 }
