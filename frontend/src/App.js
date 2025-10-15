@@ -61,7 +61,7 @@ function App() {
             element={<PrivateRoute requiredRole="ADMIN"><AddUsuarioComponent /></PrivateRoute>}
           />
         </Routes>
-      <FooterComponente />
+      
       </BrowserRouter>
     </div>
   );
