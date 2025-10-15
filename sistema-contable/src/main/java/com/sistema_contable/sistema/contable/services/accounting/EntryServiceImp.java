@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class EntryServiceImp implements EntryService {
@@ -29,7 +30,6 @@ public class EntryServiceImp implements EntryService {
         entry.setUserCreator(userDB);
         this.configMovements(entry);
         repository.save(entry);}
-
 
     //SECONDARY METHODS
     private void configMovements(Entry entry)throws Exception{

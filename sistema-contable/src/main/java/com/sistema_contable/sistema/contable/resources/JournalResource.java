@@ -1,13 +1,11 @@
 package com.sistema_contable.sistema.contable.resources;
 
-import com.sistema_contable.sistema.contable.dto.AccountResponseDTO;
 import com.sistema_contable.sistema.contable.dto.EntryResponseDTO;
 import com.sistema_contable.sistema.contable.exceptions.ModelExceptions;
-import com.sistema_contable.sistema.contable.model.Account;
 import com.sistema_contable.sistema.contable.model.Entry;
 import com.sistema_contable.sistema.contable.model.User;
 import com.sistema_contable.sistema.contable.services.accounting.interfaces.JournalService;
-import com.sistema_contable.sistema.contable.services.security.AuthorizationService;
+import com.sistema_contable.sistema.contable.services.security.interfaces.AuthorizationService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

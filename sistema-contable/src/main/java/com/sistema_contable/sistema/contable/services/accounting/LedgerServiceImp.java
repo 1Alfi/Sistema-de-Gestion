@@ -16,6 +16,6 @@ public class LedgerServiceImp implements LedgerService {
     private MovementRepository  movementRepository;
 
     public List<Movement> LadgerByAccountBetweem(Long accountID, Date before, Date after)throws Exception{
-        return movementRepository.ladgerAccountBetween(accountID, before, after);
+        return movementRepository.ledgerAccountBetween(accountID, before, after);
     }
 }

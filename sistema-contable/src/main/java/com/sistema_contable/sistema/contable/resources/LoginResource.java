@@ -2,9 +2,8 @@ package com.sistema_contable.sistema.contable.resources;
 
 import com.sistema_contable.sistema.contable.dto.AuthenticationRequestDTO;
 import com.sistema_contable.sistema.contable.exceptions.ModelExceptions;
-import com.sistema_contable.sistema.contable.model.Role;
 import com.sistema_contable.sistema.contable.model.User;
-import com.sistema_contable.sistema.contable.services.security.AuthenticationService;
+import com.sistema_contable.sistema.contable.services.security.interfaces.AuthenticationService;
 import com.sistema_contable.sistema.contable.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

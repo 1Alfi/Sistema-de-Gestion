@@ -1,22 +1,20 @@
 package com.sistema_contable.sistema.contable.resources;
 
+import com.sistema_contable.sistema.contable.dto.LedgerResponseDTO;
 import com.sistema_contable.sistema.contable.dto.Mapper;
 import com.sistema_contable.sistema.contable.dto.MovementResponseDTO;
 import com.sistema_contable.sistema.contable.exceptions.ModelExceptions;
 import com.sistema_contable.sistema.contable.model.Movement;
 import com.sistema_contable.sistema.contable.services.accounting.interfaces.LedgerService;
-import com.sistema_contable.sistema.contable.services.security.AuthorizationService;
-import org.modelmapper.ModelMapper;
+import com.sistema_contable.sistema.contable.services.security.interfaces.AuthorizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -60,8 +58,19 @@ public class LedgerResource {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}}
 
     //secondary methods
-    private List<MovementResponseDTO> responseDTOS(List<Movement> movements) {
-        return movements.stream().map(movement -> modelMapper.map(movement,MovementResponseDTO.class)).toList();
+    private LedgerResponseDTO responseDTOS(List<Movement> movements) {
+        LedgerResponseDTO ledgerResponseDTO = new LedgerResponseDTO();
+        ledgerResponseDTO.setMovements(movements.stream().map(movement -> modelMapper.map(movement,MovementResponseDTO.class)).toList());
+        ledgerResponseDTO.setInitialBalance(calculateInitialBalance(movements.get(0)));
+        return ledgerResponseDTO;
+    }
+
+    private String calculateInitialBalance(Movement movement) {
+        if(movement.getAccount().isPlus()){
+            return String.valueOf(movement.getAccountBalance()-movement.getDebit()+movement.getCredit());
+        }
+        else{
+            return String.valueOf(movement.getAccountBalance()-movement.getCredit()+movement.getDebit());}
     }
 
 }

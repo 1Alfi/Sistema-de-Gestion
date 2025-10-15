@@ -42,7 +42,8 @@ public class Mapper extends ModelMapper {
     private void configMovementDTO(){
         this.createTypeMap(Movement.class, MovementResponseDTO.class)
                 .addMapping(movement -> movement.getAccount().getName(),(dto, v)->dto.setAccount((String) v))
-                .addMapping(movement -> movement.getAccountBalance(),(dto, balance)->dto.setAccount_balance((Double) balance));
+                .addMapping(movement -> movement.getAccountBalance(),(dto, balance)->dto.setAccount_balance((Double) balance))
+                .addMapping(movement -> movement.getEntry().getDateCreated(),(dto,date)->dto.setDateCreated((String) date));
     }
 
     private void configAccountDTO(){

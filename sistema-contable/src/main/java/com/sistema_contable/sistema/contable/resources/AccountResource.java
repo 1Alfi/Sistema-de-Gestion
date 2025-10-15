@@ -5,14 +5,13 @@ import com.sistema_contable.sistema.contable.dto.AccountResponseDTO;
 import com.sistema_contable.sistema.contable.exceptions.ModelExceptions;
 import com.sistema_contable.sistema.contable.model.*;
 import com.sistema_contable.sistema.contable.services.accounting.interfaces.AccountService;
-import com.sistema_contable.sistema.contable.services.security.AuthorizationService;
+import com.sistema_contable.sistema.contable.services.security.interfaces.AuthorizationService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -59,11 +58,11 @@ public class AccountResource {
     }
 
     //delete account
-    @PutMapping("/{id}")
-    public ResponseEntity<?> delete(@RequestHeader("Authorization") String token,@PathVariable Long id, @RequestParam(name = "name", required = true) String name) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> ChangeName(@RequestHeader("Authorization") String token,@PathVariable Long id) {
         try {
             authService.adminAuthorize(token);
-            service.update(id,name);
+            service.delete(id);
             return new ResponseEntity<>(null, HttpStatus.OK);
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
@@ -72,16 +71,18 @@ public class AccountResource {
         }
     }
 
+
     //change name account
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> ChangeName(@RequestHeader("Authorization") String token,@PathVariable Long id) {
+    @PutMapping("/{id}")
+    public ResponseEntity<?> delete(@RequestHeader("Authorization") String token,@PathVariable Long id, @RequestParam(name = "name", required = true) String name) {
         try {
             authService.adminAuthorize(token);
-            service.delete(id);
+            service.update(id,name);
             return new ResponseEntity<>(null, HttpStatus.RESET_CONTENT);
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         }catch (Exception e) {
+            System.out.println(e.getCause());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -92,9 +93,9 @@ public class AccountResource {
         try {
             authService.authorize(token);
             return new ResponseEntity<>(accountResponse(service.getAll()), HttpStatus.OK);
-        } catch (ModelExceptions exception) {
+        } catch (ModelExceptions exception){
             return new ResponseEntity<>(null, exception.getHttpStatus());
-        }catch (Exception e) {
+        }catch (Exception e){
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -126,7 +127,6 @@ public class AccountResource {
     }
 
     //secondary methods
-
     private AccountResponseDTO accountResponse(Account account){
         AccountResponseDTO dto = mapper.map(account, AccountResponseDTO.class);
         List<AccountResponseDTO> dtos = account.getSubAccounts().stream().map(aux -> mapper.map(aux, AccountResponseDTO.class)).toList();

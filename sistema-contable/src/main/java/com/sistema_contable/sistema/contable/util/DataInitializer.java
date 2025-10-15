@@ -68,14 +68,10 @@ public class DataInitializer implements CommandLineRunner {
 
         Account cajaybanco = new ControlAccount();
         cajaybanco .setName("Caja y Banco");
-        cajaybanco .setPlus(true);
         accountService.create(cajaybanco, 1L);
 
         Account caja= new BalanceAccount();
         caja.setName("Caja");
-        caja.setPlus(true);
         accountService.create(caja, 6L);
-
-        accountService.refreshCodes();
     }
 }

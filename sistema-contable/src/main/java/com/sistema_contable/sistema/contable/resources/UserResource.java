@@ -5,7 +5,7 @@ import com.sistema_contable.sistema.contable.dto.UserResponseDTO;
 import com.sistema_contable.sistema.contable.exceptions.ModelExceptions;
 import com.sistema_contable.sistema.contable.model.User;
 import com.sistema_contable.sistema.contable.services.UserService;
-import com.sistema_contable.sistema.contable.services.security.AuthorizationService;
+import com.sistema_contable.sistema.contable.services.security.interfaces.AuthorizationService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

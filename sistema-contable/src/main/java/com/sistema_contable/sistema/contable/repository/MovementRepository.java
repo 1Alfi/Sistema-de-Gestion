@@ -17,5 +17,9 @@ public interface MovementRepository extends JpaRepository<Movement, Long> {
             "AND e.dateCreated BETWEEN :before AND :after " +
             "ORDER BY e.dateCreated ASC " +
             "LIMIT 10")
-    List<Movement> ladgerAccountBetween(@Param("accountID")Long accountID, @Param("before")Date before, @Param("after")Date after);
+    List<Movement> ledgerAccountBetween(@Param("accountID")Long accountID, @Param("before")Date before, @Param("after")Date after);
+
+    @Query("SELECT 1 FROM Movement m "+
+            "WHERE m.account.id = :accountID ")
+    List<Movement> oneMovementByAccount(@Param("accountID")Long accountID);
 }
