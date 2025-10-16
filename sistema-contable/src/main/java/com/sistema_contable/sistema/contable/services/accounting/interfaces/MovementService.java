@@ -6,5 +6,5 @@ import com.sistema_contable.sistema.contable.model.Movement;
 import java.util.List;
 
 public interface MovementService {
-    public List<Movement> getMovementsByAccount(Account account) throws Exception;
+    public boolean existMovementByAccount(Account account)throws Exception;
 }

@@ -16,8 +16,8 @@ public class MovementServiceImp implements MovementService {
     private MovementRepository repository;
 
     //methods
-    public List<Movement> getMovementsByAccount(Account account)throws Exception{
-        return repository.oneMovementByAccount(account.getId());
+    public boolean existMovementByAccount(Account account)throws Exception{
+        return repository.existsByAccountId(account.getId());
     }
 
 }

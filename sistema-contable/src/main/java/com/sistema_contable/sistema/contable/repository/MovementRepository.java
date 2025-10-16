@@ -15,11 +15,8 @@ public interface MovementRepository extends JpaRepository<Movement, Long> {
             "INNER JOIN Entry e ON m.entry.id = e.id " +
             "WHERE m.account.id = :accountID " +
             "AND e.dateCreated BETWEEN :before AND :after " +
-            "ORDER BY e.dateCreated ASC " +
-            "LIMIT 10")
+            "ORDER BY e.dateCreated ASC ")
     List<Movement> ledgerAccountBetween(@Param("accountID")Long accountID, @Param("before")Date before, @Param("after")Date after);
 
-    @Query("SELECT 1 FROM Movement m "+
-            "WHERE m.account.id = :accountID ")
-    List<Movement> oneMovementByAccount(@Param("accountID")Long accountID);
+    boolean existsByAccountId(Long accountId);
 }

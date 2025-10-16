@@ -28,7 +28,7 @@ public class AccountResource {
     private AuthorizationService authService;
 
 
-    //endpoints
+    //ENDPOINTS
     //create balance account
     @PostMapping(path = "/balance")
     public ResponseEntity<?> createBalanceAccount(@RequestHeader("Authorization") String token, @RequestBody AccountRequestDTO accountDTO, @RequestParam(name = "id", required = false) Long id){
@@ -39,9 +39,7 @@ public class AccountResource {
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}}
 
     //create control account
     @PostMapping(path = "/control")
@@ -53,13 +51,11 @@ public class AccountResource {
         } catch (ModelExceptions e) {
             return new ResponseEntity<>(null, e.getHttpStatus());
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}}
 
     //delete account
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> ChangeName(@RequestHeader("Authorization") String token,@PathVariable Long id) {
+    public ResponseEntity<?> delete(@RequestHeader("Authorization") String token,@PathVariable Long id) {
         try {
             authService.adminAuthorize(token);
             service.delete(id);
@@ -67,14 +63,12 @@ public class AccountResource {
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         }catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}}
 
 
     //change name account
     @PutMapping("/{id}")
-    public ResponseEntity<?> delete(@RequestHeader("Authorization") String token,@PathVariable Long id, @RequestParam(name = "name", required = true) String name) {
+    public ResponseEntity<?> changeName(@RequestHeader("Authorization") String token, @PathVariable Long id, @RequestParam(name = "name", required = true) String name) {
         try {
             authService.adminAuthorize(token);
             service.update(id,name);
@@ -82,10 +76,7 @@ public class AccountResource {
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         }catch (Exception e) {
-            System.out.println(e.getCause());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}}
 
     //get all accounts
     @GetMapping(produces = "application/json")
@@ -96,9 +87,7 @@ public class AccountResource {
         } catch (ModelExceptions exception){
             return new ResponseEntity<>(null, exception.getHttpStatus());
         }catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}}
 
     //get account by ID
     @GetMapping(path = "/{id}",produces = "application/json")
@@ -119,6 +108,18 @@ public class AccountResource {
         try {
             authService.authorize(token);
             return new ResponseEntity<>(accountResponse(service.getBalanceAccounts()), HttpStatus.OK);
+        }catch (ModelExceptions exception) {
+            return new ResponseEntity<>(null, exception.getHttpStatus());
+        }catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(path = "/account-balance/{id}",produces = "application/json")
+    public ResponseEntity<?> getAccountBalance(@RequestHeader("Authorization") String token,@PathVariable Long id){
+        try {
+            authService.authorize(token);
+            return new ResponseEntity<>(service.lastBalance(id),HttpStatus.OK);
         }catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         }catch (Exception e) {

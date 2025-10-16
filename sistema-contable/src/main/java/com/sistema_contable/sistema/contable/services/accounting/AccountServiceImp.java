@@ -11,7 +11,9 @@ import com.sistema_contable.sistema.contable.services.accounting.interfaces.Acco
 import com.sistema_contable.sistema.contable.services.accounting.interfaces.EntryService;
 import com.sistema_contable.sistema.contable.services.accounting.interfaces.MovementService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.beans.Transient;
@@ -50,16 +52,22 @@ public class AccountServiceImp implements AccountService {
             repository.save(account);}}
 
     @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void delete(Long id)throws Exception{
-        if(repository.findById(id).isPresent()){
-            Account account = repository.findById(id).get();
+        if(this.existAccountById(id)){
+            Account account = this.searchById(id);
             if(this.accountUsedInMovements(account)){
                 //logic delete
                 account.desactivate();
                 repository.save(account);
             }
             else{
-                repository.delete(account);}
+                //physical delete
+                System.out.println("borrado fisico");
+                System.out.println(existAccountById(id));
+                repository.deleteById(id);
+                repository.flush();}
+                System.out.println(existAccountById(id));
             }
         else {
             throw new AccountNotFindException();}}
@@ -86,6 +94,12 @@ public class AccountServiceImp implements AccountService {
     @Override
     public List<ControlAccount> getRootAccounts()throws Exception{return repository.getRootAccounts();}
 
+    //search last balance of account
+    @Override
+    public Double lastBalance(Long id) throws Exception {
+        Double lastBalance = repository.searchLastBalance(id);
+        if(lastBalance==null){return 0D;}
+        return lastBalance;}
 
     //SEARCHES
     //by id all types
@@ -106,13 +120,6 @@ public class AccountServiceImp implements AccountService {
 
 
     //SECONDARY METHODS
-    //search last balance of account
-    @Override
-    public Double lastBalance(Long id) throws Exception {
-        Double lastBalance = repository.searchLastBalance(id);
-        if(lastBalance==null){return 0D;}
-        return lastBalance;}
-
     //logic for root accounts code
     private void rootCode(Account account) throws Exception {
         int accountCode = this.getRootAccounts().size()+1;
@@ -120,6 +127,9 @@ public class AccountServiceImp implements AccountService {
 
     //check if the account is used in entrys/movements
     private boolean accountUsedInMovements(Account account) throws Exception {
-        return !movementService.getMovementsByAccount(account).isEmpty();
+        return movementService.existMovementByAccount(account);
     }
+
+    //check if the account exists
+    private boolean existAccountById(Long id){return repository.existsById(id);}
 }
