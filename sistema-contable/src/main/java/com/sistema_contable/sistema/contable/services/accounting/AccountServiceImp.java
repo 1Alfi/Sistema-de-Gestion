@@ -60,16 +60,14 @@ public class AccountServiceImp implements AccountService {
                 //logic delete
                 account.desactivate();
                 repository.save(account);
-            }
-            else{
+            } else{
                 //physical delete
                 System.out.println("borrado fisico");
                 System.out.println(existAccountById(id));
                 repository.deleteById(id);
-                repository.flush();}
-                System.out.println(existAccountById(id));
             }
-        else {
+            System.out.println(existAccountById(id));
+        } else {
             throw new AccountNotFindException();}}
 
     //update the name of the account
