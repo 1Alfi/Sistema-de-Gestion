@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class EntryServiceImp implements EntryService {
@@ -30,19 +31,17 @@ public class EntryServiceImp implements EntryService {
         this.configMovements(entry);
         repository.save(entry);}
 
-
     //SECONDARY METHODS
     private void configMovements(Entry entry)throws Exception{
         for (Movement movement : entry.getMovements()){
             BalanceAccount account = accountService.searchBalanceAccount(movement.getAccount().getId());
-            if(account==null){throw new AccountNotFindException();}
+            if(account==null){;throw new AccountNotFindException();}
             else{
                 //check the state of account
                 if (!account.isActive()){throw new AccountNotActiveException();}
                 movement.setEntry(entry);
                 movement.setAccount(account);
                 //check the balance of the account
-                if (!movement.balanceEnough(accountService.lastBalance(account.getId()))){
-                    throw new NotEnoughBalanceException();}
+                if (!movement.balanceEnough(accountService.lastBalance(account.getId()))){throw new NotEnoughBalanceException();}
                 movement.addAccountBalance(accountService.lastBalance(account.getId()));}}}
 }

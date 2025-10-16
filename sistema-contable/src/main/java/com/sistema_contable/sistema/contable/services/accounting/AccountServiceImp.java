@@ -8,9 +8,15 @@ import com.sistema_contable.sistema.contable.model.BalanceAccount;
 import com.sistema_contable.sistema.contable.model.ControlAccount;
 import com.sistema_contable.sistema.contable.repository.AccountRepository;
 import com.sistema_contable.sistema.contable.services.accounting.interfaces.AccountService;
+import com.sistema_contable.sistema.contable.services.accounting.interfaces.EntryService;
+import com.sistema_contable.sistema.contable.services.accounting.interfaces.MovementService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.beans.Transient;
 import java.util.List;
 
 @Service
@@ -18,14 +24,17 @@ public class AccountServiceImp implements AccountService {
 
     @Autowired
     private AccountRepository repository;
+    @Autowired
+    private MovementService movementService;
 
     //CRUD
     @Override
     public void create(Account account, Long accountID)throws Exception{
         //formats the name
         String name = account.getName().strip();
-        String aux = name.substring(0, 1).toUpperCase() + name.substring(1);
-        account.setName(aux);
+        String formatName = name.substring(0, 1).toUpperCase() + name.substring(1);
+        account.setName(formatName);
+        //set the state off the account in true/active
         account.setActive(true);
         //check that there are no accounts with the same name
         if(this.searchByName(account.getName())!=null) {throw new AccountNotFindException();}
@@ -34,11 +43,8 @@ public class AccountServiceImp implements AccountService {
             //search in db the "father" account
             ControlAccount accountBD = this.searchControlAccount(accountID);
             if(accountBD==null){throw new AccountNotFindException();}
-            int longestCode = this.longestCode();
             accountBD.addChildren(account);
             account.setPlus(accountBD.isPlus());
-            //check if the account code is larger than others
-            if (longestCode<accountBD.getCode().length()){this.refreshCodes();}
             repository.save(accountBD);}
         //new root account
         else{
@@ -46,10 +52,27 @@ public class AccountServiceImp implements AccountService {
             repository.save(account);}}
 
     @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void delete(Long id)throws Exception{
-        if(repository.findById(id).isPresent()){repository.deleteById(id);}
-        else {throw new ResourceNotFindException();}}
+        if(this.existAccountById(id)){
+            Account account = this.searchById(id);
+            if(this.accountUsedInMovements(account)){
+                //logic delete
+                account.desactivate();
+                repository.save(account);
+            }
+            else{
+                //physical delete
+                System.out.println("borrado fisico");
+                System.out.println(existAccountById(id));
+                repository.deleteById(id);
+                repository.flush();}
+                System.out.println(existAccountById(id));
+            }
+        else {
+            throw new AccountNotFindException();}}
 
+    //update the name of the account
     @Override
     public void update(Long id, String nombre) throws Exception {
         if(this.searchByName(nombre)!=null){throw new BadAccountException();}
@@ -71,6 +94,12 @@ public class AccountServiceImp implements AccountService {
     @Override
     public List<ControlAccount> getRootAccounts()throws Exception{return repository.getRootAccounts();}
 
+    //search last balance of account
+    @Override
+    public Double lastBalance(Long id) throws Exception {
+        Double lastBalance = repository.searchLastBalance(id);
+        if(lastBalance==null){return 0D;}
+        return lastBalance;}
 
     //SEARCHES
     //by id all types
@@ -91,37 +120,16 @@ public class AccountServiceImp implements AccountService {
 
 
     //SECONDARY METHODS
-    //search last balance of account
-    @Override
-    public Double lastBalance(Long id) throws Exception {
-        Double lastBalance = repository.searchLastBalance(id);
-        if(lastBalance==null){return 0D;}
-        return lastBalance;
-    }
-
-    //return the longest code of all accounts
-    private int longestCode() throws Exception {
-        int longest = 0;
-        for (Account account : this.getAll()){
-            if(account.getCode().length()>longest){longest=account.getCode().length();}}
-        return longest;}
-
     //logic for root accounts code
     private void rootCode(Account account) throws Exception {
         int accountCode = this.getRootAccounts().size()+1;
-        if(accountCode>=10) {
-            account.setCode(String.valueOf(accountCode));}
-        else {
-            account.setCode(0+String.valueOf(accountCode));}
-        int codeLength = this.longestCode();
-        while(account.getCode().length()<codeLength){
-            account.setCode(account.getCode()+".00");}}
+        account.setCode(String.valueOf(accountCode));}
 
-    //formats all accounts code
-    @Override
-    public void refreshCodes() throws Exception {
-        int codeLength = this.longestCode();
-        for (Account account : this.getAll()){
-             while(account.getCode().length()<codeLength){
-                 account.setCode(account.getCode()+".00");}}}
+    //check if the account is used in entrys/movements
+    private boolean accountUsedInMovements(Account account) throws Exception {
+        return movementService.existMovementByAccount(account);
+    }
+
+    //check if the account exists
+    private boolean existAccountById(Long id){return repository.existsById(id);}
 }

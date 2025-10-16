@@ -6,6 +6,8 @@ public class MovementResponseDTO {
     private String account;
     private Double debit;
     private Double credit;
+    private Double accountBalance;
+    private String dateCreated;
 
     public Long getId() {
         return id;
@@ -31,4 +33,10 @@ public class MovementResponseDTO {
     public void setCredit(Double credit) {
         this.credit = credit;
     }
+
+    public Double getAccount_balance() {return accountBalance;}
+    public void setAccount_balance(Double account_balance) {this.accountBalance = account_balance;}
+
+    public String getDateCreated() {return dateCreated;}
+    public void setDateCreated(String dateCreated) {this.dateCreated = dateCreated;}
 }

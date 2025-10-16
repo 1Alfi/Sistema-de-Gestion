@@ -3,6 +3,7 @@ package com.sistema_contable.sistema.contable.repository;
 import com.sistema_contable.sistema.contable.model.Account;
 import com.sistema_contable.sistema.contable.model.BalanceAccount;
 import com.sistema_contable.sistema.contable.model.ControlAccount;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,23 +18,27 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query("SELECT a FROM Account a WHERE a.id = :id")
     Account searchById(@Param("id") Long id);
 
-    @Query("SELECT a FROM Account a WHERE a.id = :id and a.class = BalanceAccount ")
+    @Query("SELECT a FROM Account a WHERE a.id = :id AND TYPE(a) = com.sistema_contable.sistema.contable.model.BalanceAccount")
     BalanceAccount searchBalanceAccount(@Param("id") Long id);
 
-    @Query("SELECT a FROM Account a WHERE a.id = :id and a.class = ControlAccount ")
+    @Query("SELECT a FROM Account a WHERE a.id = :id AND TYPE(a) = com.sistema_contable.sistema.contable.model.ControlAccount")
     ControlAccount searchControlAccount(@Param("id") Long id);
+
+    @Query("SELECT a FROM Account a WHERE TYPE(a) = com.sistema_contable.sistema.contable.model.BalanceAccount")
+    List<BalanceAccount> getBalanceAccounts();
 
     @Query("SELECT a FROM Account a WHERE a.name = :name")
     Account searchByName(@Param("name") String name);
 
-    @Query("SELECT a FROM Account a WHERE a.class = BalanceAccount")
-    List<BalanceAccount> getBalanceAccounts();
-
-    @Query("SELECT a FROM Account a WHERE a.control_account_id is null")
+    @Query("SELECT a FROM ControlAccount a WHERE a.control_account_id IS NULL")
     List<ControlAccount> getRootAccounts();
 
-
     //in development
-    @Query("SELECT m.accountBalance FROM Movement m WHERE m.account.id = :accountID ORDER BY m.entry.dateCreated DESC LIMIT 1")
+    @Query(value = "SELECT m.account_balance "+
+            "FROM movement m "+
+            "JOIN entry e ON m.entry_id = e.id "+
+            "WHERE m.account_id = :accountID "+
+            "ORDER BY e.date_created DESC LIMIT 1",
+            nativeQuery = true)
     Double searchLastBalance(@Param("accountID") Long accountID);
 }

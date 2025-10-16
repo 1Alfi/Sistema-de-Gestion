@@ -28,20 +28,22 @@ public class Mapper extends ModelMapper {
                 .addMapping(dto -> dto.getMovements(),(entry, v) -> entry.setMovements((List<Movement>)v));
     }
 
-    private void configMovement(){
-        this.createTypeMap(MovementRequestDTO.class, Movement.class)
-                .addMapping(dto -> dto.getAccount(), (movement, v)->movement.getAccount().setId((Long)v));
-    }
-
     private void configEntryDTO(){
         this.createTypeMap(Entry.class, EntryResponseDTO.class)
                 .addMapping(entry -> entry.getMovements(), (dto, v)->dto.setMovementDTOS((List<MovementResponseDTO>) v))
                 .addMapping(entry -> entry.getUserCreator().getUsername(),(dto, username)->dto.setUserCreator((String) username) );
     }
 
+    private void configMovement(){
+        this.createTypeMap(MovementRequestDTO.class, Movement.class)
+                .addMapping(dto -> dto.getAccount(), (movement, v)->movement.getAccount().setId((Long)v));
+    }
+
     private void configMovementDTO(){
         this.createTypeMap(Movement.class, MovementResponseDTO.class)
-                .addMapping(movement -> movement.getAccount().getName(),(dto, v)->dto.setAccount((String) v));
+                .addMapping(movement -> movement.getAccount().getName(),(dto, v)->dto.setAccount((String) v))
+                .addMapping(movement -> movement.getAccountBalance(),(dto, balance)->dto.setAccount_balance((Double) balance))
+                .addMapping(movement -> movement.getEntry().getDateCreated(),(dto,date)->dto.setDateCreated((String) date));
     }
 
     private void configAccountDTO(){

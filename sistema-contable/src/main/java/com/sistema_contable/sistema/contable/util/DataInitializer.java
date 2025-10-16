@@ -1,9 +1,6 @@
 package com.sistema_contable.sistema.contable.util;
 
-import com.sistema_contable.sistema.contable.model.Account;
-import com.sistema_contable.sistema.contable.model.ControlAccount;
-import com.sistema_contable.sistema.contable.model.Role;
-import com.sistema_contable.sistema.contable.model.User;
+import com.sistema_contable.sistema.contable.model.*;
 import com.sistema_contable.sistema.contable.services.UserService;
 import com.sistema_contable.sistema.contable.services.accounting.interfaces.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,45 +44,34 @@ public class DataInitializer implements CommandLineRunner {
         Account asset = new ControlAccount();
         asset.setName("Activo");
         asset.setPlus(true);
-        asset.setActive(true);
         accountService.create(asset,null);
 
         Account pasivo = new ControlAccount();
         pasivo.setName("Pasivo");
         pasivo.setPlus(false);
-        pasivo.setActive(true);
         accountService.create(pasivo,null);
 
         Account patrimonio = new ControlAccount();
         patrimonio.setName("Patrimonio");
         patrimonio.setPlus(false);
-        patrimonio.setActive(true);
         accountService.create(patrimonio,null);
 
         Account ingresos = new ControlAccount();
         ingresos.setName("Resultado Positivo");
         ingresos.setPlus(false);
-        ingresos.setActive(true);
         accountService.create(ingresos,null);
 
         Account egreso = new ControlAccount();
         egreso.setName("Resultado Negativo");
         egreso.setPlus(true);
-        egreso.setActive(true);
         accountService.create(egreso,null);
 
         Account cajaybanco = new ControlAccount();
         cajaybanco .setName("Caja y Banco");
-        cajaybanco .setPlus(true);
-        cajaybanco .setActive(true);
         accountService.create(cajaybanco, 1L);
 
-        Account caja= new ControlAccount();
+        Account caja= new BalanceAccount();
         caja.setName("Caja");
-        caja.setPlus(true);
-        caja.setActive(true);
         accountService.create(caja, 6L);
-
-        accountService.refreshCodes();
     }
 }

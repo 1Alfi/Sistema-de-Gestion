@@ -87,7 +87,6 @@ public class Movement{
             this.setAccountBalance(balance+this.getCredit()-this.getDebit());}
     }
 
-
     public boolean balanceEnough(Double balance){
         if(this.getAccount().isPlus()){
             return !(balance < this.getCredit());

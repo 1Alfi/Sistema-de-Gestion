@@ -23,7 +23,6 @@ public class JournalServiceImp implements JournalService {
 
     @Override
     public List<Entry> getJournalBetween(Date before, Date after) throws Exception{
-        List<Entry> entrys = entryRepository.findBetweenDate(before, after);
         return entryRepository.findBetweenDate(before,after);
     }
 }
