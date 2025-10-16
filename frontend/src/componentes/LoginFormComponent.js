@@ -30,6 +30,7 @@ const LoginFormComponent = () => {
         background: '#FFFFFF',
         borderRadius: '30px',
         padding: '2.5rem',
+        marginBottom: '90px',
         boxShadow: '0 15px 40px rgba(0,0,0,0.1)', 
         border: '1px solid #F0F0F0'
     },
