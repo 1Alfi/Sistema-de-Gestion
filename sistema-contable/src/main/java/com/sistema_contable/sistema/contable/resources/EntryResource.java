@@ -30,14 +30,11 @@ public class EntryResource {
     public ResponseEntity<?> create(@RequestHeader("Authorization") String token, @RequestBody EntryRequestDTO entryDTO) {
         try {
             User userDB = authService.authorize(token);
-            System.out.println(entryDTO.toString());
             service.create(mapper.map(entryDTO, Entry.class), userDB);
             return new ResponseEntity<>(null, HttpStatus.CREATED);
         } catch (ModelExceptions exception){
-            System.out.println(exception.getMessage());
             return new ResponseEntity<>(null, exception.getHttpStatus());
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

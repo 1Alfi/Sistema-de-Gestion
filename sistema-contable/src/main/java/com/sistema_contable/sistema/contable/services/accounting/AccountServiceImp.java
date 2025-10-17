@@ -63,12 +63,7 @@ public class AccountServiceImp implements AccountService {
             }
             else{
                 //physical delete
-                System.out.println("borrado fisico");
-                System.out.println(existAccountById(id));
-                repository.deleteById(id);
-                repository.flush();}
-                System.out.println(existAccountById(id));
-            }
+                repository.deleteAccountById(id);}}
         else {
             throw new AccountNotFindException();}}
 
@@ -98,7 +93,8 @@ public class AccountServiceImp implements AccountService {
     @Override
     public Double lastBalance(Long id) throws Exception {
         Double lastBalance = repository.searchLastBalance(id);
-        if(lastBalance==null){return 0D;}
+        if(lastBalance==null){
+            return 0D;}
         return lastBalance;}
 
     //SEARCHES
