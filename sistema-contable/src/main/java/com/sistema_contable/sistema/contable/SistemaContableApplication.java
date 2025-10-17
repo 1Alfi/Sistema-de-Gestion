@@ -1,5 +1,6 @@
 package com.sistema_contable.sistema.contable;
 
+import com.sistema_contable.sistema.contable.util.DateFormatter;
 import com.sistema_contable.sistema.contable.util.JwtTokenUtil;
 import com.sistema_contable.sistema.contable.util.PasswordEncoder;
 import org.modelmapper.ModelMapper;
@@ -20,6 +21,8 @@ public class SistemaContableApplication {
 	public JwtTokenUtil JwtTokenUtil(){return new JwtTokenUtil();}
 	@Bean
 	public ModelMapper modelMapper(){return new ModelMapper();}
+    @Bean
+    public DateFormatter dateFormatter(){return new DateFormatter();}
 
 }
 

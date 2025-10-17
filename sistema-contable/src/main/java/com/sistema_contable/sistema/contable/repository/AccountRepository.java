@@ -23,13 +23,13 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query("SELECT a FROM Account a WHERE a.id = :id")
     Account searchById(@Param("id") Long id);
 
-    @Query("SELECT a FROM Account a WHERE a.id = :id AND TYPE(a) = com.sistema_contable.sistema.contable.model.BalanceAccount")
+    @Query("SELECT a FROM BalanceAccount  a WHERE a.id = :id")
     BalanceAccount searchBalanceAccount(@Param("id") Long id);
 
-    @Query("SELECT a FROM Account a WHERE a.id = :id AND TYPE(a) = com.sistema_contable.sistema.contable.model.ControlAccount")
+    @Query("SELECT a FROM ControlAccount a WHERE a.id = :id")
     ControlAccount searchControlAccount(@Param("id") Long id);
 
-    @Query("SELECT a FROM Account a WHERE TYPE(a) = com.sistema_contable.sistema.contable.model.BalanceAccount")
+    @Query("SELECT a FROM BalanceAccount a")
     List<BalanceAccount> getBalanceAccounts();
 
     @Query("SELECT a FROM Account a WHERE a.name = :name")

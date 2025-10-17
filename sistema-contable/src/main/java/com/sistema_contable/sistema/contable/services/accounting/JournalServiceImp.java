@@ -1,5 +1,6 @@
 package com.sistema_contable.sistema.contable.services.accounting;
 
+import com.sistema_contable.sistema.contable.exceptions.EntryNotFindException;
 import com.sistema_contable.sistema.contable.model.Entry;
 import com.sistema_contable.sistema.contable.repository.EntryRepository;
 import com.sistema_contable.sistema.contable.services.accounting.interfaces.JournalService;
@@ -18,11 +19,17 @@ public class JournalServiceImp implements JournalService {
 
     @Override
     public List<Entry> getLastEntrys()throws Exception{
-        return entryRepository.lastEntrys();
+        List<Entry> entrys = entryRepository.lastEntrys();
+        if(entrys.isEmpty()){
+            throw new EntryNotFindException();
+        }
+        return entrys;
     }
 
     @Override
     public List<Entry> getJournalBetween(Date before, Date after) throws Exception{
-        return entryRepository.findBetweenDate(before,after);
+        List<Entry> entrys = entryRepository.findBetweenDate(before,after);
+        if(entrys.isEmpty()){throw new EntryNotFindException();}
+        return entrys;
     }
 }

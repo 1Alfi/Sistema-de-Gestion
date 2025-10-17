@@ -26,4 +26,9 @@ public class BalanceAccount extends Account{
         this.setActive(false);
     }
 
+    @Override
+    public void activate() {
+        this.setActive(true);
+    }
+
 }
