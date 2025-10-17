@@ -15,7 +15,7 @@ const CARD_COLOR = '#FFFFFF';
 const AddAsientoComponent = () => {
   const [description, setDescription] = useState('');
   const [accounts, setAccounts] = useState([]);
-  const [movements, setMovements] = useState([{ accountId: '', debit: '', credit: '' }]); // Usar accountId para el backend
+  const [movements, setMovements] = useState([{ account: '', debit: '', credit: '' }]); // Usar account para el backend
   const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
@@ -42,7 +42,7 @@ const AddAsientoComponent = () => {
 
   // 2. Manejadores de Movimientos
   const handleAddMovement = () => {
-    setMovements([...movements, { accountId: '', debit: '', credit: '' }]);
+    setMovements([...movements, { account: '', debit: '', credit: '' }]);
   };
 
   const handleRemoveMovement = (index) => {
@@ -60,7 +60,7 @@ const AddAsientoComponent = () => {
     let list = [...movements];
     
     // Si es una cuenta, guardamos el ID
-    if (name === 'accountId') {
+    if (name === 'account') {
         list[index][name] = value;
         setMovements(list);
         return;
@@ -120,7 +120,7 @@ const AddAsientoComponent = () => {
       return;
     }
 
-    const hasUnselectedAccount = movements.some(movement => !movement.accountId);
+    const hasUnselectedAccount = movements.some(movement => !movement.account);
     if (hasUnselectedAccount) {
       setError('Error: Todos los movimientos deben tener una cuenta seleccionada.');
       return;
@@ -128,7 +128,7 @@ const AddAsientoComponent = () => {
     
     // Asegurarse de que los valores numéricos se envíen como números (parseFloat)
     const finalMovements = movements.map(m => ({
-        accountId: m.accountId,
+        account: m.account,
         debit: parseFloat(m.debit) || 0,
         credit: parseFloat(m.credit) || 0,
     }));
@@ -232,8 +232,8 @@ const AddAsientoComponent = () => {
                                     <td>
                                         <select
                                             className="form-select"
-                                            name="accountId"
-                                            value={movement.accountId}
+                                            name="account"
+                                            value={movement.account}
                                             onChange={(e) => handleMovementChange(index, e)}
                                             disabled={isSaving}
                                             required

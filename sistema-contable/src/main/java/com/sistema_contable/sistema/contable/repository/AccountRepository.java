@@ -18,13 +18,13 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query("SELECT a FROM Account a WHERE a.id = :id")
     Account searchById(@Param("id") Long id);
 
-    @Query("SELECT a FROM Account a WHERE a.id = :id AND TYPE(a) = com.sistema_contable.sistema.contable.model.BalanceAccount")
+    @Query("SELECT a FROM BalanceAccount a WHERE a.id = :id")
     BalanceAccount searchBalanceAccount(@Param("id") Long id);
 
-    @Query("SELECT a FROM Account a WHERE a.id = :id AND TYPE(a) = com.sistema_contable.sistema.contable.model.ControlAccount")
+    @Query("SELECT a FROM ControlAccount a WHERE a.id = :id")
     ControlAccount searchControlAccount(@Param("id") Long id);
 
-    @Query("SELECT a FROM Account a WHERE TYPE(a) = com.sistema_contable.sistema.contable.model.BalanceAccount")
+    @Query("SELECT a FROM BalanceAccount a")
     List<BalanceAccount> getBalanceAccounts();
 
     @Query("SELECT a FROM Account a WHERE a.name = :name")
@@ -35,9 +35,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     //in development
     @Query(value = "SELECT m.account_balance "+
-            "FROM movement m "+
-            "JOIN entry e ON m.entry_id = e.id "+
-            "WHERE m.account_id = :accountID "+
+            "FROM movements m "+
+            "JOIN entrys e ON m.movement_entry_id = e.id_entry "+
+            "WHERE m.movement_account_id = :accountID "+
             "ORDER BY e.date_created DESC LIMIT 1",
             nativeQuery = true)
     Double searchLastBalance(@Param("accountID") Long accountID);
