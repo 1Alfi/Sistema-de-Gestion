@@ -10,9 +10,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/accounts")
@@ -76,8 +80,7 @@ public class AccountResource {
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         }catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}
-    }
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}}
 
     //change name account
     @PutMapping("/{id}")
@@ -111,9 +114,7 @@ public class AccountResource {
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         }catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}}
 
     //get balance accounts
     @GetMapping(path = "/balance",produces = "application/json")
@@ -124,21 +125,20 @@ public class AccountResource {
         }catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         }catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}}
 
-    @GetMapping(path = "/account-balance/{id}",produces = "application/json")
+    //get account balance
+    @GetMapping(path = "/getbalance/{id}",produces = "application/json")
     public ResponseEntity<?> getAccountBalance(@RequestHeader("Authorization") String token,@PathVariable Long id){
         try {
             authService.authorize(token);
-            return new ResponseEntity<>(service.lastBalance(id),HttpStatus.OK);
+            Map<String, Double> response = new HashMap<>();
+            response.put("balance", service.lastBalance(id));
+            return new ResponseEntity<>(response,HttpStatus.OK);
         }catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         }catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}}
 
     //secondary methods
     private AccountResponseDTO accountResponse(Account account){

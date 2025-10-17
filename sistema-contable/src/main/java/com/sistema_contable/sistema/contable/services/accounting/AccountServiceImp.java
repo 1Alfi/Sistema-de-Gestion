@@ -99,14 +99,22 @@ public class AccountServiceImp implements AccountService {
     //search last balance of account
     @Override
     public Double lastBalance(Long id) throws Exception {
-        Double lastBalance = repository.searchLastBalance(id);
-        if(lastBalance==null){return 0D;}
-        return lastBalance;}
+        Account account = this.searchById(id);
+        if(account.getSubAccounts().isEmpty()){
+            return this.searchLastBalance(id);}
+        else{
+            Double total = 0D;
+            for(Account child : account.getSubAccounts()){
+                total +=  this.lastBalance(child.getId());}
+            return total;}}
 
     //SEARCHES
     //by id all types
     @Override
-    public Account searchById(Long id) throws Exception{return repository.searchById(id);}
+    public Account searchById(Long id) throws Exception{
+        Account account = repository.searchById(id);
+        if(account==null){throw new AccountNotFindException();}
+        else{return account;}}
 
     //by name
     @Override
@@ -122,6 +130,13 @@ public class AccountServiceImp implements AccountService {
 
 
     //SECONDARY METHODS
+    //searchBalance
+    private Double searchLastBalance(Long id){
+        Double lastBalance = repository.searchLastBalance(id);
+        if(lastBalance==null){return 0D;}
+        return lastBalance;
+    }
+
     //logic for root accounts code
     private void rootCode(Account account) throws Exception {
         int accountCode = this.getRootAccounts().size()+1;
