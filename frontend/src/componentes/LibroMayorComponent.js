@@ -11,17 +11,14 @@ const TEXT_COLOR = '#2C3E50';
 const BACKGROUND_COLOR = '#F8F9FA'; 
 const CARD_COLOR = '#FFFFFF';
 const DEFAULT_CASH_ACCOUNT_CODE = '1.1.1'; // Código contable asumido para la cuenta 'Caja'
+const MAX_PERIOD_DAYS = 31; // Límite de 1 mes (31 días)
 
 // Función para sumar un día a una fecha ISO (YYYY-MM-DD)
-// Esto se hace para que el filtro "Hasta" en el backend sea inclusivo.
 const getNextDayISO = (dateString) => {
     if (!dateString) return null;
     const date = new Date(dateString);
-    // Sumar un día. Usamos setDate() para manejar correctamente el cambio de mes/año
     date.setDate(date.getDate() + 1);
     
-    // Convertir a formato YYYY-MM-DD para la API
-    // Usamos getUTCFullYear/Month/Date para evitar problemas de zona horaria con new Date(dateString)
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
@@ -33,16 +30,12 @@ const getNextDayISO = (dateString) => {
 const formatLatinDate = (dateString) => {
     if (!dateString) return '';
     
-    // Intentar crear un objeto Date. El constructor de Date maneja formatos ISO (YYYY-MM-DDTHH:mm:ss...)
-    // Usamos UTC para evitar que el navegador cambie el día si la fecha es medianoche (00:00:00)
     const date = new Date(dateString);
     
-    // Si es una fecha inválida, devolver la cadena original
     if (isNaN(date.getTime())) {
         return dateString;
     }
 
-    // Usar la zona horaria local para DD/MM/AAAA. Se suma 1 día al mes porque getMonth es 0-indexado.
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
@@ -61,7 +54,6 @@ const getLastWeekRange = () => {
     const lastWeek = new Date();
     lastWeek.setDate(today.getDate() - 7); 
 
-    // Formatear a YYYY-MM-DD
     const formatDate = (date) => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -79,6 +71,7 @@ const getLastWeekRange = () => {
 const LibroMayorComponent = () => {
     const [movimientos, setMovimientos] = useState([]);
     const [error, setError] = useState('');
+    const [validationError, setValidationError] = useState(''); // Nuevo estado para errores de validación de fechas
     const [cuentas, setCuentas] = useState([]);
     const [selectedCuentaId, setSelectedCuentaId] = useState('');
     const [fechaDesde, setFechaDesde] = useState('');
@@ -88,29 +81,57 @@ const LibroMayorComponent = () => {
     const [saldoFinal, setSaldoFinal] = useState(0);
     const [selectedCuentaName, setSelectedCuentaName] = useState('...');
 
-    // 1. Carga las cuentas y establece valores por defecto (Caja o Primera Cuenta + Última semana)
+
+    // Función de validación de fechas
+    const validateDates = (desde, hasta) => {
+        if (!desde || !hasta) {
+            setValidationError(''); // No hay error si falta una fecha
+            return false;
+        }
+
+        const dateDesde = new Date(desde);
+        const dateHasta = new Date(hasta);
+
+        // 1. Validar que fechaDesde no sea posterior a fechaHasta
+        if (dateDesde.getTime() > dateHasta.getTime()) {
+            setValidationError('La fecha "Desde" no puede ser posterior a la fecha "Hasta".');
+            return false;
+        }
+
+        // 2. Validar que el periodo no sea mayor a 31 días
+        // Sumamos 1 a la diferencia en días porque es inclusivo
+        const diffTime = Math.abs(dateHasta.getTime() - dateDesde.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
+
+        if (diffDays > MAX_PERIOD_DAYS) {
+            setValidationError(`El período seleccionado no puede ser mayor a ${MAX_PERIOD_DAYS} días (1 mes).`);
+            return false;
+        }
+
+        setValidationError(''); // Si las validaciones pasan, limpiamos el error
+        return true;
+    };
+
+
+    // 1. Carga las cuentas y establece valores por defecto
     useEffect(() => {
+        setError(''); 
         PlanDeCuentasServicio.getBalanceAccounts().then((response) => {
             const fetchedCuentas = response.data;
             setCuentas(fetchedCuentas);
 
             let accountToSelect = null;
-            
-            // 1. Intentar encontrar la cuenta de Caja por su código
             const defaultCashAccount = fetchedCuentas.find(c => c.code === DEFAULT_CASH_ACCOUNT_CODE);
             
             if (defaultCashAccount) {
                 accountToSelect = defaultCashAccount;
-            } 
-            // 2. Si no existe Caja por código, usar la primera cuenta de la lista como fallback
-            else if (fetchedCuentas.length > 0) {
+            } else if (fetchedCuentas.length > 0) {
                 accountToSelect = fetchedCuentas[0];
             }
 
             if (accountToSelect) {
                 const { fechaDesde, fechaHasta } = getLastWeekRange();
                 
-                // Establecer los valores por defecto
                 setSelectedCuentaId(accountToSelect.id);
                 setFechaDesde(fechaDesde);
                 setFechaHasta(fechaHasta);
@@ -122,25 +143,22 @@ const LibroMayorComponent = () => {
         });
     }, []);
     
-    // 2. Almacena el nombre de la cuenta seleccionada para el encabezado
+    // 2. Almacena el nombre de la cuenta seleccionada
     useEffect(() => {
         const selectedAccount = cuentas.find(c => c.id === selectedCuentaId);
         setSelectedCuentaName(selectedAccount ? selectedAccount.name : '...');
     }, [selectedCuentaId, cuentas]);
 
 
-    // 3. Efecto para buscar los datos del libro mayor (se dispara automáticamente con los valores por defecto)
+    // 3. Efecto para buscar los datos del libro mayor (Solo si las fechas son válidas)
     useEffect(() => {
-        if (selectedCuentaId && fechaDesde && fechaHasta) {
+        const datesValid = validateDates(fechaDesde, fechaHasta);
+
+        // Solo procede si hay una cuenta seleccionada y las fechas son válidas
+        if (selectedCuentaId && fechaDesde && fechaHasta && datesValid) {
             setCargando(true);
             setError(''); 
             
-            // =========================================================================
-            // LÓGICA CLAVE PARA INCLUSIÓN DE FECHA FINAL:
-            // Enviamos al backend el día siguiente (fechaExclusivaHasta) para usar
-            // en la query: entry.dateCreated < :fechaExclusivaHasta
-            // Esto garantiza que incluya TODOS los movimientos del día "fechaHasta" (hasta 23:59:59)
-            // =========================================================================
             const fechaExclusivaHasta = getNextDayISO(fechaHasta);
 
 
@@ -154,7 +172,6 @@ const LibroMayorComponent = () => {
 
                     if (fetchedMovements && fetchedMovements.length > 0) {
                         const ultimoMovimiento = fetchedMovements[fetchedMovements.length - 1];
-                        // Asumiendo que el último elemento ya tiene el saldo final calculado
                         setSaldoFinal(ultimoMovimiento.account_balance); 
                     } else {
                         setSaldoFinal(data.initialBalance || 0); 
@@ -167,18 +184,47 @@ const LibroMayorComponent = () => {
                     setMovimientos([]);
                     setSaldoInicial(0);
                     setSaldoFinal(0);
-                    setError(err.response?.data?.message || 'Ocurrió un error al cargar el libro mayor.');
+
+                    // Lógica para evitar error de "no hay datos"
+                    const errorMessage = err.response?.data?.message || '';
+                    const isNoDataError = (err.response?.status === 404 || errorMessage.toLowerCase().includes('no se encontraron'));
+
+                    if (!isNoDataError) {
+                        setError('');
+                    } 
                 })
                 .finally(() => {
                     setCargando(false);
                 });
-        } else {
-            setMovimientos([]);
-            setSaldoInicial(0);
-            setSaldoFinal(0);
-            // ... (Lógica de error simplificada, el usuario se enfoca en la funcionalidad)
+        } else if (!selectedCuentaId || !fechaDesde || !fechaHasta) {
+            // Limpiar movimientos y errores si faltan datos esenciales, pero no hay un error de validación
+            if (!validationError) {
+                setMovimientos([]);
+                setSaldoInicial(0);
+                setSaldoFinal(0);
+                setError(''); 
+            }
         }
-    }, [selectedCuentaId, fechaDesde, fechaHasta, cuentas.length]); 
+    }, [selectedCuentaId, fechaDesde, fechaHasta, cuentas.length, validationError]); // Dependencia de validationError
+
+
+    // Manejadores de cambio con validación
+    const handleFechaDesdeChange = (e) => {
+        const newDesde = e.target.value;
+        setFechaDesde(newDesde);
+        validateDates(newDesde, fechaHasta);
+    };
+
+    const handleFechaHastaChange = (e) => {
+        const newHasta = e.target.value;
+        setFechaHasta(newHasta);
+        validateDates(fechaDesde, newHasta);
+    };
+
+    // Variable booleana para simplificar la lógica de renderizado
+    const showTable = movimientos.length > 0 || saldoInicial !== 0;
+    const isReadyToSearch = selectedCuentaId && fechaDesde && fechaHasta;
+
 
     return (
         <div className='d-flex' style={{ backgroundColor: BACKGROUND_COLOR, minHeight: '100vh' }}>
@@ -235,9 +281,9 @@ const LibroMayorComponent = () => {
                                     <label className='form-label' style={{ fontWeight: '600' }}>Desde:</label>
                                     <input
                                         type='date'
-                                        className='form-control'
+                                        className={`form-control ${validationError ? 'is-invalid' : ''}`}
                                         value={fechaDesde}
-                                        onChange={(e) => setFechaDesde(e.target.value)}
+                                        onChange={handleFechaDesdeChange}
                                         style={{ borderColor: PRIMARY_COLOR }}
                                     />
                                 </div>
@@ -247,18 +293,18 @@ const LibroMayorComponent = () => {
                                     <label className='form-label' style={{ fontWeight: '600' }}>Hasta:</label>
                                     <input
                                         type='date'
-                                        className='form-control'
+                                        className={`form-control ${validationError ? 'is-invalid' : ''}`}
                                         value={fechaHasta}
-                                        onChange={(e) => setFechaHasta(e.target.value)}
+                                        onChange={handleFechaHastaChange}
                                         style={{ borderColor: PRIMARY_COLOR }}
                                     />
                                 </div>
                             </div>
                             
-                            {/* Mensaje de Error */}
-                            {error && (
+                            {/* Mensajes de Error y Validación */}
+                            {(validationError || error) && (
                                 <div className='alert alert-danger mb-4' role='alert'>
-                                    {error}
+                                    {validationError || error}
                                 </div>
                             )}
 
@@ -271,57 +317,66 @@ const LibroMayorComponent = () => {
                                     <p className='ms-3 pt-1' style={{ color: TEXT_COLOR }}>Generando movimientos...</p>
                                 </div>
                             ) : (
-                                (selectedCuentaId && fechaDesde && fechaHasta) && (movimientos.length > 0 || saldoInicial !== 0) ? (
-                                    <div className="table-responsive">
-                                        <table className="table table-bordered table-striped" style={{ fontSize: '0.9rem' }}>
-                                            <thead style={{ backgroundColor: PRIMARY_COLOR, color: TEXT_COLOR }}>
-                                                <tr>
-                                                    <th style={{ width: '15%' }}>Fecha</th>
-                                                    <th style={{ width: '37%'}}>Operación</th>
-                                                    <th style={{ width: '16%', textAlign: 'right' }}>Debe</th>
-                                                    <th style={{ width: '16%', textAlign: 'right' }}>Haber</th>
-                                                    <th style={{ width: '16%', textAlign: 'right' }}>Saldo</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {/* Fila de Saldo Inicial */}
-                                                <tr className="table-secondary fw-bold">
-                                                    <td></td>
-                                                    <td>SALDO INICIAL</td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td className='text-end'>{formatCurrency(saldoInicial)}</td>
-                                                </tr>
-                                                
-                                                {/* Movimientos del Período */}
-                                                {movimientos.map((mov, index) => {
-                                                    return (
-                                                        <tr key={index}>
-                                                            <td className='text-center'>{formatLatinDate(mov.dateCreated)}</td>
-                                                            <td>{mov.description}</td>
-                                                            <td className='text-end text-success'>{mov.debit > 0 ? formatCurrency(mov.debit) : ''}</td>
-                                                            <td className='text-end text-danger'>{mov.credit > 0 ? formatCurrency(mov.credit) : ''}</td>
-                                                            <td className='text-end'>{formatCurrency(mov.account_balance)}</td>
-                                                        </tr>
-                                                    );
-                                                })}
-                                                
-                                                {/* Fila de Saldo Final */}
-                                                <tr className="table-dark fw-bold">
-                                                    {/* Usamos la fecha original para mostrar en la tabla */}
-                                                    <td colSpan="4" className='text-end'>SALDO FINAL AL {formatLatinDate(fechaHasta)}</td>
-                                                    <td className='text-end'>{formatCurrency(saldoFinal)}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                (isReadyToSearch && !validationError) ? ( // Solo si está listo para buscar Y no hay error de validación
+                                    showTable ? (
+                                        <div className="table-responsive">
+                                            <table className="table table-bordered table-striped" style={{ fontSize: '0.9rem' }}>
+                                                <thead style={{ backgroundColor: PRIMARY_COLOR, color: TEXT_COLOR }}>
+                                                    <tr>
+                                                        <th style={{ width: '15%' }}>Fecha</th>
+                                                        <th style={{ width: '37%'}}>Operación</th>
+                                                        <th style={{ width: '16%', textAlign: 'right' }}>Debe</th>
+                                                        <th style={{ width: '16%', textAlign: 'right' }}>Haber</th>
+                                                        <th style={{ width: '16%', textAlign: 'right' }}>Saldo</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {/* Fila de Saldo Inicial */}
+                                                    <tr className="table-secondary fw-bold">
+                                                        <td></td>
+                                                        <td>SALDO INICIAL</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td className='text-end'>{formatCurrency(saldoInicial)}</td>
+                                                    </tr>
+                                                    
+                                                    {/* Movimientos del Período */}
+                                                    {movimientos.map((mov, index) => {
+                                                        return (
+                                                            <tr key={index}>
+                                                                <td className='text-center'>{formatLatinDate(mov.dateCreated)}</td>
+                                                                <td>{mov.description}</td>
+                                                                <td className='text-end text-success'>{mov.debit > 0 ? formatCurrency(mov.debit) : ''}</td>
+                                                                <td className='text-end text-danger'>{mov.credit > 0 ? formatCurrency(mov.credit) : ''}</td>
+                                                                <td className='text-end'>{formatCurrency(mov.account_balance)}</td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                    
+                                                    {/* Fila de Saldo Final */}
+                                                    <tr className="table-dark fw-bold">
+                                                        {/* Usamos la fecha original para mostrar en la tabla */}
+                                                        <td colSpan="4" className='text-end'>SALDO FINAL AL {formatLatinDate(fechaHasta)}</td>
+                                                        <td className='text-end'>{formatCurrency(saldoFinal)}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    ) : (
+                                        // Mensaje Informativo (Solo si los filtros están puestos, son válidos y la búsqueda no arrojó resultados)
+                                        <div className='alert alert-info mt-3' role='alert'>
+                                            <FaSearch className='me-2' />
+                                            No se encontraron movimientos en el período seleccionado para esta cuenta. 
+                                        </div>
+                                    )
                                 ) : (
-                                    <div className='alert alert-info mt-3' role='alert'>
-                                        <FaSearch className='me-2' />
-                                        {selectedCuentaId && fechaDesde && fechaHasta 
-                                            ? 'No se encontraron movimientos en el período seleccionado para esta cuenta.' 
-                                            : 'Seleccione una cuenta y un rango de fechas para generar el reporte del libro mayor.'}
-                                    </div>
+                                    // Mensaje inicial (si faltan filtros o si hay un error de validación activo)
+                                    !validationError && (
+                                        <div className='alert alert-info mt-3' role='alert'>
+                                            <FaSearch className='me-2' />
+                                            Seleccione una cuenta y un rango de fechas para generar el reporte del libro mayor.
+                                        </div>
+                                    )
                                 )
                             )}
                         </div>

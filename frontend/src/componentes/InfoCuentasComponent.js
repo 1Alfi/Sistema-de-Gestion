@@ -109,12 +109,22 @@ const InfoCuentasComponent = ({ id }) => {
         if (!isAdmin) return;
 
         const newState = !cuenta.active;
+        
+        // 1. Determinar la función de servicio a llamar
+        const actionFunction = newState 
+            ? PlanDeCuentasServicio.activarCuenta
+            : PlanDeCuentasServicio.desactivarCuenta;
+            
+        const actionName = newState ? 'activar' : 'desactivar';
+
         const confirmMessage = newState 
             ? "¿Estás seguro de que quieres REACTIVAR esta cuenta?" 
             : "¿Estás seguro de que quieres DESACTIVAR esta cuenta? (Borrado lógico)";
 
+        // Recordatorio: window.confirm no es ideal en este entorno, pero se mantiene por solicitud.
         if (window.confirm(confirmMessage)) {
-            PlanDeCuentasServicio.modificarCuenta(cuenta.id, { active: newState })
+            // 2. Llamar a la función específica (activarCuenta o desactivarCuenta)
+            actionFunction(cuenta.id) 
                 .then(() => {
                     // Actualiza el estado local y el árbol
                     setCuenta(prev => ({ ...prev, active: newState }));
@@ -122,7 +132,7 @@ const InfoCuentasComponent = ({ id }) => {
                     RefreshService.triggerRefresh(); 
                 })
                 .catch(err => {
-                    setError(err.response?.data?.message || `Error al ${newState ? 'activar' : 'desactivar'} la cuenta.`);
+                    setError(err.response?.data?.message || `Error al ${actionName} la cuenta.`);
                     console.error(err);
                 });
         }
@@ -267,7 +277,7 @@ const InfoCuentasComponent = ({ id }) => {
                                     fontWeight: '600'
                                 }}
                             >
-                                {cuenta.active ? <><FaTrashAlt className='me-2' /> Desactivar Cuenta</> : <><FaUndo className='me-2' /> Reactivar Cuenta</>}
+                                {cuenta.active ? <><FaTrashAlt className='me-2' /> Borrar/Desactivar Cuenta</> : <><FaUndo className='me-2' /> Reactivar Cuenta</>}
                             </button>
                         )
                     )}

@@ -54,7 +54,7 @@ public class AccountResource {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}}
 
     //delete account
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@RequestHeader("Authorization") String token,@PathVariable Long id) {
         try {
             authService.adminAuthorize(token);

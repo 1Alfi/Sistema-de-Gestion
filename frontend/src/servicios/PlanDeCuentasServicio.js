@@ -53,6 +53,16 @@ class PlanDeCuentasServicio {
         return axios.get(PLAN_DE_CUENTAS_BASE_REST_API_URL + "/balance", this.getAuthHeaders());
     }
 
+    // CORREGIDO y como función flecha
+    desactivarCuenta = (cuentaId) => {
+        return axios.delete(PLAN_DE_CUENTAS_BASE_REST_API_URL + "/delete/" + cuentaId, this.getAuthHeaders());
+    }
+    
+    // CORREGIDO (añadido 'null') y como función flecha
+    activarCuenta = (cuentaId) => {
+        return axios.put(PLAN_DE_CUENTAS_BASE_REST_API_URL + "/activate/" + cuentaId, null, this.getAuthHeaders());
+    }
+
 }
 
 export default new PlanDeCuentasServicio();
