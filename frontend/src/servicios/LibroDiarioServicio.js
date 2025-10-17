@@ -26,6 +26,7 @@ class LibroDiarioServicio {
     // Función de flecha para mantener el contexto 'this'
     getAsientosPorPeriodo = (desde, hasta) => {
         // 'this' ahora apunta correctamente a la instancia
+        console.log(LIBRO_DIARIO_BASE_REST_API_URL + "/between?before=" + desde + "&after=" + hasta)
         return axios.get(LIBRO_DIARIO_BASE_REST_API_URL + "?before=" + desde + "&after=" + hasta, this.getAuthHeaders());
     }
 
