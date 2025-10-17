@@ -1,7 +1,7 @@
 package com.sistema_contable.sistema.contable.services;
 
 import com.sistema_contable.sistema.contable.exceptions.UserNotFindException;
-import com.sistema_contable.sistema.contable.exceptions.UsernnameErrorException;
+import com.sistema_contable.sistema.contable.exceptions.UsernNameErrorException;
 import com.sistema_contable.sistema.contable.model.User;
 import com.sistema_contable.sistema.contable.repository.UserRepository;
 import com.sistema_contable.sistema.contable.util.PasswordEncoder;
@@ -24,7 +24,7 @@ public class UserServiceImp implements UserService{
     public void create(User user) throws Exception{
         User userCheck = repository.findByUsername(user.getUsername());
         if(userCheck!=null){ // username exist dont create user or user dont admin
-            throw new UsernnameErrorException();
+            throw new UsernNameErrorException();
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);
