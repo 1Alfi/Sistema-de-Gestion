@@ -60,14 +60,11 @@ public class AccountServiceImp implements AccountService {
                 //logic delete
                 account.desactivate();
                 repository.save(account);
-            } else{
-                //physical delete
-                System.out.println("borrado fisico");
-                System.out.println(existAccountById(id));
-                repository.deleteById(id);
             }
-            System.out.println(existAccountById(id));
-        } else {
+            else{
+                //physical delete
+                repository.deleteAccountById(id);}}
+        else {
             throw new AccountNotFindException();}}
 
     //update the name of the account
@@ -96,7 +93,8 @@ public class AccountServiceImp implements AccountService {
     @Override
     public Double lastBalance(Long id) throws Exception {
         Double lastBalance = repository.searchLastBalance(id);
-        if(lastBalance==null){return 0D;}
+        if(lastBalance==null){
+            return 0D;}
         return lastBalance;}
 
     //SEARCHES

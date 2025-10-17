@@ -16,6 +16,7 @@ public class ControlAccount extends Account {
 
     //methods
     //children
+
     public List<Account> getChildAccounts() {
         return subAccounts;
     }
