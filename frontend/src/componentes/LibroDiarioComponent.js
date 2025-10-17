@@ -107,6 +107,8 @@ const LibroDiarioComponent = () => {
             
             // Enviamos la fecha final del usuario directamente. 
             // Esto asume que el backend incluye el día 'fechaHasta'.
+            console.log(fechaDesde);
+            console.log(fechaHasta);
             LibroDiarioServicio.getAsientosPorPeriodo(fechaDesde, fechaHasta)
                 .then((response) => {
                     const fetchedAsientos = response.data || [];

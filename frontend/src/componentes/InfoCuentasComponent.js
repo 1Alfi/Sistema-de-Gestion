@@ -14,13 +14,11 @@ const DANGER_COLOR = '#E74C3C';
 const SUCCESS_COLOR = '#2ECC71';
 const INFO_BG = '#ECF0F1'; // Fondo claro para secciones
 
-// Placeholder para el saldo mientras no está implementado
-const SALDO_PLACEHOLDER = 15200.50; 
-
 // Recibe la prop 'id'
 const InfoCuentasComponent = ({ id }) => {
     const [cuenta, setCuenta] = useState(null); // Inicializamos en null para mostrar el mensaje de "Seleccione..."
-    const [saldo, setSaldo] = useState(0);
+    const [saldo, setSaldo] = useState(null); // Cambiamos a null para manejar la carga
+    const [saldoCargando, setSaldoCargando] = useState(false); // Nuevo estado de carga para el saldo
     const navigate = useNavigate();
     const [error, setError] = useState('');
     const [isEditing, setIsEditing] = useState(false);
@@ -31,10 +29,10 @@ const InfoCuentasComponent = ({ id }) => {
     useEffect(() => {
         if (id) {
             infoCuenta(id);
-            // saldoCuenta(id); // Descomentar cuando el servicio esté listo
+            saldoCuenta(id); // Llamada para obtener el saldo
         } else {
             setCuenta(null);
-            setSaldo(0);
+            setSaldo(null); // Limpiamos el saldo
         }
     }, [id]);
 
@@ -50,13 +48,23 @@ const InfoCuentasComponent = ({ id }) => {
         });
     };
 
-    // Placeholder de función de saldo (modificado para usar un placeholder)
+    // --- CORRECCIÓN EN EL MANEJO DE LA PROMISE DEL SALDO ---
     const saldoCuenta = (accountId) => {
-        // Cuando implementes el servicio real, usa esto:
-        // PlanDeCuentasServicio.getSaldo(accountId).then(response => setSaldo(response.data)).catch...
-
-        // Mientras tanto, usamos el placeholder:
-        setSaldo(SALDO_PLACEHOLDER); 
+        setSaldoCargando(true);
+        // ASUMIMOS QUE AccountService es el servicio correcto para el saldo.
+        PlanDeCuentasServicio.getSaldoCuenta(accountId)
+            .then(response => {
+                // Asumimos que la respuesta trae el valor del saldo directamente en response.data
+                setSaldo(response.data); 
+            })
+            .catch(err => {
+                console.error("Error al obtener saldo:", err);
+                setSaldo(0); // Establecer el saldo en 0 si hay un error
+                // NOTA: Si quieres mostrar un error específico del saldo, usa un estado adicional
+            })
+            .finally(() => {
+                setSaldoCargando(false);
+            });
     };
 
     // --- MANEJO DE ROLES Y NAVEGACIÓN ---
@@ -117,11 +125,11 @@ const InfoCuentasComponent = ({ id }) => {
             
         const actionName = newState ? 'activar' : 'desactivar';
 
+        // NOTA: Reemplazar window.confirm por un modal si es posible en el futuro.
         const confirmMessage = newState 
             ? "¿Estás seguro de que quieres REACTIVAR esta cuenta?" 
             : "¿Estás seguro de que quieres DESACTIVAR esta cuenta? (Borrado lógico)";
 
-        // Recordatorio: window.confirm no es ideal en este entorno, pero se mantiene por solicitud.
         if (window.confirm(confirmMessage)) {
             // 2. Llamar a la función específica (activarCuenta o desactivarCuenta)
             actionFunction(cuenta.id) 
@@ -196,8 +204,8 @@ const InfoCuentasComponent = ({ id }) => {
 
     const isControl = cuenta.type === 'Control';
     const hasChildren = cuenta.childAccounts && cuenta.childAccounts.length > 0;
-    // Usamos el placeholder para el saldo para la demostración
-    const currentSaldo = SALDO_PLACEHOLDER; 
+    // Usamos el estado real del saldo
+    const currentSaldo = saldo;
 
     return (
         <div style={{ flexGrow: 1, padding: '30px' }}>
@@ -293,10 +301,18 @@ const InfoCuentasComponent = ({ id }) => {
                 <h4 style={{ 
                     fontSize: '1.8rem', 
                     fontWeight: '700',
-                    color: currentSaldo >= 0 ? SUCCESS_COLOR : DANGER_COLOR, // Color condicional
+                    color: currentSaldo !== null && currentSaldo >= 0 ? SUCCESS_COLOR : DANGER_COLOR, // Color condicional
                     marginTop: '0.5rem'
                 }}>
-                    $ {currentSaldo.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {saldoCargando ? (
+                        <div className="spinner-border spinner-border-sm text-primary" role="status">
+                            <span className="visually-hidden">Cargando...</span>
+                        </div>
+                    ) : currentSaldo !== null ? (
+                        `$ ${currentSaldo.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                    ) : (
+                        `$ 0.00` // Muestra un valor por defecto si es null
+                    )}
                 </h4>
             </div>
 
