@@ -25,4 +25,5 @@ public interface AccountService {
 
     //secondary
     Double lastBalance(Long id) throws Exception;
+    void activate(Long id) throws Exception;
 }

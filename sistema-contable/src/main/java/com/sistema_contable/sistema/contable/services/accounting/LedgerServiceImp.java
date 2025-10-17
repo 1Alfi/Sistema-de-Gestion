@@ -1,5 +1,6 @@
 package com.sistema_contable.sistema.contable.services.accounting;
 
+import com.sistema_contable.sistema.contable.exceptions.EntryNotFindException;
 import com.sistema_contable.sistema.contable.model.Movement;
 import com.sistema_contable.sistema.contable.repository.MovementRepository;
 import com.sistema_contable.sistema.contable.services.accounting.interfaces.LedgerService;
@@ -16,6 +17,8 @@ public class LedgerServiceImp implements LedgerService {
     private MovementRepository  movementRepository;
 
     public List<Movement> LadgerByAccountBetweem(Long accountID, Date before, Date after)throws Exception{
-        return movementRepository.ledgerAccountBetween(accountID, before, after);
+        List<Movement> movements = movementRepository.ledgerAccountBetween(accountID, before, after);
+        if(movements.isEmpty()){throw new EntryNotFindException();}
+        return movements;
     }
 }

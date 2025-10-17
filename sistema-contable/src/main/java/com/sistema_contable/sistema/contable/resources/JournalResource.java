@@ -6,6 +6,7 @@ import com.sistema_contable.sistema.contable.model.Entry;
 import com.sistema_contable.sistema.contable.model.User;
 import com.sistema_contable.sistema.contable.services.accounting.interfaces.JournalService;
 import com.sistema_contable.sistema.contable.services.security.interfaces.AuthorizationService;
+import com.sistema_contable.sistema.contable.util.DateFormatter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,11 +28,12 @@ public class JournalResource {
     //dependencies
     @Autowired
     private JournalService service;
-    
     @Autowired
     private AuthorizationService authService;
     @Autowired
     private ModelMapper mapper;
+    @Autowired
+    private DateFormatter dateFormatter;
 
 
     //end points
@@ -48,21 +50,17 @@ public class JournalResource {
     }
 
     @GetMapping(path = "/between")
-    public ResponseEntity<?> getBetweenDates(@RequestHeader("Authorization") String token, @RequestParam("before") String before, @RequestParam("after")String after){
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        // Declaramos las variables Date para usarlas en el servicio
-        Date dateBefore;
-        Date dateAfter;
+    public ResponseEntity<?> getBetweenDates(
+            @RequestHeader("Authorization") String token,
+            @RequestParam("before") String before,
+            @RequestParam("after")String after) {
         try {
             User userDB = authService.authorize(token);
-            // 2. Parsear el String a LocalDate (API moderna)
-            LocalDate localDateBefore = LocalDate.parse(before, formatter);
-            LocalDate localDateAfter = LocalDate.parse(after, formatter);
-            // 3. Convertir LocalDate a java.util.Date (para el servicio)
-            // Se establece la hora a medianoche (startOfDay) y se usa la zona horaria del sistema.
-            dateBefore = Date.from(localDateBefore.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            dateAfter = Date.from(localDateAfter.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            return new ResponseEntity<>(entryResponse(service.getJournalBetween(dateBefore, dateAfter)), HttpStatus.OK);
+            return new ResponseEntity<>(
+                    entryResponse(service.getJournalBetween(
+                        dateFormatter.beforeDate(before),
+                        dateFormatter.afterDate(after))),
+                    HttpStatus.OK);
         } catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());
         }catch (Exception e) {

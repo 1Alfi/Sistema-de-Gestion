@@ -53,7 +53,7 @@ public class AccountResource {
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}}
 
-    //delete account
+    //delete/desactivate account
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@RequestHeader("Authorization") String token,@PathVariable Long id) {
         try {
@@ -65,6 +65,19 @@ public class AccountResource {
         }catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}}
 
+
+    //activate account
+    @PutMapping("/activate/{id}")
+    public ResponseEntity<?> activateAccount(@RequestHeader("Authorization") String token,@PathVariable Long id){
+        try {
+            authService.adminAuthorize(token);
+            service.activate(id);
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        } catch (ModelExceptions exception) {
+            return new ResponseEntity<>(null, exception.getHttpStatus());
+        }catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}
+    }
 
     //change name account
     @PutMapping("/{id}")

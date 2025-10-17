@@ -68,4 +68,5 @@ public abstract class Account {
     public abstract List<Account> getSubAccounts();
     public abstract String getType();
     public abstract void desactivate();
+    public abstract void activate();
 }

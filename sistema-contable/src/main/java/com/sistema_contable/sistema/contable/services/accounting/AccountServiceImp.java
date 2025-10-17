@@ -51,21 +51,28 @@ public class AccountServiceImp implements AccountService {
             this.rootCode(account);
             repository.save(account);}}
 
+    //delete
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void delete(Long id)throws Exception{
         if(this.existAccountById(id)){
             Account account = this.searchById(id);
-            if(this.accountUsedInMovements(account)){
+            if(this.accountUsedInMovements(account) || !account.getSubAccounts().isEmpty()){
                 //logic delete
                 account.desactivate();
-                repository.save(account);
-            }
-            else{
-                //physical delete
+                repository.save(account);}
+            else{//physical delete
                 repository.deleteAccountById(id);}}
-        else {
-            throw new AccountNotFindException();}}
+        else {throw new AccountNotFindException();}}
+
+    //activate
+    @Override
+    public void activate(Long id)throws Exception{
+        if(this.existAccountById(id)){
+            Account account = this.searchById(id);
+            account.activate();
+            repository.save(account);}
+        else{throw new AccountNotFindException();}}
 
     //update the name of the account
     @Override
@@ -93,8 +100,7 @@ public class AccountServiceImp implements AccountService {
     @Override
     public Double lastBalance(Long id) throws Exception {
         Double lastBalance = repository.searchLastBalance(id);
-        if(lastBalance==null){
-            return 0D;}
+        if(lastBalance==null){return 0D;}
         return lastBalance;}
 
     //SEARCHES
@@ -123,8 +129,7 @@ public class AccountServiceImp implements AccountService {
 
     //check if the account is used in entrys/movements
     private boolean accountUsedInMovements(Account account) throws Exception {
-        return movementService.existMovementByAccount(account);
-    }
+        return movementService.existMovementByAccount(account);}
 
     //check if the account exists
     private boolean existAccountById(Long id){return repository.existsById(id);}
