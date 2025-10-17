@@ -55,7 +55,7 @@ const InfoCuentasComponent = ({ id }) => {
         PlanDeCuentasServicio.getSaldoCuenta(accountId)
             .then(response => {
                 // Asumimos que la respuesta trae el valor del saldo directamente en response.data
-                setSaldo(response.data); 
+                setSaldo(response.data.balance); 
             })
             .catch(err => {
                 console.error("Error al obtener saldo:", err);

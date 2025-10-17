@@ -16,9 +16,7 @@ const MAX_PERIOD_DAYS = 62; // Límite de 2 meses (62 días) para el Libro Diari
 const formatLatinDate = (dateString) => {
     if (!dateString) return '';
     try {
-        // --- CORRECCIÓN CLAVE ---
-        // 1. Extraemos solo la parte de la fecha (YYYY-MM-DD), eliminando la hora y los milisegundos.
-        //    Esto evita el RangeError.
+        // 1. Extraemos solo la parte de la fecha (YYYY-MM-DD), eliminando la hora.
         const datePart = dateString.split(' ')[0].split('T')[0]; 
         
         // 2. Forzamos la interpretación como medianoche UTC para evitar cambios por zona horaria.
@@ -29,24 +27,28 @@ const formatLatinDate = (dateString) => {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
-            timeZone: 'UTC' // Importante para mantener la consistencia
+            timeZone: 'UTC' 
         });
         
-        return formatter.format(dateObj).replace(/\//g, '-'); // Reemplaza barras por guiones
+        return formatter.format(dateObj).replace(/\//g, '-'); 
     } catch (e) {
         console.error("Error al formatear fecha:", dateString, e);
         return dateString.split(' ')[0] || dateString; 
     }
 };
 
-// **FUNCIÓN getNextDayISO ELIMINADA** (Se envía la fecha final del usuario directamente)
-
 // Función para formatear el valor como moneda
 const formatCurrency = (value) => {
     if (value === null || typeof value === 'undefined') return ''; 
     const numValue = parseFloat(value);
     if (isNaN(numValue)) return '';
-    return `$ ${numValue.toFixed(2)}`;
+    // Usamos 'es-AR' para formato de moneda (Ej: $ 1.234,56)
+    return numValue.toLocaleString('es-AR', { 
+        style: 'currency', 
+        currency: 'ARS',
+        minimumFractionDigits: 2, 
+        maximumFractionDigits: 2 
+    });
 };
 
 
@@ -58,16 +60,17 @@ const LibroDiarioComponent = () => {
     const [fechaDesde, setFechaDesde] = useState('');
     const [fechaHasta, setFechaHasta] = useState('');
     const [cargando, setCargando] = useState(false);
-    const [reporteTitulo, setReporteTitulo] = useState('Seleccione un Período'); 
+    // Título inicial actualizado para reflejar la carga de los últimos asientos
+    const [reporteTitulo, setReporteTitulo] = useState('Últimos 10 Asientos Registrados'); 
 
     // Función de validación de fechas (período máximo de 62 días)
     const validateDates = (desde, hasta) => {
+        // ... (Tu función de validación actual)
         if (!desde || !hasta) {
             setValidationError(''); 
             return false;
         }
 
-        // Usamos 'T00:00:00' para asegurar interpretación consistente localmente para la validación
         const dateDesde = new Date(desde + 'T00:00:00');
         const dateHasta = new Date(hasta + 'T00:00:00');
 
@@ -76,13 +79,11 @@ const LibroDiarioComponent = () => {
             return false;
         }
 
-        // 1. Validar que fechaDesde no sea posterior a fechaHasta
         if (dateDesde.getTime() > dateHasta.getTime()) {
             setValidationError('La fecha "Desde" no puede ser posterior a la fecha "Hasta".');
             return false;
         }
 
-        // 2. Validar que el periodo no sea mayor a MAX_PERIOD_DAYS
         const diffTime = dateHasta.getTime() - dateDesde.getTime();
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
 
@@ -95,25 +96,51 @@ const LibroDiarioComponent = () => {
         return true;
     };
     
-    // 1. EFECTO PRINCIPAL DE BÚSQUEDA (Se ejecuta automáticamente al cambiar fechas)
+    // 1. EFECTO DE CARGA INICIAL: Obtener los últimos 10 asientos al montar.
     useEffect(() => {
+        setCargando(true);
+        setError(''); 
+        
+        LibroDiarioServicio.getLastAsientos() // Llama al nuevo servicio para los últimos 10
+            .then((response) => {
+                const fetchedAsientos = response.data || [];
+                setAsientos(fetchedAsientos);
+                setReporteTitulo('Últimos 10 Asientos Registrados');
+                setError('');
+            })
+            .catch(err => {
+                console.error("Error al obtener últimos asientos:", err);
+                setAsientos([]);
+                setError('Error al cargar los últimos asientos. Intente buscar por período.');
+                setReporteTitulo('Error al cargar datos iniciales');
+            })
+            .finally(() => {
+                setCargando(false);
+            });
+            
+    }, []); // Se ejecuta solo una vez al montar
+
+    // FUNCIÓN DE BÚSQUEDA EXPLÍCITA POR RANGO DE FECHAS
+    const handleBuscarAsientos = () => {
         const datesValid = validateDates(fechaDesde, fechaHasta);
 
-        // Solo procede si ambas fechas están puestas Y son válidas
-        if (fechaDesde && fechaHasta && datesValid) {
+        if (!fechaDesde || !fechaHasta) {
+            setValidationError('Debe seleccionar ambas fechas para buscar por período.');
+            return;
+        }
+
+        if (datesValid) {
             setCargando(true);
             setError(''); 
             setAsientos([]); 
+            setValidationError('');
             
-            // Enviamos la fecha final del usuario directamente. 
-            // Esto asume que el backend incluye el día 'fechaHasta'.
-            console.log(fechaDesde);
-            console.log(fechaHasta);
+            // Enviamos la fecha final del usuario directamente.
+            // Opcionalmente, puedes añadir el timestamp de caché aquí si el problema persiste.
             LibroDiarioServicio.getAsientosPorPeriodo(fechaDesde, fechaHasta)
                 .then((response) => {
                     const fetchedAsientos = response.data || [];
                     setAsientos(fetchedAsientos);
-                    console.log(response.data);
                     
                     setReporteTitulo(`Asientos del ${formatLatinDate(fechaDesde)} al ${formatLatinDate(fechaHasta)}`);
                     setError('');
@@ -128,6 +155,7 @@ const LibroDiarioComponent = () => {
                     if (!isNoDataError) {
                         setError(err.response?.data?.message || 'No se pudo establecer conexión con el servidor o hubo un error interno.');
                     } else {
+                        // Es un error 404/No data, no mostramos el mensaje de error de API, solo el título
                         setError('');
                     } 
                     setReporteTitulo(`Asientos del ${formatLatinDate(fechaDesde)} al ${formatLatinDate(fechaHasta)}`);
@@ -135,39 +163,44 @@ const LibroDiarioComponent = () => {
                 .finally(() => {
                     setCargando(false);
                 });
-        } else if (!fechaDesde || !fechaHasta) {
-             setAsientos([]);
-             setError('');
-             if (!validationError) {
-                setReporteTitulo('Seleccione un Período');
-             }
         }
-        
-    }, [fechaDesde, fechaHasta]); // Dependencias: Fechas
+    };
 
-    // Manejadores de cambio de fecha con validación reactiva
+    // Manejadores de cambio de fecha
     const handleFechaDesdeChange = (e) => {
-        const newDesde = e.target.value;
-        setFechaDesde(newDesde);
-        validateDates(newDesde, fechaHasta); 
+        setFechaDesde(e.target.value);
+        setValidationError(''); 
         setError(''); 
     };
 
     const handleFechaHastaChange = (e) => {
-        const newHasta = e.target.value;
-        setFechaHasta(newHasta);
-        validateDates(fechaDesde, newHasta);
+        setFechaHasta(e.target.value);
+        setValidationError('');
         setError('');
     };
 
-    // Función para limpiar los filtros
+    // Función para limpiar los filtros y volver a la carga inicial de los últimos asientos
     const handleLimpiarFiltro = () => {
         setFechaDesde('');
         setFechaHasta('');
         setError('');
         setValidationError(''); 
-        setAsientos([]);
-        setReporteTitulo('Seleccione un Período');
+        // Llama a la carga inicial de nuevo
+        // La forma más limpia de hacerlo es usando una función separada o re-ejecutando el efecto inicial, 
+        // pero por simplicidad, hacemos la llamada aquí de forma directa:
+        setCargando(true);
+        LibroDiarioServicio.getLastAsientos()
+            .then((response) => {
+                setAsientos(response.data || []);
+                setReporteTitulo('Últimos 10 Asientos Registrados');
+            })
+            .catch(() => {
+                setAsientos([]);
+                setReporteTitulo('Error al recargar datos');
+            })
+            .finally(() => {
+                setCargando(false);
+            });
     };
 
     // 2. Renderizado del componente
@@ -235,6 +268,16 @@ const LibroDiarioComponent = () => {
                                     />
                                 </div>
                                 
+                                {/* Botón Buscar (NUEVO) */}
+                                <button 
+                                    onClick={handleBuscarAsientos} 
+                                    className='btn btn-primary d-flex align-items-center mb-2 me-3'
+                                    style={{ fontWeight: '600', backgroundColor: PRIMARY_COLOR, borderColor: PRIMARY_COLOR, color: TEXT_COLOR }}
+                                >
+                                    <FaSearch className='me-2' /> Buscar
+                                </button>
+                                
+                                {/* Botón Limpiar Filtro */}
                                 <button 
                                     onClick={handleLimpiarFiltro} 
                                     className='btn btn-secondary d-flex align-items-center mb-2'
@@ -243,7 +286,7 @@ const LibroDiarioComponent = () => {
                                 </button>
                                 
                                 <span className='ms-3 mb-2 text-muted fst-italic' style={{ fontSize: '0.9rem' }}>
-                                    (Máx. {MAX_PERIOD_DAYS} días. El reporte se actualiza automáticamente.)
+                                    (Máx. {MAX_PERIOD_DAYS} días. Use "Buscar" para filtrar.)
                                 </span>
                             </div>
 
@@ -316,23 +359,19 @@ const LibroDiarioComponent = () => {
                                     </table>
                                 </div>
                             ) : (
-                                // Mostrar el mensaje de "No hay asientos" solo si no hay un error de validación activo
-                                (!validationError && fechaDesde && fechaHasta) && (
+                                // Mensaje de No Hay Datos (Aplica si se buscó por período sin resultados)
+                                (!cargando && (!fechaDesde || !fechaHasta) && reporteTitulo.includes('Últimos')) ? (
+                                    <div className='alert alert-info mt-3' role='alert'>
+                                        <FaCalendarAlt className='me-2' />
+                                        No hay asientos registrados. Utilice el botón "Nuevo Asiento" para empezar.
+                                    </div>
+                                ) : (fechaDesde && fechaHasta && !cargando && !validationError) ? (
                                     <div className='alert alert-info mt-3' role='alert'>
                                         <FaSearch className='me-2' />
                                         No hay asientos registrados para este período.
                                     </div>
-                                )
+                                ) : null
                             )}
-
-                            {/* Mensaje de estado inicial si faltan fechas y no hay errores */}
-                            {(!fechaDesde || !fechaHasta) && !validationError && !cargando && (
-                                <div className='alert alert-info mt-3' role='alert'>
-                                    <FaCalendarAlt className='me-2' />
-                                    Ingrese una fecha de inicio y una fecha de fin para ver los asientos del Libro Diario.
-                                </div>
-                            )}
-
                         </div>
                     </div>
                 </div>

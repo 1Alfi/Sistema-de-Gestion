@@ -27,7 +27,7 @@ class PlanDeCuentasServicio {
     
     //Retorna el saldo de la funcion calcular saldo de cada cuenta
     getSaldoCuenta(cuentaId) {
-        return axios.get(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/account-balance/' + cuentaId, this.getAuthHeaders());
+        return axios.get(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/getbalance/' + cuentaId, this.getAuthHeaders());
     }
 
     crearCuentaControl(account) {
