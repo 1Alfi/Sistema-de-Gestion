@@ -98,7 +98,7 @@ const InfoCuentasComponent = ({ id }) => {
             return;
         }
 
-        PlanDeCuentasServicio.modificarCuenta(cuenta.id, { name: tempName })
+        PlanDeCuentasServicio.modificarCuenta(cuenta.id, tempName)
             .then(() => {
                 setCuenta(prev => ({ ...prev, name: tempName }));
                 setIsEditing(false);
