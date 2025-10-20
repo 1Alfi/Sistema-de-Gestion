@@ -70,10 +70,10 @@ const InicioComponent = () => {
                         ¡Bienvenido a ContaConmigo!
                     </h1>
                     <p style={{ fontSize: '1.1rem', color: styles.secondaryText, maxWidth: '800px' }}>
-                        Tu solución integral para una contabilidad simple y precisa. Revisa los indicadores clave y accede rápidamente a tus tareas pendientes.
+                        El registro fácil para una contabilidad ordenada. Revisa tus indicadores financieros y genera tus reportes esenciales sencilla y rápidamente.
                     </p>
                     <div className="mt-3">
-                         <span className="badge bg-info text-dark" style={{background: styles.primaryColor}}>Novedad: Nuevo sistema de exportación de reportes disponible.</span>
+                         <span className="badge bg-info text-dark" style={{background: styles.primaryColor}}>Novedad: Nuevos indicadores en la pantalla de inicio ya disponibles.</span>
                     </div>
                 </div>
 
