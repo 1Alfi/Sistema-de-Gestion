@@ -1,13 +1,83 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'; 
 import SideBarComponent from './SideBarComponent';
-import { FaFileInvoiceDollar, FaChartLine, FaDollarSign, FaBolt, FaPlusCircle, FaListAlt } from 'react-icons/fa';
+import { FaFileInvoiceDollar, FaChartLine, FaDollarSign, FaTools, FaPlusCircle, FaListAlt } from 'react-icons/fa'; 
 import { Link } from 'react-router-dom';
+import PlanDeCuentasServicio from '../servicios/PlanDeCuentasServicio';
+
+// Función auxiliar para formatear números como moneda ARS
+const formatCurrency = (number) => {
+    if (number === null || typeof number === 'undefined') return '0,00'; // Muestra 0.00 mientras carga o si es nulo
+    
+    // CORRECCIÓN CLAVE: Intentamos parsear y usamos 0 si el resultado es NaN o inválido.
+    const num = parseFloat(number); 
+    
+    // Si el parsing falló (ej. el backend devolvió un string no numérico), usamos 0.
+    if (isNaN(num)) return '0,00'; 
+
+    // Usamos el formato local de Argentina con dos decimales
+    return num.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+
 
 const InicioComponent = () => {
     
-    // --- ESTILOS BASADOS EN LA LANDING PAGE ---
+    // --- ESTADOS DINÁMICOS ---
+    // Usamos 'null' como estado inicial para indicar que está cargando
+    const [activo, setActivo] = useState(null);
+    const [pasivo, setPasivo] = useState(null);
+    const [resultados, setResultados] = useState(null);
+    const [capitalDeTrabajo, setCapitalDeTrabajo] = useState(null); 
+    
+    
+    // --- LÓGICA DE CÁLCULO DE CAPITAL DE TRABAJO ---
+    useEffect(() => {
+        // Solo calcular si Activo y Pasivo ya tienen valores numéricos cargados (no null)
+        if (activo !== null && pasivo !== null) {
+            setCapitalDeTrabajo(activo - pasivo);
+        }
+    }, [activo, pasivo]); 
+
+
+    // --- LÓGICA DE CARGA DE DATOS ---
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const activoId = 1; 
+                const pasivoId = 2;
+
+                // 1. Obtener Activo
+                const activoResponse = await PlanDeCuentasServicio.getSaldoCuenta(activoId);
+                // Asegúrate de que el valor sea un número o 0 si es null/undefined
+                const activoValue = activoResponse.data.balance || 0; 
+                setActivo(activoValue);
+
+                // 2. Obtener Pasivo
+                const pasivoResponse = await PlanDeCuentasServicio.getSaldoCuenta(pasivoId);
+                const pasivoValue = pasivoResponse.data.balance || 0;
+                setPasivo(pasivoValue);
+
+                // 3. Obtener Estado de Resultados
+                const resultadosResponse = await PlanDeCuentasServicio.getResultado();
+                // Si el backend no devuelve resultado, usamos 0.
+                const resultadosValue = resultadosResponse.data.results || 0; 
+                setResultados(resultadosValue);
+
+            } catch (error) {
+                console.error("Error al cargar los indicadores clave:", error);
+                // En caso de error de red o backend, seteamos todos a 0 para evitar NaN
+                setActivo(0);
+                setPasivo(0);
+                setResultados(0);
+                setCapitalDeTrabajo(0);
+            }
+        };
+
+        fetchData();
+    }, []); 
+
+
+    // --- ESTILOS (MANTENIDOS) ---
     const styles = {
-        // Estilo para el fondo del panel de bienvenida (similar al Hero Section)
         welcomePanel: {
             background: 'linear-gradient(135deg, #F5E6E8 0%, #E8F4F8 100%)',
             borderRadius: '20px',
@@ -33,11 +103,10 @@ const InicioComponent = () => {
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: '1rem',
-            // Usamos colores de acento sutiles
             background: '#E8F4F8', 
         },
-        primaryColor: '#A8DADC', // Tu color de acento
-        secondaryText: '#5A6C7D', // Tu color de texto secundario
+        primaryColor: '#A8DADC', 
+        secondaryText: '#5A6C7D', 
         buttonPrimary: {
             background: '#A8DADC',
             color: '#2C3E50',
@@ -48,12 +117,33 @@ const InicioComponent = () => {
         }
     };
     
-    // --- Simulación de datos (Reemplazar con lógica de fetch real) ---
+    // --- DATOS DINÁMICOS PARA RENDERIZAR (Kpis) ---
     const kpis = [
-        { title: "Activos Totales", value: "350.500,00", icon: FaChartLine, color: '#A8DADC' },
-        { title: "Pasivos Totales", value: "120.000,00", icon: FaFileInvoiceDollar, color: '#FF9999' },
-        { title: "Resultado del Mes", value: "5.200,00", icon: FaDollarSign, color: '#28a745' },
-        { title: "Alertas Activas", value: "3", icon: FaBolt, color: '#ffc107' },
+        { 
+            title: "Activos Totales", 
+            value: formatCurrency(activo), 
+            icon: FaChartLine, 
+            color: styles.primaryColor 
+        },
+        { 
+            title: "Pasivos Totales", 
+            value: formatCurrency(pasivo), 
+            icon: FaFileInvoiceDollar, 
+            color: '#FF9999' 
+        },
+        { 
+            title: "Resultado del Período", 
+            value: formatCurrency(resultados), 
+            icon: FaDollarSign, 
+            // Si no es null, aplica color. Si es null (cargando) no importa el color
+            color: resultados !== null && resultados > 0 ? '#2ECC71' : (resultados !== null && resultados < 0 ? '#E74C3C' : '#5A6C7D') 
+        },
+        { 
+            title: "Capital de Trabajo", 
+            value: formatCurrency(capitalDeTrabajo), 
+            icon: FaTools, 
+            color: capitalDeTrabajo !== null && capitalDeTrabajo > 0 ? '#ffc107' : (capitalDeTrabajo !== null && capitalDeTrabajo < 0 ? '#E74C3C' : '#5A6C7D')
+        },
     ];
 
 
@@ -61,7 +151,6 @@ const InicioComponent = () => {
         <div className='d-flex'>
             <SideBarComponent />
             
-            {/* Contenido Principal con el padding inferior para el footer fijo */}
             <div style={{ flexGrow: 1, padding: '30px', paddingBottom: '80px' }}> 
                 
                 {/* 1. Panel de Bienvenida */}
@@ -87,12 +176,19 @@ const InicioComponent = () => {
                         <div className="col-lg-3 col-md-6" key={index}>
                             <div 
                                 style={styles.kpiCard}
-                                className="shadow-sm" // Sombra sutil de Bootstrap
+                                className="shadow-sm" 
                                 onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)'}
                                 onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 3px 10px rgba(0,0,0,0.05)'}
                             >
                                 <div style={{ ...styles.iconWrapper, background: kpi.color + '20' }}>
-                                    <kpi.icon size={24} style={{ color: kpi.color }} />
+                                    {/* Muestra un spinner mientras carga */}
+                                    {kpi.value === '...' && kpi.title !== 'Alertas Activas' ? (
+                                        <div className="spinner-border spinner-border-sm" role="status" style={{color: kpi.color}}>
+                                            <span className="visually-hidden">Cargando...</span>
+                                        </div>
+                                    ) : (
+                                        <kpi.icon size={24} style={{ color: kpi.color }} />
+                                    )}
                                 </div>
                                 <h4 style={{ color: styles.secondaryText, fontSize: '1rem', fontWeight: '500', marginBottom: '0.5rem' }}>
                                     {kpi.title}

@@ -147,7 +147,7 @@ public class AccountResource {
         try {
             authService.authorize(token);
             Map<String, Double> response = new HashMap<>();
-            response.put("monthlyResults", service.results());
+            response.put("results", service.results());
             return new ResponseEntity<>(response,HttpStatus.OK);
         }catch (ModelExceptions exception) {
             return new ResponseEntity<>(null, exception.getHttpStatus());

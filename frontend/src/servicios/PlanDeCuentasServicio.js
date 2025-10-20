@@ -29,6 +29,12 @@ class PlanDeCuentasServicio {
     getSaldoCuenta(cuentaId) {
         return axios.get(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/getbalance/' + cuentaId, this.getAuthHeaders());
     }
+    getResultado() {
+        return axios.get(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/results', this.getAuthHeaders());
+    }
+    getPatrimonio() {
+        return axios.get(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/equity', this.getAuthHeaders());
+    }
 
     crearCuentaControl(account) {
         return axios.post(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/control', account, this.getAuthHeaders());

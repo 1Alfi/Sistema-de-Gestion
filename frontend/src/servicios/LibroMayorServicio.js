@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const LIBRO_DIARIO_BASE_REST_API_URL = "http://localhost:8080/ledger";
+const LIBRO_MAYOR_BASE_REST_API_URL = "http://localhost:8080/ledger";
 
 class LibroMayorServicio {
 
@@ -18,7 +18,7 @@ class LibroMayorServicio {
 
     //Libro Mayor
     getMovimientosPorCuentaYPeriodo(cuentaId, desde, hasta) {
-        return axios.get(LIBRO_DIARIO_BASE_REST_API_URL+ "/" + cuentaId + "?before=" + desde + "&after=" + hasta, this.getAuthHeaders());
+        return axios.get(LIBRO_MAYOR_BASE_REST_API_URL+ "/" + cuentaId + "?before=" + desde + "&after=" + hasta, this.getAuthHeaders());
     }
 
 }
