@@ -73,5 +73,31 @@ public class DataInitializer implements CommandLineRunner {
         Account caja= new BalanceAccount();
         caja.setName("Caja");
         accountService.create(caja, 6L);
+
+        Account creditos  = new ControlAccount();
+        creditos.setName("Crédito");
+        accountService.create(creditos, 1L);
+
+        Account bienes  = new ControlAccount();
+        bienes.setName("Bienes de cambio");
+        accountService.create(bienes, 1L);
+
+        Account deudascom = new ControlAccount();
+        deudascom.setName("Deudas de comerciales");
+        accountService.create(deudascom, 2L);
+
+        Account capital = new BalanceAccount();
+        capital.setName("Capital");
+        accountService.create(capital,3L);
+
+        Account ventas = new ControlAccount();
+        ventas.setName("Ventas");
+        accountService.create(ventas, 4L);
+
+        Account otrosing = new ControlAccount();
+        otrosing.setName("Otros ingresos");
+        accountService.create(otrosing, 4L);
+
+
     }
 }

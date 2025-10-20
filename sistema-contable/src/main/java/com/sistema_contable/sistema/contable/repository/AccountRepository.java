@@ -3,6 +3,7 @@ package com.sistema_contable.sistema.contable.repository;
 import com.sistema_contable.sistema.contable.model.Account;
 import com.sistema_contable.sistema.contable.model.BalanceAccount;
 import com.sistema_contable.sistema.contable.model.ControlAccount;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -26,10 +27,10 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query("SELECT a FROM BalanceAccount  a WHERE a.id = :id")
     BalanceAccount searchBalanceAccount(@Param("id") Long id);
 
-    @Query("SELECT a FROM ControlAccount a WHERE a.id = :id")
+    @Query("SELECT a FROM ControlAccount a WHERE a.id = :id ")
     ControlAccount searchControlAccount(@Param("id") Long id);
 
-    @Query("SELECT a FROM BalanceAccount a")
+    @Query("SELECT a FROM BalanceAccount a ORDER BY a.code")
     List<BalanceAccount> getBalanceAccounts();
 
     @Query("SELECT a FROM Account a WHERE a.name = :name")

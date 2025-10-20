@@ -140,6 +140,33 @@ public class AccountResource {
         }catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}}
 
+    //METRICS
+    //monthly results
+    @GetMapping(path = "/results")
+    public ResponseEntity<?> getResults(@RequestHeader("Authorization") String token){
+        try {
+            authService.authorize(token);
+            Map<String, Double> response = new HashMap<>();
+            response.put("monthlyResults", service.results());
+            return new ResponseEntity<>(response,HttpStatus.OK);
+        }catch (ModelExceptions exception) {
+            return new ResponseEntity<>(null, exception.getHttpStatus());
+        }catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}}
+
+    //
+    @GetMapping(path = "/equity")
+    public ResponseEntity<?> getEquity(@RequestHeader("Authorization") String token){
+        try {
+            authService.authorize(token);
+            Map<String, Double> response = new HashMap<>();
+            response.put("monthlyResults", service.equity());
+            return new ResponseEntity<>(response,HttpStatus.OK);
+        }catch (ModelExceptions exception) {
+            return new ResponseEntity<>(null, exception.getHttpStatus());
+        }catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);}}
+
     //secondary methods
     private AccountResponseDTO accountResponse(Account account){
         AccountResponseDTO dto = mapper.map(account, AccountResponseDTO.class);

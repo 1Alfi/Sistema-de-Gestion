@@ -12,9 +12,11 @@ import com.sistema_contable.sistema.contable.services.accounting.interfaces.Entr
 import com.sistema_contable.sistema.contable.services.accounting.interfaces.MovementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.beans.Transient;
 import java.util.List;
@@ -107,6 +109,19 @@ public class AccountServiceImp implements AccountService {
             for(Account child : account.getSubAccounts()){
                 total +=  this.lastBalance(child.getId());}
             return total;}}
+
+    //calculate the results
+    @Override
+    public Double results() throws Exception {
+        return lastBalance(4L)-lastBalance(5L);
+    }
+
+    //calculate the equity
+    @Override
+    public Double equity() throws Exception {
+        return lastBalance(1L)-lastBalance(2L);
+    }
+
 
     //SEARCHES
     //by id all types

@@ -7,6 +7,7 @@ import com.sistema_contable.sistema.contable.services.accounting.interfaces.Jour
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class JournalServiceImp implements JournalService {
         if(entrys.isEmpty()){
             throw new EntryNotFindException();
         }
+        Collections.reverse(entrys);
         return entrys;
     }
 
