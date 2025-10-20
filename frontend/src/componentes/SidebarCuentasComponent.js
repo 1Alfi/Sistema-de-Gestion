@@ -159,7 +159,7 @@ const SidebarCuentasComponent = ({ onSelectAccount }) => {
         return () => {
             unsubscribe();
         };
-    }, [selectedNodeId]);
+    }, []);
 
 
     const renderTree = (data) => {
