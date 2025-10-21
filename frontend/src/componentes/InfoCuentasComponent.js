@@ -68,6 +68,7 @@ const InfoCuentasComponent = ({ id, onDeselect }) => {
 
     // --- MANEJO DE ROLES Y NAVEGACIÓN ---
 
+    // La lógica de rol ya está aquí, ¡perfecto!
     const userRole = getRoleFromToken();
     const isAdmin = userRole === 'ADMIN';
 
@@ -109,10 +110,11 @@ const InfoCuentasComponent = ({ id, onDeselect }) => {
             });
     };
     
-    // --- MANEJO DE BORRADO LÓGICO (Desactivación/Reactivación) - MODIFICADO ---
+    // --- MANEJO DE BORRADO LÓGICO (Desactivación/Reactivación) ---
 
     const handleToggleActive = () => {
-        if (!isAdmin || !cuenta) return;
+        // Validación de seguridad adicional en el frontend
+        if (!isAdmin || !cuenta) return; 
         
         // Validación de Negocio (mantenemos la lógica de la respuesta anterior si es relevante)
         const isDisabling = cuenta.active;
@@ -132,25 +134,20 @@ const InfoCuentasComponent = ({ id, onDeselect }) => {
             ? "¿Estás seguro de que quieres REACTIVAR esta cuenta?" 
             : "¿Estás seguro de que quieres DESACTIVAR esta cuenta? (Borrado lógico)";
 
+        // NOTE: Por buenas prácticas en aplicaciones dentro de un entorno colaborativo, 
+        // se debería reemplazar window.confirm por un modal personalizado. 
         if (window.confirm(confirmMessage)) {
             actionFunction(cuenta.id) 
                 .then(() => {
-                    // Si la operación es exitosa (ya sea activar o desactivar)...
                     setError('');
                     RefreshService.triggerRefresh(); 
                     
-                    // --- CAMBIO CLAVE SOLICITADO ---
-                    // Llama a la función del padre para setear el ID de la cuenta a null,
-                    // lo que forzará la vista de 'Seleccione una cuenta'.
+                    // Llama a la función del padre para setear el ID de la cuenta a null.
                     if (onDeselect) {
                         onDeselect(); 
                     } else {
-                        // Si no hay onDeselect (caso Reactivar/Desactivar sin cambio de vista), 
-                        // actualizamos el estado local para reflejar el cambio.
-                        // (Nota: si siempre quieres deseleccionar, esta rama es innecesaria)
                         setCuenta(prev => ({ ...prev, active: newState }));
                     }
-                    // ---------------------------------
                 })
                 .catch(err => {
                     setError(err.response?.data?.message || `Error al ${actionName} la cuenta.`);
@@ -160,7 +157,7 @@ const InfoCuentasComponent = ({ id, onDeselect }) => {
     };
 
 
-    // --- RENDERIZADO (Sin cambios, pero usa las props de íconos originales) ---
+    // --- RENDERIZADO ---
 
     if (error) {
         return <div className='alert alert-danger mt-4 mx-4'>{error}</div>;
@@ -255,6 +252,7 @@ const InfoCuentasComponent = ({ id, onDeselect }) => {
                         }}>
                             {cuenta.name} 
                         </h1>
+                        {/* Se muestra el ícono de edición solo si es ADMIN */}
                         {isAdmin && (
                             <span onClick={handleEditClick} style={{ cursor: 'pointer', verticalAlign: 'top' }}>
                                 <LuPencilLine size={24} color={TEXT_COLOR} />
@@ -285,6 +283,7 @@ const InfoCuentasComponent = ({ id, onDeselect }) => {
                             <button className="btn btn-danger" onClick={handleCancelEdit}>Cancelar</button>
                         </>
                     ) : (
+                        // Solo mostramos el botón de Desactivar/Reactivar si es ADMIN
                         isAdmin && (
                             <button
                                 className='btn btn-sm'
@@ -359,7 +358,7 @@ const InfoCuentasComponent = ({ id, onDeselect }) => {
                         <p style={{ color: '#7F8C8D' }}>Esta cuenta de Control no tiene subcuentas directas.</p>
                     )}
 
-                    {/* Botón para Agregar Subcuenta */}
+                    {/* Botón para Agregar Subcuenta: Solo si es ADMIN */}
                     {isAdmin && (
                         <button
                             className='btn mt-3'
