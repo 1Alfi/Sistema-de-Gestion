@@ -65,7 +65,7 @@ const ListarUsuariosComponente = () => {
             }).catch(error => {
                 console.error("Error al eliminar el usuario:", error);
                 // Si el error es una restricción, se notifica.
-                setError(error.response?.data?.message || 'No se pudo eliminar el usuario. Verifica los permisos o si existen dependencias.');
+                setError(error.response?.data?.message || 'No se pudo eliminar el usuario!');
             })
         }
     }
