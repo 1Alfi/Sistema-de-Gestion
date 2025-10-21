@@ -340,7 +340,7 @@ const AddAsientoComponent = () => {
                             disabled={isSaving}
                         />
                         <label className='form-check-label' htmlFor='checkDouble' style={{ fontWeight: '600' }}>
-                            Permitir Asiento Doble (Debe seguido de Haber)
+                            Permitir Asiento Doble
                         </label>
                     </div>
                 </div>

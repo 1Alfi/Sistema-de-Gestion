@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import UsuarioServicio from '../servicios/UsuarioServicio';
 import { Link } from 'react-router-dom';
 import SideBarComponent from './SideBarComponent';
 import { FaUsers, FaUserPlus, FaTrashAlt, FaSpinner } from 'react-icons/fa';
+// Eliminamos la importación de getUserIdFromToken ya que no se usará.
+// import { getUserIdFromToken } from '../utiles/authUtils'; 
 
 // --- CONSTANTES DE ESTILO ---
 const PRIMARY_COLOR = '#A8DADC';  
@@ -10,13 +12,25 @@ const TEXT_COLOR = '#2C3E50';
 const BACKGROUND_COLOR = '#F8F9FA'; 
 const CARD_COLOR = '#FFFFFF';
 
+// Constante para el ID del usuario administrador que no debe eliminarse (ID = 1)
+const ADMIN_ID_TO_PROTECT = "1";
+
 const ListarUsuariosComponente = () => {
 
     const [usuarios, setUsuarios] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState('');
+    // Eliminamos el estado currentUserId ya que no podemos obtener el ID del token.
+    // const [currentUserId, setCurrentUserId] = useState(null); 
 
     useEffect(() => {
+        // La lógica para obtener el currentUserId se elimina.
+        // const idFromToken = getUserIdFromToken();
+        // if (idFromToken) {
+        //     setCurrentUserId(idFromToken);
+        // }
+        
+        // 2. Cargar la lista de usuarios.
         listarUsuarios();
     }, [])
 
@@ -24,7 +38,8 @@ const ListarUsuariosComponente = () => {
         setCargando(true);
         setError('');
         UsuarioServicio.getAllUsuarios().then((response) => {
-            setUsuarios(response.data);
+            // Se asume que response.data es un array de usuarios.
+            setUsuarios(response.data || []); 
             console.log(response.data);
             setCargando(false);
         }).catch(error => {
@@ -36,14 +51,21 @@ const ListarUsuariosComponente = () => {
     }
 
     const deleteUsuario = (usuarioId) => {
-        // En una aplicación real, se usaría un modal de confirmación aquí
+        // Nueva validación: Si el ID es igual a ADMIN_ID_TO_PROTECT (1), bloquear la eliminación.
+        if (usuarioId === ADMIN_ID_TO_PROTECT) {
+            setError('No puedes eliminar el usuario administrador por defecto (ID 1).');
+            return;
+        }
+        
+        // NOTA: Reemplaza window.confirm() por un modal en futuras mejoras.
         if (window.confirm(`¿Estás seguro que deseas eliminar al usuario con ID ${usuarioId}?`)) {
              UsuarioServicio.deleteUsuario(usuarioId).then((response) => {
                 listarUsuarios();
-                // Opcional: Mostrar un mensaje de éxito
+                setError(''); // Limpiamos errores anteriores si la operación fue exitosa
             }).catch(error => {
                 console.error("Error al eliminar el usuario:", error);
-                setError('No se pudo eliminar el usuario. Verifica los permisos.');
+                // Si el error es una restricción, se notifica.
+                setError(error.response?.data?.message || 'No se pudo eliminar el usuario. Verifica los permisos o si existen dependencias.');
             })
         }
     }
@@ -51,6 +73,7 @@ const ListarUsuariosComponente = () => {
     // Función auxiliar para renderizar el rol de forma amigable
     const formatRole = (role) => {
         if (!role) return 'N/A';
+        // Capitaliza la primera letra y reemplaza guiones bajos por espacios
         return role.charAt(0).toUpperCase() + role.slice(1).toLowerCase().replace(/_/g, ' ');
     }
 
@@ -98,7 +121,8 @@ const ListarUsuariosComponente = () => {
                             {/* Contenido principal (Cargando o Tabla) */}
                             {cargando ? (
                                 <div className='d-flex justify-content-center my-5'>
-                                    <FaSpinner size={32} className='text-primary fa-spin me-3' />
+                                    {/* Cambiado a FaSpinner para un mejor efecto de carga */}
+                                    <FaSpinner size={32} className='text-primary fa-spin me-3' style={{ color: PRIMARY_COLOR }} />
                                     <p className='ms-3 pt-1' style={{ color: TEXT_COLOR }}>Cargando usuarios...</p>
                                 </div>
                             ) : usuarios.length > 0 ? (
@@ -121,12 +145,19 @@ const ListarUsuariosComponente = () => {
                                                             <td>{user.username}</td>
                                                             <td>{formatRole(user.role)}</td>
                                                             <td className='text-center'>
-                                                                <button 
-                                                                    className='btn btn-sm btn-danger d-flex align-items-center justify-content-center mx-auto' 
-                                                                    onClick={() => deleteUsuario(user.id)}
-                                                                > 
-                                                                    <FaTrashAlt className='me-1' /> Eliminar 
-                                                                </button>
+                                                                {/* LÓGICA CLAVE: Se verifica directamente contra el ID 1 */}
+                                                                {user.id !== ADMIN_ID_TO_PROTECT ? (
+                                                                    <button 
+                                                                        className='btn btn-sm btn-danger d-flex align-items-center justify-content-center mx-auto' 
+                                                                        onClick={() => deleteUsuario(user.id)}
+                                                                    > 
+                                                                        <FaTrashAlt className='me-1' /> Eliminar 
+                                                                    </button>
+                                                                ) : (
+                                                                    <span className='badge bg-secondary' style={{ padding: '0.5rem' }}>
+                                                                        Administrador Principal
+                                                                    </span>
+                                                                )}
                                                             </td>
                                                         </tr>
                                                 )
