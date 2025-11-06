@@ -2,6 +2,7 @@ package com.sistema_contable.sistema.contable.resources;
 
 import com.sistema_contable.sistema.contable.dto.LedgerResponseDTO;
 import com.sistema_contable.sistema.contable.dto.Mapper;
+import com.sistema_contable.sistema.contable.dto.MovementLedgerResponseDTO;
 import com.sistema_contable.sistema.contable.dto.MovementResponseDTO;
 import com.sistema_contable.sistema.contable.exceptions.ModelExceptions;
 import com.sistema_contable.sistema.contable.model.Movement;
@@ -56,7 +57,7 @@ public class LedgerResource {
     private LedgerResponseDTO responseDTOS(List<Movement> movements) {
         LedgerResponseDTO ledgerResponseDTO = new LedgerResponseDTO();
         ledgerResponseDTO.setMovements(movements.stream()
-                .map(movement -> modelMapper.map(movement,MovementResponseDTO.class)).toList());
+                .map(movement -> modelMapper.map(movement, MovementLedgerResponseDTO.class)).toList());
         ledgerResponseDTO.setInitialBalance(calculateInitialBalance(movements.get(0)));
         return ledgerResponseDTO;
     }

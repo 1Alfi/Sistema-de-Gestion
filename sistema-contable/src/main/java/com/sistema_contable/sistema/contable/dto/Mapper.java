@@ -20,6 +20,7 @@ public class Mapper extends ModelMapper {
         configEntryDTO();
         configMovementDTO();
         configAccountDTO();
+        configMovementLedgerDTO();
     }
 
     //custom mapping
@@ -43,6 +44,14 @@ public class Mapper extends ModelMapper {
         this.createTypeMap(Movement.class, MovementResponseDTO.class)
                 .addMapping(movement -> movement.getAccount().getName(),(dto, v)->dto.setAccount((String) v))
                 .addMapping(movement -> movement.getAccountBalance(),(dto, balance)->dto.setAccount_balance((Double) balance))
+                .addMapping(movement -> movement.getEntry().getDateCreated(),(dto,date)->dto.setDateCreated((String) date));
+    }
+
+    private void configMovementLedgerDTO(){
+        this.createTypeMap(Movement.class, MovementLedgerResponseDTO.class)
+                .addMapping(movement -> movement.getAccount().getName(),(dto, v)->dto.setAccount((String) v))
+                .addMapping(movement -> movement.getAccountBalance(),(dto, balance)->dto.setAccount_balance((Double) balance))
+                .addMapping(movement -> movement.getEntry().getDescription(),(dto,description)->dto.setDescription((String) description))
                 .addMapping(movement -> movement.getEntry().getDateCreated(),(dto,date)->dto.setDateCreated((String) date));
     }
 
