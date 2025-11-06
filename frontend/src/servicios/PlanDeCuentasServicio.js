@@ -1,7 +1,8 @@
 import React from 'react'
 import axios from 'axios'
 
-const PLAN_DE_CUENTAS_BASE_REST_API_URL = "http://localhost:8080/accounts";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
+const PLAN_DE_CUENTAS_BASE_REST_API_URL = `${API_BASE_URL}/accounts`;
 
 class PlanDeCuentasServicio {
 
@@ -27,7 +28,7 @@ class PlanDeCuentasServicio {
     
     //Retorna el saldo de la funcion calcular saldo de cada cuenta
     getSaldoCuenta(cuentaId) {
-        return axios.get(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/' + cuentaId  + '/get-saldo');
+        return axios.get(PLAN_DE_CUENTAS_BASE_REST_API_URL + '/getbalance/' + cuentaId, this.getAuthHeaders());
     }
 
     crearCuentaControl(account) {
@@ -52,6 +53,18 @@ class PlanDeCuentasServicio {
     getBalanceAccounts() {
         return axios.get(PLAN_DE_CUENTAS_BASE_REST_API_URL + "/balance", this.getAuthHeaders());
     }
+
+    // CORREGIDO y como función flecha
+    desactivarCuenta = (cuentaId) => {
+        return axios.delete(PLAN_DE_CUENTAS_BASE_REST_API_URL + "/delete/" + cuentaId, this.getAuthHeaders());
+    }
+    
+    // CORREGIDO (añadido 'null') y como función flecha
+    activarCuenta = (cuentaId) => {
+        return axios.put(PLAN_DE_CUENTAS_BASE_REST_API_URL + "/activate/" + cuentaId, null, this.getAuthHeaders());
+    }
+
+
 
 }
 

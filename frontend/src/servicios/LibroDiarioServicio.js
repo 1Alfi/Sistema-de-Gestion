@@ -1,10 +1,12 @@
 import axios from 'axios';
 
-const LIBRO_DIARIO_BASE_REST_API_URL = "http://localhost:8080/journal";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
+const LIBRO_DIARIO_BASE_REST_API_URL = `${API_BASE_URL}/journal`;
 
 class LibroDiarioServicio {
 
-    getAuthHeaders() {
+    // Función de flecha para mantener el contexto 'this'
+    getAuthHeaders = () => {
         const token = localStorage.getItem('token');
         if (token) {
             return {
@@ -13,22 +15,21 @@ class LibroDiarioServicio {
                 }
             };
         }
-        return {}; // Devuelve un objeto vacío si no hay token
+        return {}; 
     }
 
-    //Libro diario
-    getLastAsientos() {
+    // Función de flecha para mantener el contexto 'this'
+    getLastAsientos = () => {
+        // 'this' ahora apunta correctamente a la instancia
         return axios.get(LIBRO_DIARIO_BASE_REST_API_URL, this.getAuthHeaders());
     }
 
-    getAsientosPorPeriodo(desde, hasta) {
-        return axios.get(LIBRO_DIARIO_BASE_REST_API_URL, desde, hasta);
+    // Función de flecha para mantener el contexto 'this'
+    getAsientosPorPeriodo = (desde, hasta) => {
+        // 'this' ahora apunta correctamente a la instancia
+        console.log(LIBRO_DIARIO_BASE_REST_API_URL + "/between?before=" + desde + "&after=" + hasta)
+        return axios.get(LIBRO_DIARIO_BASE_REST_API_URL + "/between?before=" + desde + "&after=" + hasta, this.getAuthHeaders());
     }
-
-    //Libro Mayor
-    // getMovimientosPorCuentaYPeriodo(cuenta, desde, hasta) {
-    //     return axios.get(LIBRO_DIARIO_BASE_REST_API_URL + '-mayor', cuenta, desde, hasta);
-    // }
 
 }
 

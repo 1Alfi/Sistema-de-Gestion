@@ -4,6 +4,16 @@ import 'react-treeview/react-treeview.css';
 import PlanDeCuentasServicio from '../servicios/PlanDeCuentasServicio';
 import { useNavigate } from 'react-router-dom';
 import { getRoleFromToken } from '../utiles/authUtils';
+import RefreshService from '../servicios/RefreshService';
+import { FaPlusCircle } from 'react-icons/fa';
+
+// --- CONSTANTES DE DISEÑO ---
+const PRIMARY_COLOR = '#A8DADC';  
+const TEXT_COLOR = '#2C3E50';     
+const BACKGROUND_COLOR = '#F8F9FA'; 
+const ACTIVE_BG_COLOR = PRIMARY_COLOR; 
+
+// ... (buildTree se mantiene sin cambios) ...
 
 const buildTree = (accounts) => {
     const tree = [];
@@ -13,14 +23,15 @@ const buildTree = (accounts) => {
 
     //Carga todo el map con todas las cuentas que recibimos del back
     accounts.forEach(account => {
-        const node = {
-            id: account.id,
-            code: account.code,
-            name: account.name,
-            children: []
-        };
-        map.set(account.code, node);
-    });
+    const node = {
+        id: account.id,
+        code: account.code,
+        name: account.name,
+        type: account.type,
+        children: []
+    };
+    map.set(account.code, node);
+});
 
     //A cada cuenta la enlaza con su respectivo padre y la almacena dentro de sus childrens
     accounts.forEach(account => {
@@ -88,56 +99,29 @@ const buildTree = (accounts) => {
     return tree;
 };
 
-const renderTree = (data, onSelectAccount) => {
-    return data.map((node) => {
-        // Indica si el nodo tiene hijos para desplegar.
-        const hasChildrenToRender = node.children && node.children.length > 0;
-        
-        // Etiqueta: SOLO el nombre de la cuenta (Requisito 5)
-        // Ya no necesitamos estilos complejos aquí, ya que TreeView maneja el layout.
-        const labelAndButton = (
-            <span 
-                onClick={() => onSelectAccount(node.id)} 
-                style={{ cursor: 'pointer' }}
-            >
-                {node.name}
-            </span>
-        );
-        
-        // Usar TreeView para TODOS los nodos (hojas y carpetas). 
-        // Esto corrige la anidación visual y la posición del desplegable.
-        return (
-            <TreeView
-                key={node.id}
-                nodeLabel={labelAndButton}
-                
-                // Despliegue: Usamos 'true' para que por defecto TODAS las cuentas 
-                // estén colapsadas (Requisito 4).
-                defaultCollapsed={true} 
-            >
-                {/* Renderiza recursivamente SOLO si tiene hijos */}
-                {hasChildrenToRender && renderTree(node.children, onSelectAccount)}
-            </TreeView>
-        );
-    });
-};
 
 const SidebarCuentasComponent = ({ onSelectAccount }) => {
 
     const [treeData, setTreeData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const navigate = useNavigate('');
+    const navigate = useNavigate();
+    const [selectedNodeId, setSelectedNodeId] = useState(null); 
 
     const userRole = getRoleFromToken();
     const isAdmin = userRole === 'ADMIN';
+
+    const handleSelect = (id) => {
+        setSelectedNodeId(id);
+        onSelectAccount(id);
+    };
 
     const handleAddCuenta = () => {
         navigate('/add-account');
     };
 
     const fetchAccounts = async () => {
-        setLoading(true); // Iniciar la carga
+        setLoading(true); 
         try {
             const response = await PlanDeCuentasServicio.listarCuentas();
             const accounts = response.data;
@@ -146,6 +130,12 @@ const SidebarCuentasComponent = ({ onSelectAccount }) => {
                 const transformedData = buildTree(accounts);
                 setTreeData(transformedData);
                 setError('');
+                if (!selectedNodeId && accounts.length > 0) {
+                    const firstSelectable = accounts.find(a => a.type === 'Imputable');
+                    if (firstSelectable) {
+                        handleSelect(firstSelectable.id);
+                    }
+                }
             } else {
                 setError('La respuesta del servidor no es un array de cuentas válido.');
                 setTreeData([]);
@@ -154,42 +144,152 @@ const SidebarCuentasComponent = ({ onSelectAccount }) => {
             console.error("Error al obtener las cuentas: ", err);
             setError(err.response?.data?.message || 'Ocurrió un error al cargar el plan de cuentas.');
         } finally {
-            setLoading(false); // <--- Finalizar la carga, siempre
+            setLoading(false);
         }
     };
     
-    // 2. Uso de useEffect: Se ejecuta solo en el montaje
     useEffect(() => {
         fetchAccounts();
+
+        const unsubscribe = RefreshService.subscribe(() => {
+            console.log("Señal de refresco recibida. Recargando cuentas...");
+            fetchAccounts(); 
+        });
+
+        return () => {
+            unsubscribe();
+        };
     }, []);
 
-    // 3. Renderizado Condicional: Muestra el spinner si está cargando
+
+    const renderTree = (data) => {
+        return data.map((node) => {
+            const isControlAccount = node.type === 'Control';
+            const isSelected = node.id === selectedNodeId;
+            
+            const labelStyle = {
+                cursor: 'pointer', 
+                padding: '4px 8px', 
+                fontWeight: isControlAccount ? '600' : '400',
+                fontSize: '0.95rem',
+                color: TEXT_COLOR,
+                backgroundColor: isSelected ? ACTIVE_BG_COLOR : 'transparent',
+                display: 'inline-block',
+                transition: 'background-color 0.2s ease',
+            };
+
+            const labelContent = (
+                <span 
+                    onClick={() => handleSelect(node.id)} 
+                    style={labelStyle}
+                    onMouseEnter={e => e.currentTarget.style.backgroundColor = isSelected ? ACTIVE_BG_COLOR : '#E9ECEF'}
+                    onMouseLeave={e => e.currentTarget.style.backgroundColor = isSelected ? ACTIVE_BG_COLOR : 'transparent'}
+                >
+                    {node.name}
+                </span>
+            );
+            
+            if (!isControlAccount) {
+                return (
+                    <div 
+                        key={node.id} 
+                        style={{ marginLeft: '16px' }}
+                    >
+                        {labelContent}
+                    </div>
+                );
+            }
+
+            const hasChildrenToRender = node.children && node.children.length > 0;
+            
+            return (
+                <TreeView
+                    key={node.id}
+                    nodeLabel={labelContent}
+                    defaultCollapsed={true} 
+                >
+                    {isControlAccount && hasChildrenToRender && renderTree(node.children)}
+                </TreeView>
+            );
+        });
+    };
+
     if (loading) {
         return (
-            <div className='rounded shadow p-3 bg-light d-flex justify-content-center align-items-center' style={{ padding: '20px', height: '100vh' }}>
-                <div className="spinner-border text-primary" role="status">
+            <div 
+                className='rounded shadow p-3 d-flex justify-content-center align-items-center' 
+                style={{ 
+                    padding: '20px', 
+                    height: '100%', 
+                    width: '320px', 
+                    flexShrink: 0,
+                    backgroundColor: BACKGROUND_COLOR
+                }}>
+                <div className="spinner-border text-info" style={{ color: PRIMARY_COLOR }} role="status">
                     <span className="visually-hidden">Cargando...</span>
                 </div>
             </div>
         );
     }
     
-    // Renderizado principal (solo si loading es false)
+    // RENDERIZADO PRINCIPAL CON AJUSTE DE LAYOUT
     return (
-        <div className='rounded shadow p-3 bg-light' style={{ padding: '20px', height: '100vh' }}>
-            <h2>Plan de Cuentas</h2>
+        <div 
+            className='shadow-sm border-end d-flex flex-column' 
+            style={{ 
+                // CLAVE 1: Configuración del Contenedor Fijo y Flexible
+                width: '320px', 
+                flexShrink: 0,
+                // height: '100%', // Comentamos o eliminamos esto si el padre es un contenedor flex con altura definida
+                backgroundColor: BACKGROUND_COLOR, 
+                padding: '20px 0',
+                // Aseguramos que el contenedor sea una columna flexible
+            }}
+        >
+            <h2 style={{ 
+                fontSize: '1.5rem', 
+                fontWeight: '700', 
+                color: TEXT_COLOR, 
+                marginBottom: '1rem',
+                padding: '0 20px',
+            }}>
+                Plan de Cuentas
+            </h2>
             
-            {/* Si no está cargando, muestra el árbol */}
-            {renderTree(treeData, onSelectAccount)}
+            {/* CLAVE 2: Contenedor del Árbol con SCROLL INTERNO */}
+            <div 
+                className='account-tree' 
+                style={{ 
+                    flexGrow: 1,           // Ocupa todo el espacio vertical restante
+                    overflowY: 'auto',     // Permite el scroll solo en el árbol
+                    padding: '0 20px',
+                    paddingBottom: '20px', // Opcional: padding inferior
+                }}
+            >
+                {renderTree(treeData)}
+            </div>
+            
             {error && <div className='alert alert-danger'>{error}</div>}
             
+            {/* CLAVE 3: El botón se mantiene fijo en la parte inferior del sidebar */}
             {isAdmin && (
-                <button
-                    className='btn btn-success mt-2 me-2'
-                    onClick={handleAddCuenta}
-                >
-                    Agregar cuenta...
-                </button>
+                <div style={{ padding: '0 20px' }}>
+                    <button
+                        className='btn btn-lg w-100'
+                        onClick={handleAddCuenta}
+                        style={{
+                            background: PRIMARY_COLOR, 
+                            color: TEXT_COLOR, 
+                            fontWeight: '600',
+                            borderRadius: '8px',
+                            border: 'none',
+                            marginBottom: '50px', // Separación del árbol
+                            padding: '10px 15px',
+                        }}
+                    >
+                        <FaPlusCircle className="me-2" /> Agregar cuenta
+                    </button>
+                </div>
             )}
         </div>
     );

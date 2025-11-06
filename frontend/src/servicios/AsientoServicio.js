@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const ASIENTO_BASE_REST_API_URL = "http://localhost:8080/entry";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
+const ASIENTO_BASE_REST_API_URL = `${API_BASE_URL}/entry`;
 
 class AsientoServicio {
 
